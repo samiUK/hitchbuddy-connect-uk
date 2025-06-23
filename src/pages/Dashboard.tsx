@@ -17,10 +17,12 @@ import {
   Navigation
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { NewRideRequestForm } from "@/components/NewRideRequestForm";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'rides' | 'messages'>('overview');
+  const [showRideRequestForm, setShowRideRequestForm] = useState(false);
   
   const userType = user?.user_metadata?.user_type || 'rider';
   const firstName = user?.user_metadata?.first_name || '';
@@ -260,21 +262,35 @@ const Dashboard = () => {
               )}
             </div>
             
-            <div className="text-center py-12">
-              <Car className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {userType === 'driver' ? 'No rides posted yet' : 'No rides available'}
-              </h3>
-              <p className="text-gray-500 mb-4">
-                {userType === 'driver' 
-                  ? 'Start earning by posting your first ride'
-                  : 'Check back later for new ride opportunities'
-                }
-              </p>
-              <Button variant="outline">
-                {userType === 'driver' ? 'Post Your First Ride' : 'Set Up Ride Alerts'}
-              </Button>
-            </div>
+            {showRideRequestForm ? (
+              <NewRideRequestForm onClose={() => setShowRideRequestForm(false)} />
+            ) : (
+              <div className="text-center py-12">
+                <Car className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  {userType === 'driver' ? 'No rides posted yet' : 'No rides available nearby'}
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  {userType === 'driver' 
+                    ? 'Start earning by posting your first ride'
+                    : 'No drivers are offering rides in your area right now'
+                  }
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button 
+                    variant="outline"
+                    onClick={() => userType === 'rider' && setShowRideRequestForm(true)}
+                  >
+                    {userType === 'driver' ? 'Post Your First Ride' : 'Create Ride Request'}
+                  </Button>
+                  {userType === 'rider' && (
+                    <Button variant="outline">
+                      Set Up Ride Alerts
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
