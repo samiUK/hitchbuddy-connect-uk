@@ -1,20 +1,42 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, MapPin, MessageCircle, Star, Car, User } from "lucide-react";
+import { Users, MapPin, MessageCircle, Star, Car, User, LogOut } from "lucide-react";
 import { LandingHero } from "@/components/LandingHero";
 import { UserTypeSelection } from "@/components/UserTypeSelection";
 import { AuthModal } from "@/components/AuthModal";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const [showAuth, setShowAuth] = useState(false);
   const [userType, setUserType] = useState<'rider' | 'driver' | null>(null);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const handleUserTypeSelect = (type: 'rider' | 'driver') => {
-    setUserType(type);
-    setShowAuth(true);
+    if (user) {
+      // User is already logged in, redirect to member area
+      console.log('Navigate to member area for', type);
+    } else {
+      setUserType(type);
+      navigate('/auth');
+    }
+  };
+
+  const handleGetStarted = () => {
+    if (user) {
+      // User is already logged in, redirect to member area
+      console.log('Navigate to member area');
+    } else {
+      navigate('/auth');
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
   };
 
   const features = [
@@ -54,23 +76,37 @@ const Index = () => {
                 Hitchbuddy
               </span>
             </div>
-            <div className="flex space-x-4">
-              <Button variant="ghost" onClick={() => setShowAuth(true)}>
-                Sign In
-              </Button>
-              <Button 
-                className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
-                onClick={() => setShowAuth(true)}
-              >
-                Get Started
-              </Button>
+            <div className="flex space-x-4 items-center">
+              {user ? (
+                <>
+                  <span className="text-sm text-gray-600">
+                    Welcome, {user.user_metadata?.first_name || user.email}
+                  </span>
+                  <Button variant="ghost" onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="ghost" onClick={() => navigate('/auth')}>
+                    Sign In
+                  </Button>
+                  <Button 
+                    className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+                    onClick={() => navigate('/auth')}
+                  >
+                    Get Started
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <LandingHero onGetStarted={() => setShowAuth(true)} />
+      <LandingHero onGetStarted={handleGetStarted} />
 
       {/* User Type Selection */}
       <UserTypeSelection onUserTypeSelect={handleUserTypeSelect} />
