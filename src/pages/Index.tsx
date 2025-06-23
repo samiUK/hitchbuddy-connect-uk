@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,10 +16,17 @@ const Index = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+
   const handleUserTypeSelect = (type: 'rider' | 'driver') => {
     if (user) {
-      // User is already logged in, redirect to member area
-      console.log('Navigate to member area for', type);
+      // User is already logged in, redirect to dashboard
+      navigate('/dashboard');
     } else {
       setUserType(type);
       navigate('/auth');
@@ -28,8 +35,8 @@ const Index = () => {
 
   const handleGetStarted = () => {
     if (user) {
-      // User is already logged in, redirect to member area
-      console.log('Navigate to member area');
+      // User is already logged in, redirect to dashboard
+      navigate('/dashboard');
     } else {
       navigate('/auth');
     }
