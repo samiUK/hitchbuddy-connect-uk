@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Calendar, Users, PoundSterling } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { LocationAutocomplete } from "./LocationAutocomplete";
 
 interface NewRideRequestFormProps {
   onClose: () => void;
@@ -27,6 +28,13 @@ export const NewRideRequestForm = ({ onClose }: NewRideRequestFormProps) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleLocationChange = (name: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -73,28 +81,24 @@ export const NewRideRequestForm = ({ onClose }: NewRideRequestFormProps) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Location Fields */}
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="fromLocation">From</Label>
-              <Input
-                id="fromLocation"
-                name="fromLocation"
-                placeholder="Pickup location"
-                value={formData.fromLocation}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="toLocation">To</Label>
-              <Input
-                id="toLocation"
-                name="toLocation"
-                placeholder="Destination"
-                value={formData.toLocation}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+            <LocationAutocomplete
+              id="fromLocation"
+              name="fromLocation"
+              label="From"
+              placeholder="Pickup location"
+              value={formData.fromLocation}
+              onChange={(value) => handleLocationChange("fromLocation", value)}
+              required
+            />
+            <LocationAutocomplete
+              id="toLocation"
+              name="toLocation"
+              label="To"
+              placeholder="Destination"
+              value={formData.toLocation}
+              onChange={(value) => handleLocationChange("toLocation", value)}
+              required
+            />
           </div>
 
           {/* Date and Time */}
