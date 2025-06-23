@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin, Calendar, Users, Pound } from "lucide-react";
+import { MapPin, Calendar, Users, PoundSterling } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface NewRideRequestFormProps {
@@ -146,7 +146,7 @@ export const NewRideRequestForm = ({ onClose }: NewRideRequestFormProps) => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="maxPrice" className="flex items-center space-x-1">
-                <Pound className="h-4 w-4" />
+                <PoundSterling className="h-4 w-4" />
                 <span>Maximum Price</span>
               </Label>
               <Input
