@@ -526,7 +526,7 @@ const Dashboard = () => {
                       }
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {userType === 'driver' ? 'Rides you\'ve posted' : 'Your active trip requests'}
+                      {userType === 'driver' ? 'Rides you\'ve posted' : 'Your active ride requests'}
                     </p>
                   </CardContent>
                 </Card>
@@ -1076,8 +1076,8 @@ const Dashboard = () => {
                     {rideRequests.filter(req => req.status === 'pending').length === 0 ? (
                       <div className="text-center py-6 text-gray-500">
                         <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p>No active trip requests</p>
-                        <p className="text-sm mt-1">Submit a trip request to find drivers</p>
+                        <p>No active ride requests</p>
+                        <p className="text-sm mt-1">Submit a ride request to find drivers</p>
                       </div>
                     ) : (
                       <div className="grid gap-4">
@@ -1086,7 +1086,7 @@ const Dashboard = () => {
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between mb-3">
                                 <Badge variant="outline" className="text-blue-600 border-blue-300">
-                                  Trip Request
+                                  Ride Request
                                 </Badge>
                                 <Badge className="bg-orange-600">
                                   Pending
