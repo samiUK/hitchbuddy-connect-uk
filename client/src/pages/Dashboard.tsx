@@ -29,6 +29,7 @@ import {
   Calendar,
   PoundSterling
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuthNew";
 import { NewRideRequestForm } from "@/components/NewRideRequestForm";
 import { PostNewRideForm } from "@/components/PostNewRideForm";

@@ -42,6 +42,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Enhanced profile editing with photo upload and address field for all users
 - ✅ Updated database schema to include address field
 - ✅ Implemented avatar upload with image preview and file size validation
+- ✅ Added profile photo thumbnail and address display in dashboard header
+- ✅ Updated storage layer to properly handle profile photo and address updates
 
 ## User Preferences
 - Available rides should only show in rider dashboard, not driver dashboard
