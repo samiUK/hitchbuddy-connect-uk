@@ -400,6 +400,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Messages routes
+  app.post('/api/messages', async (req, res) => {
+    try {
+      const session = await storage.getSession(req.cookies.session);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const { bookingId, message } = req.body;
+      
+      if (!bookingId || !message) {
+        return res.status(400).json({ error: "Booking ID and message are required" });
+      }
+
+      const messageData = {
+        bookingId,
+        senderId: session.userId,
+        message,
+        createdAt: new Date()
+      };
+
+      const newMessage = await storage.createMessage(messageData);
+      res.json({ message: newMessage });
+    } catch (error) {
+      console.error('Error creating message:', error);
+      res.status(500).json({ error: "Failed to send message" });
+    }
+  });
+
+  app.get('/api/messages/:bookingId', async (req, res) => {
+    try {
+      const session = await storage.getSession(req.cookies.session);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const { bookingId } = req.params;
+      const messages = await storage.getMessagesByBooking(bookingId);
+      res.json({ messages });
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      res.status(500).json({ error: "Failed to fetch messages" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

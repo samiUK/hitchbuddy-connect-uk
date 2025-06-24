@@ -33,6 +33,7 @@ import { NewRideRequestForm } from "@/components/NewRideRequestForm";
 import { PostNewRideForm } from "@/components/PostNewRideForm";
 import { ProfileEditForm } from "@/components/ProfileEditForm";
 import { BookRideModal } from "@/components/BookRideModal";
+import { ChatPopup } from "@/components/ChatPopup";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
@@ -50,6 +51,8 @@ const Dashboard = () => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [showChatPopup, setShowChatPopup] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
   
   const userType = user?.userType || 'rider';
   const firstName = user?.firstName || '';
@@ -162,6 +165,47 @@ const Dashboard = () => {
       toast({
         title: "Error",
         description: "Failed to update booking status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleMessageRider = (booking: any) => {
+    setSelectedBooking(booking);
+    setShowChatPopup(true);
+  };
+
+  const handleSendMessage = async (message: string) => {
+    try {
+      const response = await fetch('/api/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          bookingId: selectedBooking.id,
+          message: message,
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Message sent!",
+          description: "Your message has been sent to the rider.",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to send message. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
         variant: "destructive",
       });
     }
@@ -577,7 +621,12 @@ const Dashboard = () => {
                                 </Button>
                               </div>
                             ) : (
-                              <Button size="sm" variant="outline">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleMessageRider(booking)}
+                              >
+                                <MessageCircle className="h-4 w-4 mr-1" />
                                 Message Rider
                               </Button>
                             )}
