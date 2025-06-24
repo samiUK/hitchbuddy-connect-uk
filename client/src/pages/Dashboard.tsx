@@ -1177,12 +1177,25 @@ const Dashboard = () => {
               <div className="space-y-4">
                 {rides.filter((ride: any) => {
                   // Only show rides within next 60 days and not the current user's rides
+                  // Handle both specific dates and recurring rides
+                  if (ride.driverId === user?.id) return false; // Don't show user's own rides
+                  
+                  if (ride.isRecurring === 'true' || ride.isRecurring === true) {
+                    // Show all recurring rides as they are ongoing
+                    return true;
+                  }
+                  
+                  if (!ride.departureDate || ride.departureDate === '') {
+                    // Skip rides without departure dates that aren't recurring
+                    return false;
+                  }
+                  
                   const today = new Date();
                   const rideDate = new Date(ride.departureDate);
                   const maxDate = new Date();
                   maxDate.setDate(today.getDate() + 60);
                   
-                  return rideDate >= today && rideDate <= maxDate && ride.driverId !== user?.id;
+                  return rideDate >= today && rideDate <= maxDate;
                 }).map((ride: any) => (
                   <Card key={ride.id} className="p-4 hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start">
@@ -1197,7 +1210,7 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
                           <div className="flex items-center space-x-1">
                             <Calendar className="h-4 w-4" />
-                            <span>{ride.departureDate}</span>
+                            <span>{ride.departureDate || (ride.isRecurring === 'true' ? 'Recurring' : 'Date TBD')}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Clock className="h-4 w-4" />
@@ -1218,6 +1231,11 @@ const Dashboard = () => {
                             <strong>Notes:</strong> {ride.notes}
                           </p>
                         )}
+                        {ride.isRecurring === 'true' && (
+                          <div className="text-sm text-blue-600 font-medium">
+                            <strong>Recurring:</strong> {ride.recurringData ? JSON.parse(ride.recurringData).frequency : 'Regular schedule'}
+                          </div>
+                        )}
                       </div>
                       <div className="text-right">
                         <div className="text-lg font-bold text-green-600 mb-2">
@@ -1235,12 +1253,23 @@ const Dashboard = () => {
                   </Card>
                 ))}
                 {rides.filter((ride: any) => {
+                  // Filter logic same as above for consistency
+                  if (ride.driverId === user?.id) return false;
+                  
+                  if (ride.isRecurring === 'true' || ride.isRecurring === true) {
+                    return true;
+                  }
+                  
+                  if (!ride.departureDate || ride.departureDate === '') {
+                    return false;
+                  }
+                  
                   const today = new Date();
                   const rideDate = new Date(ride.departureDate);
                   const maxDate = new Date();
                   maxDate.setDate(today.getDate() + 60);
                   
-                  return rideDate >= today && rideDate <= maxDate && ride.driverId !== user?.id;
+                  return rideDate >= today && rideDate <= maxDate;
                 }).length === 0 && (
                   <div className="text-center py-12">
                     <Search className="h-16 w-16 mx-auto mb-4 text-gray-300" />
