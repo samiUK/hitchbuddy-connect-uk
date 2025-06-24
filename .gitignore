@@ -1,6 +1,17 @@
-node_modules
-dist
+node_modules/
+.env
+.env.local
+.env.production.local
+.vercel
+dist/
+build/
+*.log
 .DS_Store
-server/public
-vite.config.ts.*
-*.tar.gz
+.vscode/
+.idea/
+
+# Temporary deployment files
+authentication-steps.md
+manual-deployment.sh
+vercel-deployment-steps.md
+vercel-auth-solution.md
