@@ -70,6 +70,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - No automatic messages in chat - users only send real messages
 - Show only other person's photo in chat, not user's own photo
 - Photo thumbnails align with message bubbles, not below them
+- User avatars only display beside sender's messages, current user messages show no avatar
 - Riders see driver name and photo; drivers see rider name and photo
 - Clear role identification in chat headers and interface
 - Navigation order: Overview, My Rides & Bookings, Find Requests/Find Rides, Post New Ride/Request a Ride

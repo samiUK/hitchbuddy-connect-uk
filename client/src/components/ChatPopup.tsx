@@ -268,7 +268,7 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
                     key={msg.id}
                     className={`flex ${isCurrentUserMessage ? 'justify-end' : 'justify-start'} items-end space-x-2`}
                   >
-                    {/* Avatar for non-current user messages */}
+                    {/* Avatar only for non-current user messages */}
                     {!isCurrentUserMessage && (
                       <Avatar className="w-6 h-6 md:w-8 md:h-8 mb-1">
                         <AvatarImage src={messageUserAvatar} alt={msg.senderName} />
@@ -278,7 +278,7 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
                       </Avatar>
                     )}
                     
-                    <div className={`max-w-[75%] md:max-w-[80%] ${isCurrentUserMessage ? 'order-first' : ''}`}>
+                    <div className={`max-w-[75%] md:max-w-[80%]`}>
                       {/* Sender name for group context */}
                       {!isCurrentUserMessage && (
                         <div className="text-xs text-gray-500 mb-1 ml-2">
@@ -327,16 +327,6 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
                         )}
                       </div>
                     </div>
-
-                    {/* Avatar for current user messages */}
-                    {isCurrentUserMessage && (
-                      <Avatar className="w-6 h-6 md:w-8 md:h-8 mb-1">
-                        <AvatarImage src={messageUserAvatar} alt={msg.senderName} />
-                        <AvatarFallback className="text-xs bg-gradient-to-r from-blue-500 to-green-500 text-white">
-                          {currentUser.firstName?.charAt(0)}{currentUser.lastName?.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
                   </div>
                 );
               })

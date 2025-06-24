@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { users, sessions, rides, rideRequests, bookings, messages, type User, type InsertUser, type Session, type Ride, type RideRequest, type Booking, type Message, type InsertRide, type InsertRideRequest, type InsertBooking, type InsertMessage } from "@shared/schema";
+import { users, sessions, rides, rideRequests, bookings, messages, notifications, type User, type InsertUser, type Session, type Ride, type RideRequest, type Booking, type Message, type Notification, type InsertRide, type InsertRideRequest, type InsertBooking, type InsertMessage, type InsertNotification } from "@shared/schema";
 import { eq, or } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
