@@ -1183,6 +1183,17 @@ const Dashboard = () => {
             </div>
           </div>
         )}
+
+        {/* Chat Popup */}
+        {showChatPopup && selectedBooking && (
+          <ChatPopup
+            isOpen={showChatPopup}
+            onClose={() => setShowChatPopup(false)}
+            booking={selectedBooking}
+            currentUser={user}
+            onSendMessage={handleSendMessage}
+          />
+        )}
       </div>
     </div>
   );

@@ -266,59 +266,5 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
         </CardContent>
       </Card>
     </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="h-6 w-6 p-0 text-white hover:bg-blue-700"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          {/* Messages */}
-          <div className="max-h-64 overflow-y-auto p-3 space-y-3">
-            {/* Rider's message */}
-            <div className="flex">
-              <div className="bg-gray-100 rounded-lg p-2 max-w-xs">
-                <div className="text-xs text-gray-500 mb-1">{riderName}</div>
-                <div className="text-sm">{riderMessage}</div>
-              </div>
-            </div>
-            
-            {/* Driver's response placeholder */}
-            <div className="text-xs text-gray-400 text-center">
-              Type your response below
-            </div>
-          </div>
-          
-          {/* Message input */}
-          <div className="border-t p-3 bg-gray-50">
-            <div className="flex space-x-2">
-              <Textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
-                className="flex-1 min-h-0 resize-none text-sm"
-                rows={2}
-              />
-              <Button
-                onClick={handleSendMessage}
-                disabled={!message.trim() || isSending}
-                size="sm"
-                className="self-end px-3"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="text-xs text-gray-500 mt-1 hidden sm:block">
-              Press Enter to send, Shift+Enter for new line
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
   );
 };
