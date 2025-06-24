@@ -393,6 +393,9 @@ const Dashboard = () => {
                 </div>
               </div>
               
+              {/* Notification Center */}
+              <NotificationCenter />
+              
               {/* Settings Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

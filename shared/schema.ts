@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, uuid, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, uuid, integer, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -80,6 +80,20 @@ export const messages = pgTable("messages", {
   bookingId: uuid("booking_id").notNull().references(() => bookings.id, { onDelete: "cascade" }),
   senderId: uuid("sender_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   message: text("message").notNull(),
+  isRead: boolean("is_read").default(false).notNull(),
+  readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const notifications = pgTable("notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  type: text("type").notNull(), // 'message', 'booking_request', 'booking_confirmed', 'ride_completed'
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  relatedId: uuid("related_id"), // bookingId, messageId, etc.
+  isRead: boolean("is_read").default(false).notNull(),
+  readAt: timestamp("read_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -109,6 +123,7 @@ export const insertBookingSchema = createInsertSchema(bookings).omit({
   jobId: true  // Job ID will be auto-generated
 });
 export const insertMessageSchema = createInsertSchema(messages);
+export const insertNotificationSchema = createInsertSchema(notifications);
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -121,3 +136,5 @@ export type Booking = typeof bookings.$inferSelect;
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;

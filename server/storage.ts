@@ -39,9 +39,18 @@ export interface IStorage {
   getBookingsByUser(userId: string): Promise<Booking[]>;
   updateBooking(id: string, updates: Partial<Booking>): Promise<Booking | undefined>;
   getRide(id: string): Promise<Ride | undefined>;
+  getBooking(id: string): Promise<Booking | undefined>;
   // Messages
   createMessage(message: InsertMessage): Promise<Message>;
   getMessagesByBooking(bookingId: string): Promise<Message[]>;
+  markMessageAsRead(messageId: string, userId: string): Promise<void>;
+  getUnreadMessageCount(userId: string): Promise<number>;
+  // Notifications
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  getNotifications(userId: string): Promise<Notification[]>;
+  markNotificationAsRead(notificationId: string): Promise<void>;
+  markAllNotificationsAsRead(userId: string): Promise<void>;
+  getUnreadNotificationCount(userId: string): Promise<number>;
 }
 
 export class PostgreSQLStorage implements IStorage {
@@ -226,6 +235,11 @@ export class PostgreSQLStorage implements IStorage {
     return ride || undefined;
   }
 
+  async getBooking(id: string): Promise<Booking | undefined> {
+    const [booking] = await db.select().from(bookings).where(eq(bookings.id, id));
+    return booking || undefined;
+  }
+
   async createMessage(insertMessage: InsertMessage): Promise<Message> {
     const [message] = await db
       .insert(messages)
@@ -240,6 +254,92 @@ export class PostgreSQLStorage implements IStorage {
       .from(messages)
       .where(eq(messages.bookingId, bookingId))
       .orderBy(messages.createdAt);
+  }
+
+  async markMessageAsRead(messageId: string, userId: string): Promise<void> {
+    await db
+      .update(messages)
+      .set({ isRead: true, readAt: new Date() })
+      .where(eq(messages.id, messageId));
+  }
+
+  async getUnreadMessageCount(userId: string): Promise<number> {
+    // Get bookings where user is involved and count unread messages not sent by them
+    const userBookings = await db
+      .select({ id: bookings.id })
+      .from(bookings)
+      .where(eq(bookings.riderId, userId))
+      .union(
+        db.select({ id: bookings.id })
+          .from(bookings)
+          .where(eq(bookings.driverId, userId))
+      );
+    
+    const bookingIds = userBookings.map(b => b.id);
+    if (bookingIds.length === 0) return 0;
+
+    const unreadMessages = await db
+      .select()
+      .from(messages)
+      .where(
+        and(
+          eq(messages.isRead, false),
+          // Message not sent by current user
+          // Note: We'll need to check this in the application logic
+        )
+      );
+
+    // Filter messages not sent by current user
+    return unreadMessages.filter(msg => msg.senderId !== userId).length;
+  }
+
+  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
+    const [notification] = await db
+      .insert(notifications)
+      .values(insertNotification)
+      .returning();
+    return notification;
+  }
+
+  async getNotifications(userId: string): Promise<Notification[]> {
+    return await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt))
+      .limit(50);
+  }
+
+  async markNotificationAsRead(notificationId: string): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ isRead: true, readAt: new Date() })
+      .where(eq(notifications.id, notificationId));
+  }
+
+  async markAllNotificationsAsRead(userId: string): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ isRead: true, readAt: new Date() })
+      .where(
+        and(
+          eq(notifications.userId, userId),
+          eq(notifications.isRead, false)
+        )
+      );
+  }
+
+  async getUnreadNotificationCount(userId: string): Promise<number> {
+    const result = await db
+      .select()
+      .from(notifications)
+      .where(
+        and(
+          eq(notifications.userId, userId),
+          eq(notifications.isRead, false)
+        )
+      );
+    return result.length;
   }
 }
 
