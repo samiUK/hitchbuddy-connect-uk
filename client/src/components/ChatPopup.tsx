@@ -40,21 +40,56 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
     avatar: booking?.otherUserAvatar
   };
 
-  // Initialize messages with booking message
+  // Load chat history from database
   useEffect(() => {
-    if (booking?.message && messages.length === 0) {
-      const initialMessage: Message = {
-        id: 'initial',
-        senderId: booking.riderId,
-        senderName: 'Rider',
-        senderType: 'rider',
-        message: booking.message,
-        timestamp: new Date(booking.createdAt),
-        isRead: true
-      };
-      setMessages([initialMessage]);
-    }
-  }, [booking]);
+    const loadChatHistory = async () => {
+      if (!booking?.id) return;
+      
+      setIsLoadingHistory(true);
+      try {
+        const response = await fetch(`/api/messages/${booking.id}`, {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          const loadedMessages = data.messages.map((msg: any) => ({
+            id: msg.id,
+            senderId: msg.senderId,
+            senderName: msg.senderId === currentUser?.id ? 
+              `${currentUser.firstName} ${currentUser.lastName}` : 
+              otherUser.name,
+            senderType: msg.senderId === booking.driverId ? 'driver' : 'rider',
+            message: msg.message,
+            timestamp: new Date(msg.createdAt),
+            isRead: true
+          }));
+          
+          // Add initial booking message if it exists and no messages loaded
+          if (booking.message && loadedMessages.length === 0) {
+            const initialMessage: Message = {
+              id: 'initial',
+              senderId: booking.riderId,
+              senderName: otherUser.name,
+              senderType: 'rider',
+              message: booking.message,
+              timestamp: new Date(booking.createdAt),
+              isRead: true
+            };
+            setMessages([initialMessage]);
+          } else {
+            setMessages(loadedMessages);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading chat history:', error);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
+    loadChatHistory();
+  }, [booking?.id, currentUser, otherUser.name]);
 
   // Auto scroll to bottom
   useEffect(() => {
@@ -72,27 +107,60 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSendMessage = async () => {
-    if (!message.trim() || isSending) return;
-    
+  const handleSendMessage = async (messageText?: string) => {
+    const textToSend = messageText || message.trim();
+    if (!textToSend || isSending) return;
+
+    setIsSending(true);
+    if (!messageText) setMessage('');
+
+    // Add message to local state immediately for better UX
     const newMessage: Message = {
       id: Date.now().toString(),
       senderId: currentUser.id,
-      senderName: isCurrentUserDriver ? 'Driver' : 'Rider',
-      senderType: isCurrentUserDriver ? 'driver' : 'rider',
-      message: message.trim(),
+      senderName: `${currentUser.firstName} ${currentUser.lastName}`,
+      senderType: currentUser.id === booking?.driverId ? 'driver' : 'rider',
+      message: textToSend,
       timestamp: new Date(),
       isRead: false
     };
 
     setMessages(prev => [...prev, newMessage]);
-    setMessage('');
-    setIsSending(true);
-    
+
     try {
-      await onSendMessage(newMessage.message);
+      await onSendMessage(textToSend);
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Failed to send message:', error);
+      // Remove the message from local state if sending failed
+      setMessages(prev => prev.filter(msg => msg.id !== newMessage.id));
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const shareLocation = async () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by this browser.');
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 60000
+        });
+      });
+
+      const { latitude, longitude } = position.coords;
+      const locationMessage = `📍 Live Location: https://maps.google.com/maps?q=${latitude},${longitude}`;
+      
+      await handleSendMessage(locationMessage);
+    } catch (error) {
+      console.error('Error getting location:', error);
+      alert('Unable to get your location. Please check your browser permissions.');
     } finally {
       setIsSending(false);
     }
