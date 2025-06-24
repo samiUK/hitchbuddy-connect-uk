@@ -5,8 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuthNew";
 import { useToast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
 
@@ -15,15 +14,14 @@ interface ProfileEditFormProps {
 }
 
 export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
   
   const [formData, setFormData] = useState({
-    firstName: user?.user_metadata?.first_name || '',
-    lastName: user?.user_metadata?.last_name || '',
-    phone: user?.user_metadata?.phone || '',
-    bio: user?.user_metadata?.bio || '',
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    phone: user?.phone || '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,37 +31,25 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
     setIsUpdating(true);
     
     try {
-      // Update user metadata
-      const { error: authError } = await supabase.auth.updateUser({
-        data: {
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          phone: formData.phone,
-          bio: formData.bio,
-        }
+      const { error } = await updateProfile({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
       });
 
-      if (authError) throw authError;
-
-      // Update profile in database
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          phone: formData.phone,
-          bio: formData.bio,
-        })
-        .eq('id', user.id);
-
-      if (profileError) throw profileError;
-
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
-      });
-
-      onClose();
+      if (error) {
+        toast({
+          title: "Error",
+          description: error,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Profile updated",
+          description: "Your profile has been successfully updated.",
+        });
+        onClose();
+      }
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({
@@ -123,16 +109,7 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
             />
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="bio">Bio</Label>
-            <Textarea
-              id="bio"
-              value={formData.bio}
-              onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-              placeholder="Tell us a bit about yourself..."
-              rows={3}
-            />
-          </div>
+
           
           <div className="flex gap-3 pt-4">
             <Button type="submit" disabled={isUpdating}>

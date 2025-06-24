@@ -27,15 +27,14 @@ import {
   RefreshCw,
   Calendar
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuthNew";
 import { NewRideRequestForm } from "@/components/NewRideRequestForm";
 import { PostNewRideForm } from "@/components/PostNewRideForm";
 import { ProfileEditForm } from "@/components/ProfileEditForm";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, updateProfile } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'overview' | 'rides' | 'messages'>('overview');
   const [showRideRequestForm, setShowRideRequestForm] = useState(false);
@@ -43,9 +42,9 @@ const Dashboard = () => {
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [isUpdatingUserType, setIsUpdatingUserType] = useState(false);
   
-  const userType = user?.user_metadata?.user_type || 'rider';
-  const firstName = user?.user_metadata?.first_name || '';
-  const lastName = user?.user_metadata?.last_name || '';
+  const userType = user?.userType || 'rider';
+  const firstName = user?.firstName || '';
+  const lastName = user?.lastName || '';
 
   const handleSignOut = async () => {
     await signOut();
@@ -57,28 +56,20 @@ const Dashboard = () => {
     setIsUpdatingUserType(true);
     
     try {
-      // Update user metadata
-      const { error: authError } = await supabase.auth.updateUser({
-        data: { user_type: newUserType }
-      });
+      const { error } = await updateProfile({ userType: newUserType });
 
-      if (authError) throw authError;
-
-      // Update profile in database
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({ user_type: newUserType })
-        .eq('id', user?.id);
-
-      if (profileError) throw profileError;
-
-      toast({
-        title: "Account type updated",
-        description: `You are now a ${newUserType}`,
-      });
-
-      // Refresh the page to update the UI
-      window.location.reload();
+      if (error) {
+        toast({
+          title: "Error",
+          description: error,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Account type updated",
+          description: `You are now a ${newUserType}`,
+        });
+      }
     } catch (error) {
       console.error('Error updating user type:', error);
       toast({

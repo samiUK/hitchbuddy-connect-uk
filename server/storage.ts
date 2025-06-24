@@ -1,0 +1,97 @@
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import { users, sessions, type User, type InsertUser, type Session } from "@shared/schema";
+import { eq } from "drizzle-orm";
+import * as bcrypt from "bcryptjs";
+import { nanoid } from "nanoid";
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is required");
+}
+
+const sql = neon(process.env.DATABASE_URL);
+const db = drizzle(sql);
+
+export interface IStorage {
+  getUser(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  updateUser(id: string, updates: Partial<User>): Promise<User | undefined>;
+  createSession(userId: string): Promise<Session>;
+  getSession(sessionId: string): Promise<Session | undefined>;
+  deleteSession(sessionId: string): Promise<void>;
+  verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean>;
+  hashPassword(password: string): Promise<string>;
+}
+
+export class PostgreSQLStorage implements IStorage {
+  async getUser(id: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    return result[0];
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const hashedPassword = await this.hashPassword(insertUser.password);
+    const result = await db.insert(users).values({
+      email: insertUser.email,
+      password: hashedPassword,
+      firstName: insertUser.firstName,
+      lastName: insertUser.lastName,
+      phone: insertUser.phone,
+      userType: insertUser.userType as 'rider' | 'driver'
+    }).returning();
+    return result[0];
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const result = await db.update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async createSession(userId: string): Promise<Session> {
+    const sessionId = nanoid();
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+    
+    const result = await db.insert(sessions).values({
+      id: sessionId,
+      userId,
+      expiresAt
+    }).returning();
+    
+    return result[0];
+  }
+
+  async getSession(sessionId: string): Promise<Session | undefined> {
+    const result = await db.select().from(sessions).where(eq(sessions.id, sessionId)).limit(1);
+    const session = result[0];
+    
+    if (session && session.expiresAt < new Date()) {
+      await this.deleteSession(sessionId);
+      return undefined;
+    }
+    
+    return session;
+  }
+
+  async deleteSession(sessionId: string): Promise<void> {
+    await db.delete(sessions).where(eq(sessions.id, sessionId));
+  }
+
+  async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    return bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, 12);
+  }
+}
+
+export const storage = new PostgreSQLStorage();

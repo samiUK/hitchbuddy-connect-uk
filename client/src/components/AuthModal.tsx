@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Car, User, Mail, Lock, Phone, Eye, EyeOff } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuthNew";
 import { useToast } from "@/hooks/use-toast";
 
 interface AuthModalProps {
@@ -35,7 +35,7 @@ export const AuthModal = ({ isOpen, onClose, userType }: AuthModalProps) => {
         if (error) {
           toast({
             title: "Password reset failed",
-            description: error.message,
+            description: error,
             variant: "destructive"
           });
         } else {
@@ -53,7 +53,7 @@ export const AuthModal = ({ isOpen, onClose, userType }: AuthModalProps) => {
           if (error) {
             toast({
               title: "Sign in failed",
-              description: error.message,
+              description: error,
               variant: "destructive"
             });
           } else {
@@ -71,7 +71,7 @@ export const AuthModal = ({ isOpen, onClose, userType }: AuthModalProps) => {
           if (error) {
             toast({
               title: "Sign up failed", 
-              description: error.message,
+              description: error,
               variant: "destructive"
             });
           } else {

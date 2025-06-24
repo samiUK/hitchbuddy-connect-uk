@@ -8,7 +8,7 @@ import { Users, MapPin, MessageCircle, Star, Car, User, LogOut } from "lucide-re
 import { LandingHero } from "@/components/LandingHero";
 import { UserTypeSelection } from "@/components/UserTypeSelection";
 import { AuthModal } from "@/components/AuthModal";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuthNew";
 
 const Index = () => {
   const [showAuth, setShowAuth] = useState(false);
@@ -87,7 +87,7 @@ const Index = () => {
               {user ? (
                 <>
                   <span className="text-sm text-gray-600">
-                    Welcome, {user.user_metadata?.first_name || user.email}
+                    Welcome, {user.firstName || user.email}
                   </span>
                   <Button variant="ghost" onClick={handleSignOut}>
                     <LogOut className="h-4 w-4 mr-2" />
