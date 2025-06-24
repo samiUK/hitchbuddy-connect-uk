@@ -83,7 +83,9 @@ export const insertUserSchema = createInsertSchema(users).pick({
   firstName: true,
   lastName: true,
   phone: true,
+  address: true,
   userType: true,
+  avatarUrl: true,
 });
 
 export const insertSessionSchema = createInsertSchema(sessions);

@@ -39,6 +39,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Implemented "My Bookings" section for riders with confirmed and past bookings
 - ✅ Added chat functionality for riders to communicate with drivers
 - ✅ Separated upcoming and past bookings for better organization
+- ✅ Enhanced profile editing with photo upload and address field for all users
+- ✅ Updated database schema to include address field
+- ✅ Implemented avatar upload with image preview and file size validation
 
 ## User Preferences
 - Available rides should only show in rider dashboard, not driver dashboard
