@@ -55,11 +55,17 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
 
     try {
       const updateData = {
-        ...formData,
-        ...(profileImage && profileImage !== user?.avatarUrl && { avatarUrl: profileImage })
+        ...formData
       };
       
-      console.log('Submitting profile update:', updateData);
+      // Always include avatar URL if it exists and is different
+      if (profileImage && profileImage !== user?.avatarUrl) {
+        updateData.avatarUrl = profileImage;
+      }
+      
+      console.log('Form: Submitting profile update:', updateData);
+      console.log('Form: Current user avatarUrl:', user?.avatarUrl);
+      console.log('Form: New profileImage:', profileImage);
       
       const result = await updateProfile(updateData);
       
