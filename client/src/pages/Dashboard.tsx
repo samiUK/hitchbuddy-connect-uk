@@ -482,7 +482,7 @@ const Dashboard = () => {
           {[
             { id: 'overview', label: 'Overview', icon: Navigation },
             { id: 'rides', label: userType === 'driver' ? 'My Rides & Bookings' : 'My Rides & Bookings', icon: Car },
-            { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'Find Rides', icon: userType === 'driver' ? Search : Search },
+            { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'Available Rides', icon: userType === 'driver' ? Search : Search },
             { id: 'post', label: userType === 'driver' ? 'Post New Ride' : 'Request a Ride', icon: Calendar }
           ].map((tab) => (
             <button
@@ -1309,7 +1309,7 @@ const Dashboard = () => {
         {activeTab === 'requests' && !showProfileEdit && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900">
-              {userType === 'driver' ? 'Find Ride Requests' : 'Find Rides'}
+              {userType === 'driver' ? 'Find Ride Requests' : 'Available Rides'}
             </h2>
 
             {userType === 'driver' ? (

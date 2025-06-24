@@ -135,6 +135,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Changed ride request default status from "active" to "pending" for better workflow
 - ✅ Fixed "Find Requests" section for drivers to only show pending ride requests from riders
 - ✅ Fixed storage layer to query 'pending' status instead of 'active' for ride requests
+- ✅ Updated rider interface: changed "Find Rides" to "Available Rides" for better clarity
 
 ## Technical Stack
 - Node.js 20
