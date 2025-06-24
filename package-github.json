@@ -1,12 +1,12 @@
 {
   "name": "hitchbuddy",
   "version": "1.0.0",
-  "description": "Ride-sharing platform with real-time features",
+  "description": "Modern ride-sharing platform",
   "main": "api/index.js",
   "scripts": {
     "start": "node api/index.js",
-    "build": "echo 'Build complete - client already built'",
-    "postinstall": "echo 'Dependencies installed'"
+    "build": "echo 'Build complete'",
+    "dev": "node api/index.js"
   },
   "dependencies": {
     "express": "^4.18.2",

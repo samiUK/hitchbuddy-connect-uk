@@ -233,11 +233,23 @@ app.get('/api/notifications', requireAuth, async (req, res) => {
 });
 
 // Serve static files from client/dist for Vercel
-app.use(express.static(path.join(__dirname, '../client/dist')));
+const staticPath = path.join(__dirname, '../client/dist');
+app.use(express.static(staticPath));
 
-// Catch-all handler: send back React's index.html file for any non-API routes
+// API routes should be handled above, catch-all for React SPA
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  // Don't serve index.html for API routes
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
+  
+  const indexPath = path.join(staticPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error('Error serving index.html:', err);
+      res.status(500).send('Error loading application');
+    }
+  });
 });
 
 module.exports = app;
