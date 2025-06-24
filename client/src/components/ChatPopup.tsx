@@ -30,8 +30,20 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const userAgent = navigator.userAgent;
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      setIsMobile(isMobileDevice);
+    };
+    
+    checkIfMobile();
+  }, []);
 
   const isCurrentUserDriver = currentUser?.id === booking?.driverId;
   const otherUser = {
@@ -336,16 +348,18 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
           {/* Input */}
           <div className="p-3 md:p-4 bg-white border-t">
             <div className="flex items-center space-x-2">
-              <Button
-                onClick={shareLocation}
-                disabled={isSending}
-                variant="outline"
-                size="sm"
-                className="text-blue-600 hover:bg-blue-50"
-                title="Share live location"
-              >
-                <MapPin className="h-4 w-4" />
-              </Button>
+              {isMobile && (
+                <Button
+                  onClick={shareLocation}
+                  disabled={isSending}
+                  variant="outline"
+                  size="sm"
+                  className="text-blue-600 hover:bg-blue-50"
+                  title="Share live location"
+                >
+                  <MapPin className="h-4 w-4" />
+                </Button>
+              )}
               <Input
                 ref={inputRef}
                 value={message}
