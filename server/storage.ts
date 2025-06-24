@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { users, sessions, rides, rideRequests, bookings, messages, notifications, type User, type InsertUser, type Session, type Ride, type RideRequest, type Booking, type Message, type Notification, type InsertRide, type InsertRideRequest, type InsertBooking, type InsertMessage, type InsertNotification } from "@shared/schema";
-import { eq, or } from "drizzle-orm";
+import { users, sessions, rides, rideRequests, bookings, messages, notifications, ratings, emailQueue, type User, type InsertUser, type Session, type Ride, type RideRequest, type Booking, type Message, type Notification, type Rating, type EmailQueue, type InsertRide, type InsertRideRequest, type InsertBooking, type InsertMessage, type InsertNotification, type InsertRating, type InsertEmailQueue } from "@shared/schema";
+import { eq, or, desc, and } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 
@@ -51,6 +51,15 @@ export interface IStorage {
   markNotificationAsRead(notificationId: string): Promise<void>;
   markAllNotificationsAsRead(userId: string): Promise<void>;
   getUnreadNotificationCount(userId: string): Promise<number>;
+  // Ratings
+  createRating(rating: InsertRating): Promise<Rating>;
+  getRatingsByUser(userId: string): Promise<Rating[]>;
+  getRatingForBooking(bookingId: string, raterId: string): Promise<Rating | undefined>;
+  // Email Queue
+  addEmailToQueue(email: InsertEmailQueue): Promise<EmailQueue>;
+  getPendingEmails(): Promise<EmailQueue[]>;
+  markEmailAsSent(emailId: string): Promise<void>;
+  markEmailAsFailed(emailId: string): Promise<void>;
 }
 
 export class PostgreSQLStorage implements IStorage {
@@ -340,6 +349,65 @@ export class PostgreSQLStorage implements IStorage {
         )
       );
     return result.length;
+  }
+
+  async createRating(insertRating: InsertRating): Promise<Rating> {
+    const [rating] = await db
+      .insert(ratings)
+      .values(insertRating)
+      .returning();
+    return rating;
+  }
+
+  async getRatingsByUser(userId: string): Promise<Rating[]> {
+    return await db
+      .select()
+      .from(ratings)
+      .where(eq(ratings.ratedUserId, userId))
+      .orderBy(desc(ratings.createdAt));
+  }
+
+  async getRatingForBooking(bookingId: string, raterId: string): Promise<Rating | undefined> {
+    const [rating] = await db
+      .select()
+      .from(ratings)
+      .where(
+        and(
+          eq(ratings.bookingId, bookingId),
+          eq(ratings.raterId, raterId)
+        )
+      );
+    return rating || undefined;
+  }
+
+  async addEmailToQueue(insertEmail: InsertEmailQueue): Promise<EmailQueue> {
+    const [email] = await db
+      .insert(emailQueue)
+      .values(insertEmail)
+      .returning();
+    return email;
+  }
+
+  async getPendingEmails(): Promise<EmailQueue[]> {
+    return await db
+      .select()
+      .from(emailQueue)
+      .where(eq(emailQueue.status, 'pending'))
+      .orderBy(emailQueue.scheduledFor);
+  }
+
+  async markEmailAsSent(emailId: string): Promise<void> {
+    await db
+      .update(emailQueue)
+      .set({ status: 'sent', sentAt: new Date() })
+      .where(eq(emailQueue.id, emailId));
+  }
+
+  async markEmailAsFailed(emailId: string): Promise<void> {
+    await db
+      .update(emailQueue)
+      .set({ status: 'failed' })
+      .where(eq(emailQueue.id, emailId));
   }
 }
 

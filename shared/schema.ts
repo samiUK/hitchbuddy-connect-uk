@@ -88,12 +88,35 @@ export const messages = pgTable("messages", {
 export const notifications = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  type: text("type").notNull(), // 'message', 'booking_request', 'booking_confirmed', 'ride_completed'
+  type: text("type").notNull(), // 'message', 'booking_request', 'booking_confirmed', 'ride_completed', 'rating_request'
   title: text("title").notNull(),
   message: text("message").notNull(),
   relatedId: uuid("related_id"), // bookingId, messageId, etc.
   isRead: boolean("is_read").default(false).notNull(),
   readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const ratings = pgTable("ratings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  bookingId: uuid("booking_id").notNull().references(() => bookings.id, { onDelete: "cascade" }),
+  raterId: uuid("rater_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  ratedUserId: uuid("rated_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  rating: integer("rating").notNull(), // 1-5 stars
+  review: text("review"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const emailQueue = pgTable("email_queue", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  to: text("to").notNull(),
+  subject: text("subject").notNull(),
+  content: text("content").notNull(),
+  type: text("type").notNull(), // 'trip_confirmed', 'rating_request'
+  relatedId: uuid("related_id"),
+  scheduledFor: timestamp("scheduled_for"),
+  sentAt: timestamp("sent_at"),
+  status: text("status").default('pending').notNull(), // 'pending', 'sent', 'failed'
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -124,6 +147,8 @@ export const insertBookingSchema = createInsertSchema(bookings).omit({
 });
 export const insertMessageSchema = createInsertSchema(messages);
 export const insertNotificationSchema = createInsertSchema(notifications);
+export const insertRatingSchema = createInsertSchema(ratings);
+export const insertEmailQueueSchema = createInsertSchema(emailQueue);
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -138,3 +163,7 @@ export type Message = typeof messages.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type Rating = typeof ratings.$inferSelect;
+export type InsertRating = z.infer<typeof insertRatingSchema>;
+export type EmailQueue = typeof emailQueue.$inferSelect;
+export type InsertEmailQueue = z.infer<typeof insertEmailQueueSchema>;

@@ -560,6 +560,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Rating routes
+  app.post("/api/ratings", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const ratingData = {
+        bookingId: req.body.bookingId,
+        raterId: session.userId,
+        ratedUserId: req.body.ratedUserId,
+        rating: req.body.rating,
+        review: req.body.review
+      };
+
+      const rating = await storage.createRating(ratingData);
+      res.json({ rating });
+    } catch (error) {
+      console.error('Create rating error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/ratings/:userId", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const ratings = await storage.getRatingsByUser(req.params.userId);
+      res.json({ ratings });
+    } catch (error) {
+      console.error('Get ratings error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
