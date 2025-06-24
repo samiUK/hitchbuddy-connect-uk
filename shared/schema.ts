@@ -1,50 +1,36 @@
-import {
-  pgTable,
-  text,
-  varchar,
-  timestamp,
-  uuid,
-  integer,
-  boolean,
-  jsonb,
-  index,
-} from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, uuid, integer, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Session storage table for Replit Auth (mandatory)
-export const sessions = pgTable(
-  "sessions",
-  {
-    sid: varchar("sid").primaryKey(),
-    sess: jsonb("sess").notNull(),
-    expire: timestamp("expire").notNull(),
-  },
-  (table) => [index("IDX_session_expire").on(table.expire)],
-);
-
-// User storage table for Replit Auth (mandatory)
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().notNull(),
-  email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull().unique(),
+  password: text("password").notNull(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
   phone: text("phone"),
-  userType: text("user_type").notNull().default('rider').$type<'rider' | 'driver'>(),
+  userType: text("user_type").notNull().$type<'rider' | 'driver'>(),
+  avatarUrl: text("avatar_url"),
   addressLine1: text("address_line_1"),
   addressLine2: text("address_line_2"),
   city: text("city"),
   county: text("county"),
   postcode: text("postcode"),
   country: text("country"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const sessions = pgTable("sessions", {
+  id: text("id").primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const rides = pgTable("rides", {
   id: uuid("id").primaryKey().defaultRandom(),
-  driverId: varchar("driver_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  driverId: uuid("driver_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   fromLocation: text("from_location").notNull(),
   toLocation: text("to_location").notNull(),
   departureDate: text("departure_date"),
@@ -62,7 +48,7 @@ export const rides = pgTable("rides", {
 
 export const rideRequests = pgTable("ride_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
-  riderId: varchar("rider_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  riderId: uuid("rider_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   fromLocation: text("from_location").notNull(),
   toLocation: text("to_location").notNull(),
   departureDate: text("departure_date"),
@@ -70,17 +56,16 @@ export const rideRequests = pgTable("ride_requests", {
   passengers: text("passengers").notNull(),
   maxPrice: text("max_price"),
   notes: text("notes"),
-  status: text("status").notNull().default('pending').$type<'pending' | 'matched' | 'cancelled'>(),
+  status: text("status").notNull().default('active').$type<'active' | 'matched' | 'cancelled'>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const bookings = pgTable("bookings", {
   id: uuid("id").primaryKey().defaultRandom(),
-  jobId: text("job_id").notNull().unique(),
-  rideId: uuid("ride_id").references(() => rides.id, { onDelete: "cascade" }),
-  riderId: varchar("rider_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  driverId: varchar("driver_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  rideId: uuid("ride_id").notNull().references(() => rides.id, { onDelete: "cascade" }),
+  riderId: uuid("rider_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  driverId: uuid("driver_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   seatsBooked: integer("seats_booked").notNull(),
   phoneNumber: text("phone_number").notNull(),
   message: text("message"),
@@ -93,7 +78,7 @@ export const bookings = pgTable("bookings", {
 export const messages = pgTable("messages", {
   id: uuid("id").primaryKey().defaultRandom(),
   bookingId: uuid("booking_id").notNull().references(() => bookings.id, { onDelete: "cascade" }),
-  senderId: varchar("sender_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  senderId: uuid("sender_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   message: text("message").notNull(),
   isRead: boolean("is_read").default(false).notNull(),
   readAt: timestamp("read_at"),
@@ -102,7 +87,7 @@ export const messages = pgTable("messages", {
 
 export const notifications = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   type: text("type").notNull(), // 'message', 'booking_request', 'booking_confirmed', 'ride_completed', 'rating_request'
   title: text("title").notNull(),
   message: text("message").notNull(),
@@ -115,8 +100,8 @@ export const notifications = pgTable("notifications", {
 export const ratings = pgTable("ratings", {
   id: uuid("id").primaryKey().defaultRandom(),
   bookingId: uuid("booking_id").notNull().references(() => bookings.id, { onDelete: "cascade" }),
-  raterId: varchar("rater_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  ratedUserId: varchar("rated_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  raterId: uuid("rater_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  ratedUserId: uuid("rated_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   rating: integer("rating").notNull(), // 1-5 stars
   review: text("review"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -125,27 +110,19 @@ export const ratings = pgTable("ratings", {
 
 
 export const insertUserSchema = createInsertSchema(users).pick({
-  id: true,
   email: true,
+  password: true,
   firstName: true,
   lastName: true,
-  profileImageUrl: true,
   phone: true,
   userType: true,
+  avatarUrl: true,
   addressLine1: true,
   addressLine2: true,
   city: true,
   county: true,
   postcode: true,
   country: true,
-});
-
-export const upsertUserSchema = createInsertSchema(users).pick({
-  id: true,
-  email: true,
-  firstName: true,
-  lastName: true,
-  profileImageUrl: true,
 });
 
 export const insertSessionSchema = createInsertSchema(sessions);
@@ -162,7 +139,6 @@ export const insertNotificationSchema = createInsertSchema(notifications);
 export const insertRatingSchema = createInsertSchema(ratings);
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Session = typeof sessions.$inferSelect;
 export type Ride = typeof rides.$inferSelect;
