@@ -33,10 +33,11 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Available rides should only show in rider dashboard, not driver dashboard
 - Drivers should only see booking requests from riders (not ride requests)
 - Riders should see available rides posted by drivers
-- Quick actions area shows notifications for new ride requests from specific users
+- Quick actions area shows notifications only when there are pending actions
 - Confirmation options displayed under ride request tabs for ongoing communication
 - Confirmed rides move to "my upcoming rides" section
 - For testing purposes, riders can book their own rides (remove in production)
+- Removed redundant quick action buttons (user prefers minimal interface)
 
 ## Technical Stack
 - Node.js 20
