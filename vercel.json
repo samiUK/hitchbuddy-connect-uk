@@ -2,10 +2,6 @@
   "version": 2,
   "builds": [
     {
-      "src": "client/dist/**/*",
-      "use": "@vercel/static"
-    },
-    {
       "src": "api/server.js",
       "use": "@vercel/node"
     }
@@ -17,7 +13,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/client/dist/index.html"
+      "dest": "/api/server.js"
     }
   ],
   "functions": {

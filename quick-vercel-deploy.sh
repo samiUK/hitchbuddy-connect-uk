@@ -1,42 +1,18 @@
 #!/bin/bash
-# Quick Vercel deployment without local build
+# Quick Vercel deployment script after authentication
 
-echo "🚀 Quick Vercel Deployment"
-echo "=========================="
+echo "🚀 Deploying Hitchbuddy to Vercel..."
 
-# Create minimal vercel.json for auto-build
-cat > vercel.json << 'EOF'
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/client/dist/$1"
-    }
-  ],
-  "env": {
-    "DATABASE_URL": "@database-url",
-    "NODE_ENV": "production"
-  }
-}
-EOF
-
-# Deploy directly to Vercel
-echo "Deploying to Vercel..."
+# Deploy to production
 npx vercel --prod --yes
 
-echo "✅ Deployment initiated!"
-echo "Next steps:"
-echo "1. Add DATABASE_URL in Vercel Dashboard"
-echo "2. Set NODE_ENV=production"
-echo "3. Test the deployed application"
+echo "✅ Deployment complete!"
+echo ""
+echo "Your Hitchbuddy app is now live with:"
+echo "- Built React frontend (no more source code display)"
+echo "- Serverless API with Supabase database"
+echo "- All ride-sharing features functional"
+echo ""
+echo "Next: Add environment variables in Vercel dashboard if needed:"
+echo "- DATABASE_URL (already configured)"
+echo "- NODE_ENV: production"

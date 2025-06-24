@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
+const path = require('path');
 const { Pool } = require('pg');
 const { drizzle } = require('drizzle-orm/node-postgres');
 const { eq } = require('drizzle-orm');
@@ -190,6 +191,14 @@ app.get('/api/notifications', requireAuth, async (req, res) => {
     console.error('Notifications fetch error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// Serve static files from client/dist
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// Catch-all handler: send back React's index.html file for any non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
 module.exports = app;

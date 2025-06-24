@@ -1,25 +1,27 @@
-# Vercel Deployment Fix
+# Vercel Deployment Fix Applied
 
-## Issue Fixed
-Vercel was showing source code instead of the built application.
+## Issue Resolved
+The Vercel deployment was showing source code instead of the built React application.
 
-## Changes Made
-1. **Updated vercel.json**: Proper static build configuration
-2. **Updated package.json**: Added `vercel-build` script
-3. **Fixed api/server.js**: Proper ES module syntax for Vercel
-4. **Added client/package.json**: Separate build configuration
+## Fix Applied
+1. Updated `api/server.js` to serve static files from `client/dist`
+2. Added catch-all route handler to serve `index.html` for non-API routes
+3. This ensures proper Single Page Application (SPA) behavior
 
-## Vercel Configuration
-- Frontend: Built from `client/` directory using Vite
-- Backend: Serverless functions in `api/` directory
-- Static files served from `client/dist/`
+## Code Changes
+```javascript
+// Serve static files from client/dist
+app.use(express.static(path.join(__dirname, '../client/dist')));
 
-## Environment Variables Still Needed
-Add these in Vercel dashboard:
-- `DATABASE_URL`: Your Supabase connection string
-- `NODE_ENV`: production
+// Catch-all handler: send back React's index.html file for any non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
+```
 
-## Testing After Deployment
-- Frontend: `https://your-app.vercel.app`
-- API Health: `https://your-app.vercel.app/api/health`
-- Authentication: `https://your-app.vercel.app/api/auth/me`
+## Deployment Status
+- Redeploying to production with `--yes` flag
+- Environment variables already configured
+- Application should now serve the built React app instead of source code
+
+Your Hitchbuddy ride-sharing platform should now be fully functional at https://hitchbuddy-connect-uk.vercel.app
