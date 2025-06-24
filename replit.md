@@ -112,6 +112,11 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Trip confirmation notifications sent automatically when bookings are confirmed
 - ✅ Rating request notifications scheduled after trip completion (demo: 2 seconds, production: 2 hours)
 - ✅ Enhanced database schema with ratings and email queue tables for future email integration
+- ✅ Updated all text references from "rides" to "trips" for consistent professional language
+- ✅ Enhanced location autocomplete with predefined major landmarks and transportation hubs
+- ✅ Added comprehensive location database including airports, train stations, shopping centres, universities
+- ✅ Implemented smart location search with category icons and visual indicators
+- ✅ Popular destinations shown on focus for better user experience
 
 ## Technical Stack
 - Node.js 20
@@ -129,7 +134,10 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - `rides` table: id, driverId, fromLocation, toLocation, departureDate, departureTime, availableSeats, price, vehicleInfo, notes, isRecurring, recurringData, status, createdAt, updatedAt
 - `ride_requests` table: id, riderId, fromLocation, toLocation, departureDate, departureTime, passengers, maxPrice, notes, status, createdAt, updatedAt
 - `bookings` table: id, jobId, rideId, riderId, driverId, seatsBooked, phoneNumber, message, totalCost, status, createdAt, updatedAt
-- `messages` table: id, bookingId, senderId, message, createdAt
+- `messages` table: id, bookingId, senderId, message, isRead, readAt, createdAt
+- `notifications` table: id, userId, type, title, message, relatedId, isRead, readAt, createdAt
+- `ratings` table: id, bookingId, raterId, ratedUserId, rating, review, createdAt
+- `email_queue` table: id, to, subject, content, type, relatedId, scheduledFor, sentAt, status, createdAt
 
 ## Authentication System
 - Session-based authentication with HTTP-only cookies
