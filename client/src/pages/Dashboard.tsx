@@ -1137,17 +1137,20 @@ const Dashboard = () => {
                             <p className="text-sm text-gray-600 mt-1">{request.notes}</p>
                           )}
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
                           <Button 
                             size="sm"
-                            onClick={() => {
-                              toast({
-                                title: "Feature coming soon",
-                                description: "Direct messaging with riders will be available soon.",
-                              });
-                            }}
+                            onClick={() => handleConfirmRideRequest(request)}
+                            className="bg-green-600 hover:bg-green-700"
                           >
-                            Contact Rider
+                            Confirm Ride
+                          </Button>
+                          <Button 
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCounterOffer(request)}
+                          >
+                            Counter Offer
                           </Button>
                         </div>
                       </div>
