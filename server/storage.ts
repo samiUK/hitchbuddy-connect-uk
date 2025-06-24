@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import { users, sessions, rides, rideRequests, bookings, messages, notifications, ratings, type User, type InsertUser, type Session, type Ride, type RideRequest, type Booking, type Message, type Notification, type Rating, type InsertRide, type InsertRideRequest, type InsertBooking, type InsertMessage, type InsertNotification, type InsertRating } from "@shared/schema";
-import { eq, or, desc, and, sql } from "drizzle-orm";
+import { eq, or, desc, and } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 
@@ -153,10 +153,13 @@ export class PostgreSQLStorage implements IStorage {
   async createRide(insertRide: InsertRide): Promise<Ride> {
     const rideData = {
       ...insertRide,
-      isRecurring: insertRide.isRecurring === 'true' ? 'true' : 'false'
+      status: 'active' as const
     };
-    const result = await db.insert(rides).values([rideData]).returning();
-    return result[0];
+    const [ride] = await db
+      .insert(rides)
+      .values([rideData])
+      .returning();
+    return ride;
   }
 
   async getRides(): Promise<Ride[]> {
@@ -190,7 +193,7 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async getRideRequests(): Promise<RideRequest[]> {
-    return await db.select().from(rideRequests).where(eq(rideRequests.status, 'pending'));
+    return await db.select().from(rideRequests);
   }
 
   async getRideRequestsByRider(riderId: string): Promise<RideRequest[]> {
@@ -210,9 +213,14 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async createBooking(insertBooking: InsertBooking): Promise<Booking> {
+    const bookingData = {
+      ...insertBooking,
+      jobId: `HB-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
+      status: 'pending' as const
+    };
     const [booking] = await db
       .insert(bookings)
-      .values([insertBooking])
+      .values([bookingData])
       .returning();
     return booking;
   }

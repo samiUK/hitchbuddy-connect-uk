@@ -39,7 +39,7 @@ export const rides = pgTable("rides", {
   price: text("price").notNull(),
   vehicleInfo: text("vehicle_info"),
   notes: text("notes"),
-  isRecurring: text("is_recurring").notNull().$type<'true' | 'false'>(),
+  isRecurring: text("is_recurring", { enum: ["true", "false"] }).notNull().default("false"),
   recurringData: text("recurring_data"), // JSON string
   status: text("status").notNull().default('active').$type<'active' | 'cancelled' | 'completed'>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -131,8 +131,7 @@ export const insertRideRequestSchema = createInsertSchema(rideRequests);
 export const insertBookingSchema = createInsertSchema(bookings).omit({ 
   id: true, 
   createdAt: true, 
-  updatedAt: true,
-  jobId: true  // Job ID will be auto-generated
+  updatedAt: true
 });
 export const insertMessageSchema = createInsertSchema(messages);
 export const insertNotificationSchema = createInsertSchema(notifications);
