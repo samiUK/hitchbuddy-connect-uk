@@ -82,6 +82,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Privacy protection: only city and country visible to other users publicly
 - Hidden profile completion prompts when profile is 100% complete
 - Profile considered complete when city field is populated (simplified completion criteria)
+- Find Rides section now shows only future available rides posted by drivers
+- Riders cannot see their own rides and only see future rides for booking
 
 ## Technical Stack
 - Node.js 20
