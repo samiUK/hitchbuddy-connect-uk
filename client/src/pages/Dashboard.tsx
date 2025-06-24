@@ -383,8 +383,8 @@ const Dashboard = () => {
         <div className="flex space-x-1 mb-8 bg-gray-100 p-1 rounded-lg w-fit">
           {[
             { id: 'overview', label: 'Overview', icon: Navigation },
-            { id: 'post', label: userType === 'driver' ? 'Post New Ride' : 'Request a Ride', icon: Calendar },
             { id: 'rides', label: userType === 'driver' ? 'My Rides & Bookings' : 'Find Rides', icon: Car },
+            { id: 'post', label: userType === 'driver' ? 'Post New Ride' : 'Request a Ride', icon: Calendar },
             { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'My Requests', icon: Search }
           ].map((tab) => (
             <button

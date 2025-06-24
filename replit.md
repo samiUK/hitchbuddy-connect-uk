@@ -34,6 +34,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Changed "Post New Ride" from button to dedicated tab for cleaner interface
 - ✅ Added form data persistence for seamless tab switching
 - ✅ Form data auto-saves and expires after 5 minutes for user convenience
+- ✅ Reordered navigation tabs: Overview, My Rides & Bookings, Post New Ride, Find Requests
 
 ## User Preferences
 - Available rides should only show in rider dashboard, not driver dashboard
