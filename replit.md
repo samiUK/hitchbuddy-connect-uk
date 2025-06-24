@@ -81,6 +81,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Enhanced address fields with addressLine1, addressLine2, city, county, postcode, country
 - Privacy protection: only city and country visible to other users publicly
 - Hidden profile completion prompts when profile is 100% complete
+- Profile considered complete when city field is populated (simplified completion criteria)
 
 ## Technical Stack
 - Node.js 20
