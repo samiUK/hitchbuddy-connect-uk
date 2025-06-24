@@ -1176,26 +1176,46 @@ const Dashboard = () => {
               // Riders see available rides from drivers (next 60 days)
               <div className="space-y-4">
                 {rides.filter((ride: any) => {
-                  // Only show rides within next 60 days and not the current user's rides
-                  // Handle both specific dates and recurring rides
-                  if (ride.driverId === user?.id) return false; // Don't show user's own rides
+                  // Debug: Log filtering for troubleshooting
+                  console.log('Filtering ride:', {
+                    id: ride.id,
+                    from: ride.fromLocation,
+                    to: ride.toLocation,
+                    driverId: ride.driverId,
+                    currentUserId: user?.id,
+                    isOwnRide: ride.driverId === user?.id,
+                    departureDate: ride.departureDate,
+                    isRecurring: ride.isRecurring
+                  });
                   
-                  if (ride.isRecurring === 'true' || ride.isRecurring === true) {
-                    // Show all recurring rides as they are ongoing
-                    return true;
-                  }
-                  
-                  if (!ride.departureDate || ride.departureDate === '') {
-                    // Skip rides without departure dates that aren't recurring
+                  // Don't show user's own rides
+                  if (ride.driverId === user?.id) {
+                    console.log('Filtered out: own ride');
                     return false;
                   }
                   
+                  // Show all recurring rides as they are ongoing
+                  if (ride.isRecurring === 'true' || ride.isRecurring === true) {
+                    console.log('Included: recurring ride');
+                    return true;
+                  }
+                  
+                  // Skip rides without departure dates that aren't recurring
+                  if (!ride.departureDate || ride.departureDate === '') {
+                    console.log('Filtered out: no departure date and not recurring');
+                    return false;
+                  }
+                  
+                  // Check date range for non-recurring rides
                   const today = new Date();
                   const rideDate = new Date(ride.departureDate);
                   const maxDate = new Date();
                   maxDate.setDate(today.getDate() + 60);
                   
-                  return rideDate >= today && rideDate <= maxDate;
+                  const inDateRange = rideDate >= today && rideDate <= maxDate;
+                  console.log('Date check:', { today: today.toDateString(), rideDate: rideDate.toDateString(), inRange: inDateRange });
+                  
+                  return inDateRange;
                 }).map((ride: any) => (
                   <Card key={ride.id} className="p-4 hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start">
