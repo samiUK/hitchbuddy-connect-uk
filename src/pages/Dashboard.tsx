@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { 
   Car, 
   User, 
@@ -18,11 +19,15 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { NewRideRequestForm } from "@/components/NewRideRequestForm";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'overview' | 'rides' | 'messages'>('overview');
   const [showRideRequestForm, setShowRideRequestForm] = useState(false);
+  const [isUpdatingUserType, setIsUpdatingUserType] = useState(false);
   
   const userType = user?.user_metadata?.user_type || 'rider';
   const firstName = user?.user_metadata?.first_name || '';
@@ -30,6 +35,47 @@ const Dashboard = () => {
 
   const handleSignOut = async () => {
     await signOut();
+  };
+
+  const handleUserTypeSwitch = async (isDriver: boolean) => {
+    if (isUpdatingUserType) return;
+    
+    setIsUpdatingUserType(true);
+    const newUserType = isDriver ? 'driver' : 'rider';
+    
+    try {
+      // Update user metadata
+      const { error: authError } = await supabase.auth.updateUser({
+        data: { user_type: newUserType }
+      });
+
+      if (authError) throw authError;
+
+      // Update profile in database
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ user_type: newUserType })
+        .eq('id', user?.id);
+
+      if (profileError) throw profileError;
+
+      toast({
+        title: "Account type updated",
+        description: `You are now a ${newUserType}`,
+      });
+
+      // Refresh the page to update the UI
+      window.location.reload();
+    } catch (error) {
+      console.error('Error updating user type:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update account type. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdatingUserType(false);
+    }
   };
 
   return (
@@ -47,20 +93,40 @@ const Dashboard = () => {
               </span>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
-                  {userType === 'driver' ? (
-                    <Car className="h-4 w-4 text-white" />
-                  ) : (
-                    <User className="h-4 w-4 text-white" />
-                  )}
+              <div className="flex items-center space-x-4">
+                {/* User Type Switcher */}
+                <div className="flex items-center space-x-3 px-3 py-2 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <User className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm text-gray-600">Rider</span>
+                  </div>
+                  <Switch
+                    checked={userType === 'driver'}
+                    onCheckedChange={handleUserTypeSwitch}
+                    disabled={isUpdatingUserType}
+                  />
+                  <div className="flex items-center space-x-2">
+                    <Car className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm text-gray-600">Driver</span>
+                  </div>
                 </div>
-                <span className="text-sm font-medium text-gray-700">
-                  {firstName} {lastName}
-                </span>
-                <Badge variant={userType === 'driver' ? 'default' : 'secondary'}>
-                  {userType}
-                </Badge>
+
+                {/* User Profile Info */}
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
+                    {userType === 'driver' ? (
+                      <Car className="h-4 w-4 text-white" />
+                    ) : (
+                      <User className="h-4 w-4 text-white" />
+                    )}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {firstName} {lastName}
+                  </span>
+                  <Badge variant={userType === 'driver' ? 'default' : 'secondary'}>
+                    {userType}
+                  </Badge>
+                </div>
               </div>
               <Button variant="ghost" size="sm">
                 <Settings className="h-4 w-4" />
