@@ -8,7 +8,7 @@ const { drizzle } = require('drizzle-orm/node-postgres');
 const { eq } = require('drizzle-orm');
 
 // Import schema - use relative path for Vercel
-const { users, sessions, rides, rideRequests, bookings, messages, notifications, ratings } = require('../shared/schema');
+const { users, sessions, rides, rideRequests, bookings, messages, notifications, ratings } = require('../shared/schema.js');
 
 const app = express();
 
