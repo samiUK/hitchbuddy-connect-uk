@@ -356,46 +356,46 @@ const Dashboard = () => {
         {/* Content based on active tab */}
         {activeTab === 'overview' && !showProfileEdit && (
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Quick Actions */}
+            {/* Overview Stats */}
             <div className="lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
-                  <CardDescription>
-                    {userType === 'driver' 
-                      ? 'Manage your driving schedule and rides'
-                      : 'Find and book your next journey'
-                    }
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {userType === 'driver' ? (
-                      <>
-                        <Button className="h-24 flex-col space-y-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
-                          <Calendar className="h-6 w-6" />
-                          <span>My Upcoming Rides</span>
-                        </Button>
-                        <Button variant="outline" className="h-24 flex-col space-y-2">
-                          <RefreshCw className="h-6 w-6" />
-                          <span>Ride History</span>
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button className="h-24 flex-col space-y-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
-                          <Search className="h-6 w-6" />
-                          <span>Find a Ride</span>
-                        </Button>
-                        <Button variant="outline" className="h-24 flex-col space-y-2">
-                          <Calendar className="h-6 w-6" />
-                          <span>My Upcoming Rides</span>
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Rides</CardTitle>
+                    <Car className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{userType === 'driver' ? rides.filter(r => r.driverId === user?.id).length : rides.length}</div>
+                    <p className="text-xs text-muted-foreground">
+                      {userType === 'driver' ? 'Rides you\'ve posted' : 'Available rides'}
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Active Bookings</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{bookings.filter(b => b.status === 'confirmed').length}</div>
+                    <p className="text-xs text-muted-foreground">
+                      {userType === 'driver' ? 'Confirmed bookings' : 'Your upcoming rides'}
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Notifications</CardTitle>
+                    <Star className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{notifications.length}</div>
+                    <p className="text-xs text-muted-foreground">
+                      {userType === 'driver' ? 'New ride requests' : 'Updates'}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
 
               {/* Recent Activity */}
               <Card className="mt-6">
