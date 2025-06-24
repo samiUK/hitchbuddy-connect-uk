@@ -2,7 +2,6 @@ import express, { type Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { startEmailProcessor } from "./emailProcessor";
 
 const app = express();
 app.use(express.json());
@@ -69,9 +68,6 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = process.env.PORT || 5000;
-  
-  // Start email processor
-  startEmailProcessor();
 
   server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);

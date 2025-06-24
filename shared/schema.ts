@@ -107,18 +107,7 @@ export const ratings = pgTable("ratings", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const emailQueue = pgTable("email_queue", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  to: text("to").notNull(),
-  subject: text("subject").notNull(),
-  content: text("content").notNull(),
-  type: text("type").notNull(), // 'trip_confirmed', 'rating_request'
-  relatedId: uuid("related_id"),
-  scheduledFor: timestamp("scheduled_for"),
-  sentAt: timestamp("sent_at"),
-  status: text("status").default('pending').notNull(), // 'pending', 'sent', 'failed'
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+
 
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -148,7 +137,6 @@ export const insertBookingSchema = createInsertSchema(bookings).omit({
 export const insertMessageSchema = createInsertSchema(messages);
 export const insertNotificationSchema = createInsertSchema(notifications);
 export const insertRatingSchema = createInsertSchema(ratings);
-export const insertEmailQueueSchema = createInsertSchema(emailQueue);
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -165,5 +153,3 @@ export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Rating = typeof ratings.$inferSelect;
 export type InsertRating = z.infer<typeof insertRatingSchema>;
-export type EmailQueue = typeof emailQueue.$inferSelect;
-export type InsertEmailQueue = z.infer<typeof insertEmailQueueSchema>;

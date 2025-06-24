@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { users, sessions, rides, rideRequests, bookings, messages, notifications, ratings, emailQueue, type User, type InsertUser, type Session, type Ride, type RideRequest, type Booking, type Message, type Notification, type Rating, type EmailQueue, type InsertRide, type InsertRideRequest, type InsertBooking, type InsertMessage, type InsertNotification, type InsertRating, type InsertEmailQueue } from "@shared/schema";
+import { users, sessions, rides, rideRequests, bookings, messages, notifications, ratings, type User, type InsertUser, type Session, type Ride, type RideRequest, type Booking, type Message, type Notification, type Rating, type InsertRide, type InsertRideRequest, type InsertBooking, type InsertMessage, type InsertNotification, type InsertRating } from "@shared/schema";
 import { eq, or, desc, and } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
@@ -55,11 +55,6 @@ export interface IStorage {
   createRating(rating: InsertRating): Promise<Rating>;
   getRatingsByUser(userId: string): Promise<Rating[]>;
   getRatingForBooking(bookingId: string, raterId: string): Promise<Rating | undefined>;
-  // Email Queue
-  addEmailToQueue(email: InsertEmailQueue): Promise<EmailQueue>;
-  getPendingEmails(): Promise<EmailQueue[]>;
-  markEmailAsSent(emailId: string): Promise<void>;
-  markEmailAsFailed(emailId: string): Promise<void>;
 }
 
 export class PostgreSQLStorage implements IStorage {
@@ -380,35 +375,7 @@ export class PostgreSQLStorage implements IStorage {
     return rating || undefined;
   }
 
-  async addEmailToQueue(insertEmail: InsertEmailQueue): Promise<EmailQueue> {
-    const [email] = await db
-      .insert(emailQueue)
-      .values(insertEmail)
-      .returning();
-    return email;
-  }
 
-  async getPendingEmails(): Promise<EmailQueue[]> {
-    return await db
-      .select()
-      .from(emailQueue)
-      .where(eq(emailQueue.status, 'pending'))
-      .orderBy(emailQueue.scheduledFor);
-  }
-
-  async markEmailAsSent(emailId: string): Promise<void> {
-    await db
-      .update(emailQueue)
-      .set({ status: 'sent', sentAt: new Date() })
-      .where(eq(emailQueue.id, emailId));
-  }
-
-  async markEmailAsFailed(emailId: string): Promise<void> {
-    await db
-      .update(emailQueue)
-      .set({ status: 'failed' })
-      .where(eq(emailQueue.id, emailId));
-  }
 }
 
 export const storage = new PostgreSQLStorage();
