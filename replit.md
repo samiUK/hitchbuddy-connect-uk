@@ -91,6 +91,10 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Implemented Job ID system (format: HB-YYYYMMDD-XXXXX) for all bookings
 - Job IDs displayed as badges on booking cards for easy reference
 - Job IDs shown in confirmation messages for customer support and invoicing
+- Enhanced booking modal with passenger count selection and message input
+- Added date picker for recurring rides requiring specific date selection
+- Improved booking flow with detailed cost breakdown and confirmation
+- Changed "Book Ride" to "Send Request" to reflect booking request workflow
 
 ## Technical Stack
 - Node.js 20

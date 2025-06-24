@@ -1176,35 +1176,24 @@ const Dashboard = () => {
               // Riders see available rides from drivers (next 60 days)
               <div className="space-y-4">
                 {rides.filter((ride: any) => {
-                  // Debug: Log filtering for troubleshooting
-                  console.log('Filtering ride:', {
-                    id: ride.id,
-                    from: ride.fromLocation,
-                    to: ride.toLocation,
-                    driverId: ride.driverId,
-                    currentUserId: user?.id,
-                    currentUserEmail: user?.email,
-                    isOwnRide: ride.driverId === user?.id,
-                    isTestUser: user?.email === 'coolsami_uk@yahoo.com',
-                    departureDate: ride.departureDate,
-                    isRecurring: ride.isRecurring
-                  });
+                  // Debug: Log filtering for troubleshooting (remove in production)
+                  // console.log('Filtering ride:', { ... });
                   
                   // Don't show user's own rides (except for test user)
                   if (ride.driverId === user?.id && user?.email !== 'coolsami_uk@yahoo.com') {
-                    console.log('Filtered out: own ride');
+                    // console.log('Filtered out: own ride');
                     return false;
                   }
                   
                   // Show all recurring rides as they are ongoing
                   if (ride.isRecurring === 'true' || ride.isRecurring === true) {
-                    console.log('Included: recurring ride');
+                    // console.log('Included: recurring ride');
                     return true;
                   }
                   
                   // Skip rides without departure dates that aren't recurring
                   if (!ride.departureDate || ride.departureDate === '') {
-                    console.log('Filtered out: no departure date and not recurring');
+                    // console.log('Filtered out: no departure date and not recurring');
                     return false;
                   }
                   
@@ -1215,7 +1204,7 @@ const Dashboard = () => {
                   maxDate.setDate(today.getDate() + 60);
                   
                   const inDateRange = rideDate >= today && rideDate <= maxDate;
-                  console.log('Date check:', { today: today.toDateString(), rideDate: rideDate.toDateString(), inRange: inDateRange });
+                  // console.log('Date check:', { today: today.toDateString(), rideDate: rideDate.toDateString(), inRange: inDateRange });
                   
                   return inDateRange;
                 }).map((ride: any) => (
@@ -1265,7 +1254,10 @@ const Dashboard = () => {
                         </div>
                         <Button 
                           size="sm"
-                          onClick={() => setSelectedRide(ride)}
+                          onClick={() => {
+                            setSelectedRide(ride);
+                            setShowBookingModal(true);
+                          }}
                           className="bg-blue-600 hover:bg-blue-700"
                         >
                           Book Ride
@@ -1317,6 +1309,8 @@ const Dashboard = () => {
               setSelectedRide(null);
             }}
             onBookingComplete={() => {
+              setShowBookingModal(false);
+              setSelectedRide(null);
               fetchData();
             }}
           />
