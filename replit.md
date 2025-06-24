@@ -76,6 +76,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Both rider and driver dashboards have "My Rides & Bookings" as option 2 with Upcoming/Past segments
 - Added "Ride Completed" and "Cancel Ride" buttons for both drivers and riders
 - Completed rides automatically move to "Past Rides" section and appear grayed out
+- Added beta disclaimer popup that appears on first visit with localStorage persistence
+- Users can dismiss the disclaimer with "I understand" button
 
 ## Technical Stack
 - Node.js 20

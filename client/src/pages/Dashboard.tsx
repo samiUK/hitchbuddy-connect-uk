@@ -38,6 +38,7 @@ import { PostNewRideForm } from "@/components/PostNewRideForm";
 import { ProfileEditForm } from "@/components/ProfileEditForm";
 import { BookRideModal } from "@/components/BookRideModal";
 import { ChatPopup } from "@/components/ChatPopup";
+import { BetaDisclaimer } from "@/components/BetaDisclaimer";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
