@@ -838,18 +838,40 @@ const Dashboard = () => {
                                 <div className="text-lg font-bold text-green-600 mb-2">
                                   £{booking.totalCost}
                                 </div>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => handleMessageRider(booking)}
-                                  className="relative"
-                                >
-                                  <MessageCircle className="h-4 w-4 mr-1" />
-                                  Message Rider
-                                  {booking.hasUnreadMessages && (
-                                    <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse"></span>
-                                  )}
-                                </Button>
+                                <div className="flex flex-col space-y-2">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => handleMessageRider(booking)}
+                                    className="relative"
+                                  >
+                                    <MessageCircle className="h-4 w-4 mr-1" />
+                                    Message Rider
+                                    {booking.hasUnreadMessages && (
+                                      <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse"></span>
+                                    )}
+                                  </Button>
+                                  <div className="flex space-x-1">
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => handleBookingAction(booking.id, 'completed')}
+                                      className="bg-green-50 hover:bg-green-100 text-green-700 border-green-300 text-xs"
+                                    >
+                                      <Check className="h-3 w-3 mr-1" />
+                                      Complete
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => handleBookingAction(booking.id, 'cancelled')}
+                                      className="bg-red-50 hover:bg-red-100 text-red-700 border-red-300 text-xs"
+                                    >
+                                      <X className="h-3 w-3 mr-1" />
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </Card>
@@ -959,18 +981,40 @@ const Dashboard = () => {
                                 <div className="text-lg font-bold text-green-600 mb-2">
                                   £{booking.totalCost}
                                 </div>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => handleMessageDriver(booking)}
-                                  className="relative"
-                                >
-                                  <MessageCircle className="h-4 w-4 mr-1" />
-                                  Message Driver
-                                  {booking.hasUnreadMessages && (
-                                    <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse"></span>
-                                  )}
-                                </Button>
+                                <div className="flex flex-col space-y-2">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => handleMessageDriver(booking)}
+                                    className="relative"
+                                  >
+                                    <MessageCircle className="h-4 w-4 mr-1" />
+                                    Message Driver
+                                    {booking.hasUnreadMessages && (
+                                      <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse"></span>
+                                    )}
+                                  </Button>
+                                  <div className="flex space-x-1">
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => handleBookingAction(booking.id, 'completed')}
+                                      className="bg-green-50 hover:bg-green-100 text-green-700 border-green-300 text-xs"
+                                    >
+                                      <Check className="h-3 w-3 mr-1" />
+                                      Complete
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => handleBookingAction(booking.id, 'cancelled')}
+                                      className="bg-red-50 hover:bg-red-100 text-red-700 border-red-300 text-xs"
+                                    >
+                                      <X className="h-3 w-3 mr-1" />
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </Card>

@@ -74,6 +74,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Clear role identification in chat headers and interface
 - Navigation order: Overview, My Rides & Bookings, Find Requests/Find Rides, Post New Ride/Request a Ride
 - Both rider and driver dashboards have "My Rides & Bookings" as option 2 with Upcoming/Past segments
+- Added "Ride Completed" and "Cancel Ride" buttons for both drivers and riders
+- Completed rides automatically move to "Past Rides" section and appear grayed out
 
 ## Technical Stack
 - Node.js 20
