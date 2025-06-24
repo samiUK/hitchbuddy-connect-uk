@@ -590,10 +590,10 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setShowProfileEdit(true)}>
+              <Card className={`${profileCompleteness.percentage < 100 ? 'cursor-pointer hover:shadow-md' : ''} transition-shadow`} onClick={profileCompleteness.percentage < 100 ? () => setShowProfileEdit(true) : undefined}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle>Profile Completion</CardTitle>
+                    <CardTitle>Profile Status</CardTitle>
                     <Badge variant={profileCompleteness.percentage === 100 ? "default" : "secondary"} className="ml-2">
                       {profileCompleteness.percentage}%
                     </Badge>
@@ -628,8 +628,8 @@ const Dashboard = () => {
                       </p>
                     </div>
 
-                    {/* Missing Fields */}
-                    {profileCompleteness.missing.length > 0 && (
+                    {/* Missing Fields - Only show if profile is incomplete */}
+                    {profileCompleteness.percentage < 100 && profileCompleteness.missing.length > 0 && (
                       <div className="space-y-2">
                         <p className="text-sm font-medium text-gray-700">Missing:</p>
                         <div className="flex flex-wrap gap-1">
@@ -647,7 +647,7 @@ const Dashboard = () => {
                       </div>
                     )}
 
-                    {/* Complete Button */}
+                    {/* Complete Button - Only show if profile is not complete */}
                     {profileCompleteness.percentage < 100 && (
                       <Button 
                         size="sm" 
