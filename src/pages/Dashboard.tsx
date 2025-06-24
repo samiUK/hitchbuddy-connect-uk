@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { NewRideRequestForm } from "@/components/NewRideRequestForm";
+import { PostNewRideForm } from "@/components/PostNewRideForm";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,6 +28,7 @@ const Dashboard = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'overview' | 'rides' | 'messages'>('overview');
   const [showRideRequestForm, setShowRideRequestForm] = useState(false);
+  const [showPostRideForm, setShowPostRideForm] = useState(false);
   const [isUpdatingUserType, setIsUpdatingUserType] = useState(false);
   
   const userType = user?.user_metadata?.user_type || 'rider';
@@ -194,7 +196,10 @@ const Dashboard = () => {
                   <div className="grid md:grid-cols-2 gap-4">
                     {userType === 'driver' ? (
                       <>
-                        <Button className="h-24 flex-col space-y-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
+                        <Button 
+                          className="h-24 flex-col space-y-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                          onClick={() => setShowPostRideForm(true)}
+                        >
                           <Plus className="h-6 w-6" />
                           <span>Post New Ride</span>
                         </Button>
@@ -321,7 +326,10 @@ const Dashboard = () => {
                 {userType === 'driver' ? 'My Rides' : 'Available Rides'}
               </h2>
               {userType === 'driver' && (
-                <Button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
+                <Button 
+                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                  onClick={() => setShowPostRideForm(true)}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Post New Ride
                 </Button>
@@ -330,6 +338,8 @@ const Dashboard = () => {
             
             {showRideRequestForm ? (
               <NewRideRequestForm onClose={() => setShowRideRequestForm(false)} />
+            ) : showPostRideForm ? (
+              <PostNewRideForm onClose={() => setShowPostRideForm(false)} />
             ) : (
               <div className="text-center py-12">
                 <Car className="h-16 w-16 mx-auto mb-4 text-gray-300" />
@@ -345,7 +355,13 @@ const Dashboard = () => {
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button 
                     variant="outline"
-                    onClick={() => userType === 'rider' && setShowRideRequestForm(true)}
+                    onClick={() => {
+                      if (userType === 'driver') {
+                        setShowPostRideForm(true);
+                      } else {
+                        setShowRideRequestForm(true);
+                      }
+                    }}
                   >
                     {userType === 'driver' ? 'Post Your First Ride' : 'Create Ride Request'}
                   </Button>
