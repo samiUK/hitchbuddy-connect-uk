@@ -730,6 +730,11 @@ const Dashboard = () => {
                               <Badge variant={booking.status === 'pending' ? 'destructive' : 'default'}>
                                 {booking.status}
                               </Badge>
+                              {booking.jobId && (
+                                <Badge variant="outline" className="text-xs">
+                                  {booking.jobId}
+                                </Badge>
+                              )}
                             </div>
                             <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
                               {relatedRide?.departureDate && (
@@ -1301,6 +1306,11 @@ const Dashboard = () => {
                           <Badge variant="default" className="bg-green-600">
                             Confirmed
                           </Badge>
+                          {booking.jobId && (
+                            <Badge variant="outline" className="text-xs">
+                              {booking.jobId}
+                            </Badge>
+                          )}
                         </div>
                         <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
                           {relatedRide?.departureDate && (

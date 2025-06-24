@@ -102,7 +102,12 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export const insertSessionSchema = createInsertSchema(sessions);
 export const insertRideSchema = createInsertSchema(rides);
 export const insertRideRequestSchema = createInsertSchema(rideRequests);
-export const insertBookingSchema = createInsertSchema(bookings);
+export const insertBookingSchema = createInsertSchema(bookings).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true,
+  jobId: true  // Job ID will be auto-generated
+});
 export const insertMessageSchema = createInsertSchema(messages);
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

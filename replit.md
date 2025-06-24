@@ -87,6 +87,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Added "Confirm Ride" and "Counter Offer" buttons for drivers responding to ride requests
 - Drivers can confirm rides directly or send counter offers with different pricing
 - Counter offers create pending bookings that require rider confirmation
+- Implemented Job ID system (format: HB-YYYYMMDD-XXXXX) for all bookings
+- Job IDs displayed as badges on booking cards for easy reference
+- Job IDs shown in confirmation messages for customer support and invoicing
 
 ## Technical Stack
 - Node.js 20
@@ -103,7 +106,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - `sessions` table: id, userId, expiresAt, createdAt
 - `rides` table: id, driverId, fromLocation, toLocation, departureDate, departureTime, availableSeats, price, vehicleInfo, notes, isRecurring, recurringData, status, createdAt, updatedAt
 - `ride_requests` table: id, riderId, fromLocation, toLocation, departureDate, departureTime, passengers, maxPrice, notes, status, createdAt, updatedAt
-- `bookings` table: id, rideId, riderId, driverId, seatsBooked, phoneNumber, message, totalCost, status, createdAt, updatedAt
+- `bookings` table: id, jobId, rideId, riderId, driverId, seatsBooked, phoneNumber, message, totalCost, status, createdAt, updatedAt
 - `messages` table: id, bookingId, senderId, message, createdAt
 
 ## Authentication System
