@@ -548,9 +548,6 @@ const Dashboard = () => {
 
         {activeTab === 'post' && !showProfileEdit && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {userType === 'driver' ? 'Post a New Ride' : 'Request a Ride'}
-            </h2>
             <div className="max-w-2xl">
               {userType === 'driver' ? (
                 <PostNewRideForm 
