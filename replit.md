@@ -11,6 +11,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - **Deployment**: Replit-native deployment
 
 ## Recent Changes
+- ✅ Changed default port from 5000 to 3000 to resolve deployment proxy connection issues
 - ✅ Fixed production build port configuration to use dynamic PORT environment variable
 - ✅ Resolved missing Babel dependencies preventing deployment startup
 - ✅ Eliminated "connection refused" deployment errors through proper port binding
