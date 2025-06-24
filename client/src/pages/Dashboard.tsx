@@ -967,6 +967,80 @@ const Dashboard = () => {
               ) : (
                 // Riders see their bookings with same structure
                 <div className="space-y-6">
+                  {/* My Live Requests Section (only for riders) */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-gray-900">My Live Requests</h3>
+                      <Badge variant="outline" className="text-blue-600">
+                        {allMyRideRequests.filter(req => req.status === 'pending').length} active
+                      </Badge>
+                    </div>
+                    
+                    {allMyRideRequests.filter(req => req.status === 'pending').length === 0 ? (
+                      <div className="text-center py-6 text-gray-500">
+                        <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No active trip requests</p>
+                        <p className="text-sm mt-1">Submit a trip request to find drivers</p>
+                      </div>
+                    ) : (
+                      <div className="grid gap-4">
+                        {allMyRideRequests.filter(req => req.status === 'pending').map((request) => (
+                          <Card key={request.id} className="border-blue-200 bg-blue-50">
+                            <CardContent className="p-4">
+                              <div className="flex items-center justify-between mb-3">
+                                <Badge variant="outline" className="text-blue-600 border-blue-300">
+                                  Trip Request
+                                </Badge>
+                                <Badge className="bg-blue-600">
+                                  Active
+                                </Badge>
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <div className="flex items-center space-x-2 text-sm">
+                                  <MapPin className="h-4 w-4 text-gray-500" />
+                                  <span className="text-gray-900">{request.fromLocation}</span>
+                                  <span className="text-gray-500">→</span>
+                                  <span className="text-gray-900">{request.toLocation}</span>
+                                </div>
+                                
+                                <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                  <div className="flex items-center space-x-1">
+                                    <Calendar className="h-4 w-4" />
+                                    <span>{request.departureDate}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <Clock className="h-4 w-4" />
+                                    <span>{request.departureTime}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <Users className="h-4 w-4" />
+                                    <span>{request.passengers} passenger{request.passengers > 1 ? 's' : ''}</span>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center justify-between pt-2">
+                                  <div className="text-sm text-gray-600">
+                                    Max budget: <span className="font-semibold text-gray-900">£{request.maxPrice}</span>
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    Submitted {new Date(request.createdAt).toLocaleDateString()}
+                                  </div>
+                                </div>
+                                
+                                {request.notes && (
+                                  <div className="pt-2 border-t border-blue-200">
+                                    <p className="text-sm text-gray-600 italic">"{request.notes}"</p>
+                                  </div>
+                                )}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   {/* Upcoming Rides Section */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Rides</h3>
