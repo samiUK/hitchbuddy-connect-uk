@@ -22,7 +22,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Real-time data display for drivers and riders
 
 ## User Preferences
-None specified yet.
+- Available rides should only show in rider dashboard, not driver dashboard
+- Drivers should only see ride requests from riders
+- Riders should see available rides posted by drivers
 
 ## Technical Stack
 - Node.js 20

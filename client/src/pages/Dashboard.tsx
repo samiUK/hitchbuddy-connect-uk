@@ -78,7 +78,7 @@ const Dashboard = () => {
           setRides(data.rides || []);
         }
       } else {
-        // Fetch available rides for riders
+        // Fetch available rides for riders (only riders should see rides)
         const ridesResponse = await fetch('/api/rides', {
           credentials: 'include'
         });
@@ -237,7 +237,7 @@ const Dashboard = () => {
         <div className="flex space-x-1 mb-8 bg-gray-100 p-1 rounded-lg w-fit">
           {[
             { id: 'overview', label: 'Overview', icon: Navigation },
-            { id: 'rides', label: userType === 'driver' ? 'My Rides' : 'Find Rides', icon: Car },
+            { id: 'rides', label: userType === 'driver' ? 'Ride Requests' : 'Find Rides', icon: Car },
             { id: 'messages', label: 'Messages', icon: MessageCircle }
           ].map((tab) => (
             <button
@@ -403,7 +403,7 @@ const Dashboard = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">
-                {userType === 'driver' ? 'Available Rides to Book' : 'Available Rides'}
+                {userType === 'driver' ? 'Ride Requests' : 'Available Rides'}
               </h2>
               <Button 
                 className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
@@ -429,22 +429,22 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-4 mb-2">
                           <div className="flex items-center space-x-2">
                             <MapPin className="h-4 w-4 text-green-600" />
-                            <span className="font-medium">{ride.from}</span>
+                            <span className="font-medium">{ride.fromLocation}</span>
                           </div>
                           <span className="text-gray-400">→</span>
                           <div className="flex items-center space-x-2">
                             <MapPin className="h-4 w-4 text-red-600" />
-                            <span className="font-medium">{ride.to}</span>
+                            <span className="font-medium">{ride.toLocation}</span>
                           </div>
                         </div>
                         <div className="flex items-center space-x-6 text-sm text-gray-600">
                           <div className="flex items-center space-x-1">
                             <Clock className="h-4 w-4" />
-                            <span>{ride.date} at {ride.time}</span>
+                            <span>{ride.departureDate || 'Not specified'} at {ride.departureTime}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <User className="h-4 w-4" />
-                            <span>{ride.availableSeats} seats available</span>
+                            <span>{ride.availableSeats || ride.passengers} {userType === 'driver' ? 'passengers' : 'seats'} available</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Star className="h-4 w-4 text-yellow-400 fill-current" />
@@ -454,7 +454,9 @@ const Dashboard = () => {
                             <Badge variant="outline">Recurring</Badge>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 mt-1">Driver: {ride.driver}</p>
+                        {ride.notes && (
+                          <p className="text-sm text-gray-600 mt-1">{ride.notes}</p>
+                        )}
                       </div>
                       <div className="flex items-center space-x-4">
                         <div className="text-right">
