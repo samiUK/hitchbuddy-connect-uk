@@ -67,6 +67,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Confirmed rides move to "my upcoming rides" section
 - For testing purposes, riders can book their own rides (remove in production)
 - Removed redundant quick action buttons (user prefers minimal interface)
+- No automatic messages in chat - users only send real messages
+- Show only other person's photo in chat, not user's own photo
+- Photo thumbnails align with message bubbles, not below them
 
 ## Technical Stack
 - Node.js 20

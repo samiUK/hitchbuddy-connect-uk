@@ -96,27 +96,6 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
     
     try {
       await onSendMessage(newMessage.message);
-      
-      // Simulate typing indicator for response
-      setTimeout(() => {
-        setIsTyping(true);
-        setTimeout(() => {
-          setIsTyping(false);
-          const autoReply: Message = {
-            id: (Date.now() + 1).toString(),
-            senderId: isCurrentUserDriver ? booking.riderId : booking.driverId,
-            senderName: otherUser.name,
-            senderType: otherUser.type,
-            message: isCurrentUserDriver 
-              ? "Thanks for the message! I'll be ready for pickup." 
-              : "Got it! I'll see you at the pickup location.",
-            timestamp: new Date(),
-            isRead: false
-          };
-          setMessages(prev => [...prev, autoReply]);
-        }, 1500);
-      }, 500);
-      
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
@@ -196,11 +175,11 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.senderId === currentUser.id ? 'justify-end' : 'justify-start'} items-end space-x-2`}
+                className={`flex ${msg.senderId === currentUser.id ? 'justify-end' : 'justify-start'} items-start space-x-2`}
               >
-                {/* Avatar for other user's messages */}
+                {/* Avatar for other user's messages only */}
                 {msg.senderId !== currentUser.id && (
-                  <Avatar className="w-6 h-6 md:w-8 md:h-8 mb-1">
+                  <Avatar className="w-6 h-6 md:w-8 md:h-8 mt-0.5">
                     <AvatarImage src={otherUser.avatar} alt={otherUser.name} />
                     <AvatarFallback className="text-xs">
                       {otherUser.type === 'driver' ? <Car className="h-3 w-3" /> : <User className="h-3 w-3" />}
@@ -208,7 +187,7 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
                   </Avatar>
                 )}
                 
-                <div className={`max-w-[75%] md:max-w-[80%] ${msg.senderId === currentUser.id ? 'order-2' : 'order-1'}`}>
+                <div className={`max-w-[75%] md:max-w-[80%]`}>
                   <div
                     className={`px-3 md:px-4 py-2 rounded-2xl ${
                       msg.senderId === currentUser.id
@@ -231,31 +210,10 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
                     )}
                   </div>
                 </div>
-                
-                {/* Current user's avatar */}
-                {msg.senderId === currentUser.id && (
-                  <Avatar className="w-6 h-6 md:w-8 md:h-8 mb-1">
-                    <AvatarImage src={currentUser?.avatarUrl} alt={currentUser?.firstName} />
-                    <AvatarFallback className="text-xs bg-blue-600 text-white">
-                      {currentUser?.firstName?.[0] || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
               </div>
             ))}
             
-            {/* Typing Indicator */}
-            {isTyping && (
-              <div className="flex justify-start">
-                <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-md px-4 py-2">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                  </div>
-                </div>
-              </div>
-            )}
+
             
             <div ref={messagesEndRef} />
           </div>
