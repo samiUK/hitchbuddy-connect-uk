@@ -844,9 +844,13 @@ const Dashboard = () => {
                                   size="sm" 
                                   variant="outline"
                                   onClick={() => handleMessageRider(booking)}
+                                  className="relative"
                                 >
                                   <MessageCircle className="h-4 w-4 mr-1" />
-                                  Start Chat
+                                  Message Rider
+                                  {booking.hasUnreadMessages && (
+                                    <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse"></span>
+                                  )}
                                 </Button>
                               </div>
                             </div>
@@ -1006,12 +1010,17 @@ const Dashboard = () => {
                     {bookings.filter(booking => booking.riderId === user?.id && booking.status === 'confirmed').map((booking: any) => {
                       const relatedRide = rides.find(r => r.id === booking.rideId);
                       return (
-                        <Card key={booking.id} className="p-4 border-green-300 bg-green-50">
+                        <Card key={booking.id} className={`p-4 border-green-300 bg-green-50 ${booking.hasUnreadMessages ? 'ring-2 ring-blue-500 shadow-lg' : ''}`}>
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
                               <div className="flex items-center space-x-2 mb-2">
                                 <MapPin className="h-4 w-4 text-gray-500" />
-                                <span className="font-medium">{relatedRide?.fromLocation} → {relatedRide?.toLocation}</span>
+                                <span className="font-medium flex items-center">
+                                  {relatedRide?.fromLocation} → {relatedRide?.toLocation}
+                                  {booking.hasUnreadMessages && (
+                                    <span className="ml-2 text-xs bg-red-500 text-white px-2 py-1 rounded-full">New Message</span>
+                                  )}
+                                </span>
                                 <Badge variant="default" className="bg-green-600">
                                   Confirmed
                                 </Badge>
@@ -1045,9 +1054,13 @@ const Dashboard = () => {
                                 size="sm" 
                                 variant="outline"
                                 onClick={() => handleMessageRider(booking)}
+                                className="relative"
                               >
                                 <MessageCircle className="h-4 w-4 mr-1" />
                                 Message Driver
+                                {booking.hasUnreadMessages && (
+                                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse"></span>
+                                )}
                               </Button>
                             </div>
                           </div>
@@ -1162,12 +1175,17 @@ const Dashboard = () => {
                 const relatedRide = rides.find(r => r.id === booking.rideId);
                 const isDriver = booking.driverId === user?.id;
                 return (
-                  <Card key={booking.id} className="p-4 border-green-300 bg-green-50">
+                  <Card key={booking.id} className={`p-4 border-green-300 bg-green-50 ${booking.hasUnreadMessages ? 'ring-2 ring-blue-500 shadow-lg' : ''}`}>
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
                           <MapPin className="h-4 w-4 text-gray-500" />
-                          <span className="font-medium">{relatedRide?.fromLocation} → {relatedRide?.toLocation}</span>
+                          <span className="font-medium flex items-center">
+                            {relatedRide?.fromLocation} → {relatedRide?.toLocation}
+                            {booking.hasUnreadMessages && (
+                              <span className="ml-2 text-xs bg-red-500 text-white px-2 py-1 rounded-full">New Message</span>
+                            )}
+                          </span>
                           <Badge variant="default" className="bg-green-600">
                             Confirmed
                           </Badge>
@@ -1201,9 +1219,13 @@ const Dashboard = () => {
                           size="sm" 
                           variant="outline"
                           onClick={() => handleMessageRider(booking)}
+                          className="relative"
                         >
                           <MessageCircle className="h-4 w-4 mr-1" />
-                          Start Chat
+                          {booking.driverId === user?.id ? 'Message Rider' : 'Message Driver'}
+                          {booking.hasUnreadMessages && (
+                            <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse"></span>
+                          )}
                         </Button>
                       </div>
                     </div>

@@ -54,6 +54,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Made chat system mobile-friendly with responsive design
 - ✅ Added unread message indicators with red badges and highlighting
 - ✅ Integrated profile photos in chat popup with proper avatar display
+- ✅ Unified messaging experience across rider and driver interfaces
+- ✅ Enhanced booking cards with consistent visual indicators for unread messages
+- ✅ Standardized "Message Rider/Driver" button naming for clarity
 
 ## User Preferences
 - Available rides should only show in rider dashboard, not driver dashboard
