@@ -383,9 +383,9 @@ const Dashboard = () => {
         <div className="flex space-x-1 mb-8 bg-gray-100 p-1 rounded-lg w-fit">
           {[
             { id: 'overview', label: 'Overview', icon: Navigation },
-            { id: 'rides', label: userType === 'driver' ? 'My Rides & Bookings' : 'Find Rides', icon: Car },
-            { id: 'post', label: userType === 'driver' ? 'Post New Ride' : 'Request a Ride', icon: Calendar },
-            { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'My Requests', icon: Search }
+            { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'My Bookings', icon: Car },
+            { id: 'rides', label: userType === 'driver' ? 'My Rides & Bookings' : 'Find Rides', icon: userType === 'driver' ? Car : Search },
+            { id: 'post', label: userType === 'driver' ? 'Post New Ride' : 'Request a Ride', icon: Calendar }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -398,7 +398,7 @@ const Dashboard = () => {
             >
               <tab.icon className="h-4 w-4" />
               <span>{tab.label}</span>
-              {tab.id === 'rides' && notifications.length > 0 && (
+              {tab.id === 'rides' && notifications.length > 0 && userType === 'driver' && (
                 <Badge variant="destructive" className="ml-1 text-xs">
                   {notifications.length}
                 </Badge>
