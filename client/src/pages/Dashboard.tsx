@@ -741,6 +741,91 @@ const Dashboard = () => {
             <div className="grid gap-6">
               {userType === 'driver' ? (
                 <div className="space-y-6">
+                  {/* My Posted Rides Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-gray-900">My Posted Rides</h3>
+                      <Badge variant="outline" className="text-green-600">
+                        {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active').length} active
+                      </Badge>
+                    </div>
+                    
+                    {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active').length === 0 ? (
+                      <div className="text-center py-6 text-gray-500">
+                        <Car className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No active ride posts</p>
+                        <p className="text-sm mt-1">Post a new ride to find passengers</p>
+                      </div>
+                    ) : (
+                      <div className="grid gap-4">
+                        {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active').map((ride) => (
+                          <Card key={ride.id} className="border-green-200 bg-green-50">
+                            <CardContent className="p-4">
+                              <div className="flex items-center justify-between mb-3">
+                                <Badge variant="outline" className="text-green-600 border-green-300">
+                                  Posted Ride
+                                </Badge>
+                                <Badge className="bg-green-600">
+                                  Active
+                                </Badge>
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <div className="flex items-center space-x-2 text-sm">
+                                  <MapPin className="h-4 w-4 text-gray-500" />
+                                  <span className="font-medium">{ride.fromLocation} → {ride.toLocation}</span>
+                                </div>
+                                <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                  <div className="flex items-center space-x-1">
+                                    <Calendar className="h-4 w-4" />
+                                    <span>{ride.departureDate}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <Clock className="h-4 w-4" />
+                                    <span>{ride.departureTime}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <Users className="h-4 w-4" />
+                                    <span>{ride.availableSeats} seats</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <span className="font-semibold text-green-600">£{ride.price}</span>
+                                  </div>
+                                </div>
+                                {ride.notes && (
+                                  <div className="text-sm text-gray-600">
+                                    <p><strong>Notes:</strong> {ride.notes}</p>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="flex justify-end space-x-2 mt-4">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleModifyRide(ride.id)}
+                                  className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                                >
+                                  <Edit className="h-4 w-4 mr-1" />
+                                  Modify
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleCancelRide(ride.id)}
+                                  className="text-red-600 border-red-300 hover:bg-red-50"
+                                >
+                                  <X className="h-4 w-4 mr-1" />
+                                  Cancel
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   {/* Booking Requests Section */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Booking Requests</h3>

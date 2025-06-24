@@ -120,6 +120,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Added comprehensive UK rail and bus stations to location database
 - ✅ Implemented "My Live Requests" section for riders to track active trip requests
 - ✅ Enhanced My Trips & Bookings with separate sections for pending requests and confirmed bookings
+- ✅ Added "My Posted Rides" section for drivers with modify and cancel functionality
+- ✅ Implemented ride deletion API endpoint for drivers to cancel their posted rides
+- ✅ Changed ride request default status from "active" to "pending" for better workflow
 
 ## Technical Stack
 - Node.js 20
