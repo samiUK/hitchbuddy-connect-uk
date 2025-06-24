@@ -39,6 +39,7 @@ import { ProfileEditForm } from "@/components/ProfileEditForm";
 import { BookRideModal } from "@/components/BookRideModal";
 import { ChatPopup } from "@/components/ChatPopup";
 import { BetaDisclaimer } from "@/components/BetaDisclaimer";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
