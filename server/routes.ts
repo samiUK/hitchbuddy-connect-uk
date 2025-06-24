@@ -190,6 +190,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/auth/user/:id", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const userId = req.params.id;
+      const user = await storage.getUser(userId);
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Return user without password for privacy
+      const { password, ...userWithoutPassword } = user;
+      res.json({ user: userWithoutPassword });
+    } catch (error) {
+      console.error('Get user by ID error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Rides routes
   app.post("/api/rides", async (req, res) => {
     try {

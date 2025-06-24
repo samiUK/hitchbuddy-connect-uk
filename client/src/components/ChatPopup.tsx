@@ -33,17 +33,11 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isCurrentUserDriver = currentUser?.id === booking?.driverId;
-  const otherUser = isCurrentUserDriver 
-    ? { 
-        name: booking?.riderName || 'Rider', 
-        type: 'rider' as const,
-        avatar: booking?.riderAvatar
-      }
-    : { 
-        name: booking?.driverName || 'Driver', 
-        type: 'driver' as const,
-        avatar: booking?.driverAvatar
-      };
+  const otherUser = {
+    name: booking?.otherUserName || (isCurrentUserDriver ? 'Rider' : 'Driver'),
+    type: booking?.otherUserType || (isCurrentUserDriver ? 'rider' : 'driver'),
+    avatar: booking?.otherUserAvatar
+  };
 
   // Initialize messages with booking message
   useEffect(() => {
