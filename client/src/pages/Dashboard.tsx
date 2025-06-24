@@ -992,7 +992,7 @@ const Dashboard = () => {
                                   <Button 
                                     size="sm" 
                                     variant="outline"
-                                    onClick={() => handleMessageDriver(booking)}
+                                    onClick={() => handleMessageRider(booking)}
                                     className="relative"
                                   >
                                     <MessageCircle className="h-4 w-4 mr-1" />
@@ -1176,24 +1176,18 @@ const Dashboard = () => {
               // Riders see available rides from drivers (next 60 days)
               <div className="space-y-4">
                 {rides.filter((ride: any) => {
-                  // Debug: Log filtering for troubleshooting (remove in production)
-                  // console.log('Filtering ride:', { ... });
-                  
                   // Don't show user's own rides (except for test user)
                   if (ride.driverId === user?.id && user?.email !== 'coolsami_uk@yahoo.com') {
-                    // console.log('Filtered out: own ride');
                     return false;
                   }
                   
                   // Show all recurring rides as they are ongoing
                   if (ride.isRecurring === 'true' || ride.isRecurring === true) {
-                    // console.log('Included: recurring ride');
                     return true;
                   }
                   
                   // Skip rides without departure dates that aren't recurring
                   if (!ride.departureDate || ride.departureDate === '') {
-                    // console.log('Filtered out: no departure date and not recurring');
                     return false;
                   }
                   
@@ -1203,10 +1197,7 @@ const Dashboard = () => {
                   const maxDate = new Date();
                   maxDate.setDate(today.getDate() + 60);
                   
-                  const inDateRange = rideDate >= today && rideDate <= maxDate;
-                  // console.log('Date check:', { today: today.toDateString(), rideDate: rideDate.toDateString(), inRange: inDateRange });
-                  
-                  return inDateRange;
+                  return rideDate >= today && rideDate <= maxDate;
                 }).map((ride: any) => (
                   <Card key={ride.id} className="p-4 hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start">
