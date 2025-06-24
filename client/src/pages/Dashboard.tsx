@@ -234,12 +234,18 @@ const Dashboard = () => {
         if (response.ok) {
           const riderData = await response.json();
           otherUserDetails = {
-            riderName: `${riderData.user.firstName} ${riderData.user.lastName}`,
-            riderAvatar: riderData.user.avatarUrl
+            otherUserName: `${riderData.user.firstName} ${riderData.user.lastName}`,
+            otherUserAvatar: riderData.user.avatarUrl,
+            otherUserType: 'rider'
           };
         }
       } catch (error) {
         console.error('Error fetching rider details:', error);
+        otherUserDetails = {
+          otherUserName: 'Rider',
+          otherUserAvatar: null,
+          otherUserType: 'rider'
+        };
       }
     } else {
       // Rider messaging driver - get driver details
@@ -250,12 +256,18 @@ const Dashboard = () => {
         if (response.ok) {
           const driverData = await response.json();
           otherUserDetails = {
-            driverName: `${driverData.user.firstName} ${driverData.user.lastName}`,
-            driverAvatar: driverData.user.avatarUrl
+            otherUserName: `${driverData.user.firstName} ${driverData.user.lastName}`,
+            otherUserAvatar: driverData.user.avatarUrl,
+            otherUserType: 'driver'
           };
         }
       } catch (error) {
         console.error('Error fetching driver details:', error);
+        otherUserDetails = {
+          otherUserName: 'Driver',
+          otherUserAvatar: null,
+          otherUserType: 'driver'
+        };
       }
     }
 
