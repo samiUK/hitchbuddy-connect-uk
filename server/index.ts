@@ -64,13 +64,10 @@ app.use((req, res, next) => {
   // It is the only port that is not firewalled.
   const port = process.env.PORT || 5000;
   
-  app.listen(port, () => console.log("Running"));
-  
-  server.listen({
-    port: 5000,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port 5000`);
+  // Start email processor
+  startEmailProcessor();
+
+  server.listen(port, "0.0.0.0", () => {
+    log(`serving on port ${port}`);
   });
 })();
