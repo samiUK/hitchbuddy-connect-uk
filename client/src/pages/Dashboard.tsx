@@ -1315,7 +1315,7 @@ const Dashboard = () => {
             {userType === 'driver' ? (
               // Drivers see ride requests from riders
               <div className="space-y-4">
-                {rideRequests.map((request: any) => (
+                {rideRequests.filter((request: any) => request.status === 'pending').map((request: any) => (
                   <Card key={request.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
@@ -1371,7 +1371,7 @@ const Dashboard = () => {
                     </CardContent>
                   </Card>
                 ))}
-                {rideRequests.length === 0 && (
+                {rideRequests.filter((request: any) => request.status === 'pending').length === 0 && (
                   <div className="text-center py-12">
                     <Search className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No ride requests</h3>

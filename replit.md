@@ -133,6 +133,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Added "My Posted Rides" section for drivers with modify and cancel functionality
 - ✅ Implemented ride deletion API endpoint for drivers to cancel their posted rides
 - ✅ Changed ride request default status from "active" to "pending" for better workflow
+- ✅ Fixed "Find Requests" section for drivers to only show pending ride requests from riders
 
 ## Technical Stack
 - Node.js 20
