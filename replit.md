@@ -95,6 +95,11 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Added date picker for recurring rides requiring specific date selection
 - Improved booking flow with detailed cost breakdown and confirmation
 - Changed "Book Ride" to "Send Request" to reflect booking request workflow
+- Enhanced chat with distinct message colors for drivers (indigo) and riders (green)
+- Added user thumbnails beside all messages for clear identification
+- Implemented persistent chat history with database storage and retrieval
+- Added live GPS location sharing functionality with Google Maps integration
+- Improved message display with sender names and better visual hierarchy
 
 ## Technical Stack
 - Node.js 20

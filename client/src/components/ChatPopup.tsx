@@ -29,6 +29,7 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
   const [isSending, setIsSending] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -168,48 +169,98 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
         {/* Messages */}
         <CardContent className="p-0">
           <div className="h-64 md:h-80 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 bg-gray-50">
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.senderId === currentUser.id ? 'justify-end' : 'justify-start'} items-start space-x-2`}
-              >
-                {/* Avatar for other user's messages only */}
-                {msg.senderId !== currentUser.id && (
-                  <Avatar className="w-6 h-6 md:w-8 md:h-8 mt-0.5">
-                    <AvatarImage src={otherUser.avatar} alt={otherUser.name} />
-                    <AvatarFallback className="text-xs">
-                      {otherUser.type === 'driver' ? <Car className="h-3 w-3" /> : <User className="h-3 w-3" />}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
+            {isLoadingHistory ? (
+              <div className="flex justify-center items-center h-full">
+                <div className="text-sm text-gray-500">Loading chat history...</div>
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="flex justify-center items-center h-full">
+                <div className="text-sm text-gray-500">Start your conversation...</div>
+              </div>
+            ) : (
+              messages.map((msg) => {
+                const isCurrentUserMessage = msg.senderId === currentUser.id;
+                const messageUserAvatar = isCurrentUserMessage ? currentUser.avatarUrl : otherUser.avatar;
+                const isLocationMessage = msg.message.includes('📍 Live Location:');
                 
-                <div className={`max-w-[75%] md:max-w-[80%]`}>
+                return (
                   <div
-                    className={`px-3 md:px-4 py-2 rounded-2xl ${
-                      msg.senderId === currentUser.id
-                        ? 'bg-blue-600 text-white rounded-br-md'
-                        : msg.senderType === 'rider'
-                          ? 'bg-green-500 text-white rounded-bl-md'
-                          : 'bg-white border border-gray-200 text-gray-800 rounded-bl-md'
-                    }`}
+                    key={msg.id}
+                    className={`flex ${isCurrentUserMessage ? 'justify-end' : 'justify-start'} items-end space-x-2`}
                   >
-                    <p className="text-sm leading-relaxed">{msg.message}</p>
-                  </div>
-                  <div className={`flex items-center mt-1 space-x-2 ${
-                    msg.senderId === currentUser.id ? 'justify-end' : 'justify-start'
-                  }`}>
-                    <span className="text-xs text-gray-500">{formatTime(msg.timestamp)}</span>
-                    {msg.senderId === currentUser.id && (
-                      <span className="text-xs text-gray-500">
-                        {msg.isRead ? '✓✓' : '✓'}
-                      </span>
+                    {/* Avatar for non-current user messages */}
+                    {!isCurrentUserMessage && (
+                      <Avatar className="w-6 h-6 md:w-8 md:h-8 mb-1">
+                        <AvatarImage src={messageUserAvatar} alt={msg.senderName} />
+                        <AvatarFallback className="text-xs bg-gradient-to-r from-blue-500 to-green-500 text-white">
+                          {otherUser.type === 'driver' ? <Car className="h-3 w-3" /> : <User className="h-3 w-3" />}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                    
+                    <div className={`max-w-[75%] md:max-w-[80%] ${isCurrentUserMessage ? 'order-first' : ''}`}>
+                      {/* Sender name for group context */}
+                      {!isCurrentUserMessage && (
+                        <div className="text-xs text-gray-500 mb-1 ml-2">
+                          {msg.senderName}
+                        </div>
+                      )}
+                      
+                      <div
+                        className={`px-3 md:px-4 py-2 rounded-2xl shadow-sm ${
+                          isCurrentUserMessage
+                            ? 'bg-blue-600 text-white rounded-br-md'
+                            : msg.senderType === 'driver'
+                              ? 'bg-indigo-500 text-white rounded-bl-md'
+                              : 'bg-green-500 text-white rounded-bl-md'
+                        }`}
+                      >
+                        {isLocationMessage ? (
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <MapPin className="h-4 w-4" />
+                              <span className="text-sm font-medium">Live Location Shared</span>
+                            </div>
+                            <a 
+                              href={msg.message.split(': ')[1]} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center space-x-1 text-sm underline hover:no-underline"
+                            >
+                              <Navigation className="h-3 w-3" />
+                              <span>Open in Maps</span>
+                            </a>
+                          </div>
+                        ) : (
+                          <p className="text-sm leading-relaxed">{msg.message}</p>
+                        )}
+                      </div>
+                      
+                      <div className={`flex items-center mt-1 space-x-2 ${
+                        isCurrentUserMessage ? 'justify-end' : 'justify-start'
+                      }`}>
+                        <span className="text-xs text-gray-500">{formatTime(msg.timestamp)}</span>
+                        {isCurrentUserMessage && (
+                          <span className="text-xs text-gray-500">
+                            {msg.isRead ? '✓✓' : '✓'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Avatar for current user messages */}
+                    {isCurrentUserMessage && (
+                      <Avatar className="w-6 h-6 md:w-8 md:h-8 mb-1">
+                        <AvatarImage src={messageUserAvatar} alt={msg.senderName} />
+                        <AvatarFallback className="text-xs bg-gradient-to-r from-blue-500 to-green-500 text-white">
+                          {currentUser.firstName?.charAt(0)}{currentUser.lastName?.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
                     )}
                   </div>
-                </div>
-              </div>
-            ))}
-            
-
+                );
+              })
+            )}
             
             <div ref={messagesEndRef} />
           </div>
@@ -217,6 +268,16 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
           {/* Input */}
           <div className="p-3 md:p-4 bg-white border-t">
             <div className="flex items-center space-x-2">
+              <Button
+                onClick={shareLocation}
+                disabled={isSending}
+                variant="outline"
+                size="sm"
+                className="text-blue-600 hover:bg-blue-50"
+                title="Share live location"
+              >
+                <MapPin className="h-4 w-4" />
+              </Button>
               <Input
                 ref={inputRef}
                 value={message}
@@ -227,7 +288,7 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
                 disabled={isSending}
               />
               <Button 
-                onClick={handleSendMessage} 
+                onClick={() => handleSendMessage()} 
                 disabled={!message.trim() || isSending}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4"
                 size="sm"
