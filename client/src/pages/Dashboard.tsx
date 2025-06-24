@@ -136,7 +136,10 @@ const Dashboard = () => {
         });
         if (myRequestsResponse.ok) {
           const data = await myRequestsResponse.json();
+          console.log('Rider requests data:', data);
           setRideRequests(data.rideRequests || []);
+        } else {
+          console.error('Failed to fetch rider requests:', myRequestsResponse.status);
         }
       }
 
@@ -975,6 +978,15 @@ const Dashboard = () => {
                         {rideRequests.filter(req => req.status === 'pending').length} active
                       </Badge>
                     </div>
+                    
+                    {/* Debug info - remove after testing */}
+                    {process.env.NODE_ENV === 'development' && (
+                      <div className="text-xs text-gray-500 bg-gray-100 p-2 rounded">
+                        Debug: Total requests: {rideRequests.length}, 
+                        Pending: {rideRequests.filter(req => req.status === 'pending').length},
+                        User ID: {user?.id}
+                      </div>
+                    )}
                     
                     {rideRequests.filter(req => req.status === 'pending').length === 0 ? (
                       <div className="text-center py-6 text-gray-500">
