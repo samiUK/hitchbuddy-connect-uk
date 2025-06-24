@@ -36,6 +36,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Form data auto-saves and expires after 5 minutes for user convenience
 - ✅ Reordered navigation tabs: Overview, My Bookings/Find Requests, My Rides & Bookings/Find Rides, Post New Ride
 - ✅ Updated tab icons: My Bookings uses car icon, Find Rides uses magnifying glass icon
+- ✅ Implemented "My Bookings" section for riders with confirmed and past bookings
+- ✅ Added chat functionality for riders to communicate with drivers
+- ✅ Separated upcoming and past bookings for better organization
 
 ## User Preferences
 - Available rides should only show in rider dashboard, not driver dashboard
