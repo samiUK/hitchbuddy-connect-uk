@@ -99,16 +99,31 @@ export const PostNewRideForm = ({ onClose }: PostNewRideFormProps) => {
         recurringData: isRecurring ? recurringData : null
       };
       
-      console.log("Ride posted:", rideData);
-      
-      toast({
-        title: "Ride posted successfully!",
-        description: isRecurring 
-          ? "Your recurring ride has been posted. Passengers can now book seats."
-          : "Your ride has been posted. Passengers can now book seats.",
+      const response = await fetch('/api/rides', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(rideData),
       });
-      
-      onClose();
+
+      if (response.ok) {
+        toast({
+          title: "Ride posted successfully!",
+          description: isRecurring 
+            ? "Your recurring ride has been posted. Passengers can now book seats."
+            : "Your ride has been posted. Passengers can now book seats.",
+        });
+        onClose();
+      } else {
+        const data = await response.json();
+        toast({
+          title: "Error",
+          description: data.error || "Failed to post your ride. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",

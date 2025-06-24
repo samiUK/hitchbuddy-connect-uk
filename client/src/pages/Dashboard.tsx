@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,10 +41,67 @@ const Dashboard = () => {
   const [showPostRideForm, setShowPostRideForm] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [isUpdatingUserType, setIsUpdatingUserType] = useState(false);
+  const [rides, setRides] = useState([]);
+  const [rideRequests, setRideRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   const userType = user?.userType || 'rider';
   const firstName = user?.firstName || '';
   const lastName = user?.lastName || '';
+
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    }
+  }, [user, userType]);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      if (userType === 'driver') {
+        // Fetch available ride requests for drivers
+        const requestsResponse = await fetch('/api/ride-requests', {
+          credentials: 'include'
+        });
+        if (requestsResponse.ok) {
+          const data = await requestsResponse.json();
+          setRideRequests(data.rideRequests || []);
+        }
+        
+        // Fetch driver's own rides
+        const myRidesResponse = await fetch('/api/rides/my', {
+          credentials: 'include'
+        });
+        if (myRidesResponse.ok) {
+          const data = await myRidesResponse.json();
+          setRides(data.rides || []);
+        }
+      } else {
+        // Fetch available rides for riders
+        const ridesResponse = await fetch('/api/rides', {
+          credentials: 'include'
+        });
+        if (ridesResponse.ok) {
+          const data = await ridesResponse.json();
+          setRides(data.rides || []);
+        }
+        
+        // Fetch rider's own requests
+        const myRequestsResponse = await fetch('/api/ride-requests/my', {
+          credentials: 'include'
+        });
+        if (myRequestsResponse.ok) {
+          const data = await myRequestsResponse.json();
+          setRideRequests(data.rideRequests || []);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -82,45 +139,7 @@ const Dashboard = () => {
     }
   };
 
-  // Mock ride data for testing
-  const mockRides = [
-    {
-      id: 1,
-      from: "London",
-      to: "Manchester",
-      date: "2025-01-15",
-      time: "09:00",
-      price: "£25",
-      availableSeats: 3,
-      driver: "John Doe",
-      rating: 4.8,
-      isRecurring: false
-    },
-    {
-      id: 2,
-      from: "Birmingham",
-      to: "Leeds",
-      date: "2025-01-16",
-      time: "14:30",
-      price: "£30",
-      availableSeats: 2,
-      driver: "Sarah Smith",
-      rating: 4.9,
-      isRecurring: true
-    },
-    {
-      id: 3,
-      from: "Bristol",
-      to: "Cardiff",
-      date: "2025-01-17",
-      time: "11:15",
-      price: "£15",
-      availableSeats: 4,
-      driver: "Mike Johnson",
-      rating: 4.7,
-      isRecurring: false
-    }
-  ];
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
@@ -402,7 +421,7 @@ const Dashboard = () => {
             
             {/* Mock rides list */}
             <div className="grid gap-4">
-              {mockRides.map((ride) => (
+              {(userType === 'driver' ? rideRequests : rides).map((ride: any) => (
                 <Card key={ride.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
@@ -429,9 +448,9 @@ const Dashboard = () => {
                           </div>
                           <div className="flex items-center space-x-1">
                             <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                            <span>{ride.rating}</span>
+                            <span>New</span>
                           </div>
-                          {ride.isRecurring && (
+                          {ride.isRecurring === 'true' && (
                             <Badge variant="outline">Recurring</Badge>
                           )}
                         </div>

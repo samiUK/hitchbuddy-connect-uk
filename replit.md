@@ -17,6 +17,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Updated all components to use new auth system
 - ✅ Removed all Supabase dependencies
 - ✅ Database schema successfully pushed
+- ✅ Implemented rides and ride requests functionality
+- ✅ Connected frontend to backend APIs for ride-sharing
+- ✅ Real-time data display for drivers and riders
 
 ## User Preferences
 None specified yet.
@@ -34,6 +37,8 @@ None specified yet.
 ## Database Schema
 - `users` table: id, email, password, firstName, lastName, phone, userType, avatarUrl, createdAt, updatedAt
 - `sessions` table: id, userId, expiresAt, createdAt
+- `rides` table: id, driverId, fromLocation, toLocation, departureDate, departureTime, availableSeats, price, vehicleInfo, notes, isRecurring, recurringData, status, createdAt, updatedAt
+- `ride_requests` table: id, riderId, fromLocation, toLocation, departureDate, departureTime, passengers, maxPrice, notes, status, createdAt, updatedAt
 
 ## Authentication System
 - Session-based authentication with HTTP-only cookies
@@ -42,9 +47,20 @@ None specified yet.
 - Protected routes implementation
 
 ## API Endpoints
+### Authentication
 - POST /api/auth/signup - User registration
 - POST /api/auth/signin - User login
 - POST /api/auth/signout - User logout
 - GET /api/auth/me - Get current user
 - POST /api/auth/reset-password - Password reset
 - PUT /api/auth/update-profile - Update user profile
+
+### Rides
+- POST /api/rides - Create new ride (drivers)
+- GET /api/rides - Get all available rides
+- GET /api/rides/my - Get user's own rides
+
+### Ride Requests
+- POST /api/ride-requests - Create new ride request (riders)
+- GET /api/ride-requests - Get all ride requests
+- GET /api/ride-requests/my - Get user's own ride requests

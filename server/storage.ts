@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { users, sessions, type User, type InsertUser, type Session } from "@shared/schema";
+import { users, sessions, rides, rideRequests, type User, type InsertUser, type Session, type Ride, type RideRequest, type InsertRide, type InsertRideRequest } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
@@ -22,6 +22,18 @@ export interface IStorage {
   deleteSession(sessionId: string): Promise<void>;
   verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean>;
   hashPassword(password: string): Promise<string>;
+  // Rides
+  createRide(ride: InsertRide): Promise<Ride>;
+  getRides(): Promise<Ride[]>;
+  getRidesByDriver(driverId: string): Promise<Ride[]>;
+  updateRide(id: string, updates: Partial<Ride>): Promise<Ride | undefined>;
+  deleteRide(id: string): Promise<void>;
+  // Ride Requests
+  createRideRequest(request: InsertRideRequest): Promise<RideRequest>;
+  getRideRequests(): Promise<RideRequest[]>;
+  getRideRequestsByRider(riderId: string): Promise<RideRequest[]>;
+  updateRideRequest(id: string, updates: Partial<RideRequest>): Promise<RideRequest | undefined>;
+  deleteRideRequest(id: string): Promise<void>;
 }
 
 export class PostgreSQLStorage implements IStorage {
@@ -91,6 +103,58 @@ export class PostgreSQLStorage implements IStorage {
 
   async hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, 12);
+  }
+
+  // Rides methods
+  async createRide(insertRide: InsertRide): Promise<Ride> {
+    const result = await db.insert(rides).values(insertRide).returning();
+    return result[0];
+  }
+
+  async getRides(): Promise<Ride[]> {
+    return await db.select().from(rides).where(eq(rides.status, 'active'));
+  }
+
+  async getRidesByDriver(driverId: string): Promise<Ride[]> {
+    return await db.select().from(rides).where(eq(rides.driverId, driverId));
+  }
+
+  async updateRide(id: string, updates: Partial<Ride>): Promise<Ride | undefined> {
+    const result = await db.update(rides)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(rides.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteRide(id: string): Promise<void> {
+    await db.delete(rides).where(eq(rides.id, id));
+  }
+
+  // Ride Requests methods
+  async createRideRequest(insertRequest: InsertRideRequest): Promise<RideRequest> {
+    const result = await db.insert(rideRequests).values(insertRequest).returning();
+    return result[0];
+  }
+
+  async getRideRequests(): Promise<RideRequest[]> {
+    return await db.select().from(rideRequests).where(eq(rideRequests.status, 'active'));
+  }
+
+  async getRideRequestsByRider(riderId: string): Promise<RideRequest[]> {
+    return await db.select().from(rideRequests).where(eq(rideRequests.riderId, riderId));
+  }
+
+  async updateRideRequest(id: string, updates: Partial<RideRequest>): Promise<RideRequest | undefined> {
+    const result = await db.update(rideRequests)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(rideRequests.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteRideRequest(id: string): Promise<void> {
+    await db.delete(rideRequests).where(eq(rideRequests.id, id));
   }
 }
 

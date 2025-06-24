@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema } from "@shared/schema";
+import { insertUserSchema, insertRideSchema, insertRideRequestSchema } from "@shared/schema";
 import { z } from "zod";
 
 const signInSchema = z.object({
@@ -191,6 +191,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ user: userWithoutPassword });
     } catch (error) {
       console.error('Update profile error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Rides routes
+  app.post("/api/rides", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const rideData = {
+        ...req.body,
+        driverId: session.userId,
+        isRecurring: req.body.isRecurring ? 'true' : 'false',
+        recurringData: req.body.recurringData ? JSON.stringify(req.body.recurringData) : null
+      };
+
+      const ride = await storage.createRide(rideData);
+      res.json({ ride });
+    } catch (error) {
+      console.error('Create ride error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/rides", async (req, res) => {
+    try {
+      const rides = await storage.getRides();
+      res.json({ rides });
+    } catch (error) {
+      console.error('Get rides error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/rides/my", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const rides = await storage.getRidesByDriver(session.userId);
+      res.json({ rides });
+    } catch (error) {
+      console.error('Get my rides error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Ride requests routes
+  app.post("/api/ride-requests", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const requestData = {
+        ...req.body,
+        riderId: session.userId
+      };
+
+      const rideRequest = await storage.createRideRequest(requestData);
+      res.json({ rideRequest });
+    } catch (error) {
+      console.error('Create ride request error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/ride-requests", async (req, res) => {
+    try {
+      const rideRequests = await storage.getRideRequests();
+      res.json({ rideRequests });
+    } catch (error) {
+      console.error('Get ride requests error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/ride-requests/my", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const rideRequests = await storage.getRideRequestsByRider(session.userId);
+      res.json({ rideRequests });
+    } catch (error) {
+      console.error('Get my ride requests error:', error);
       res.status(500).json({ error: "Internal server error" });
     }
   });

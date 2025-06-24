@@ -46,15 +46,29 @@ export const NewRideRequestForm = ({ onClose }: NewRideRequestFormProps) => {
     setIsSubmitting(true);
 
     try {
-      // Here you would normally submit to your backend
-      console.log("Ride request submitted:", formData);
-      
-      toast({
-        title: "Ride request posted!",
-        description: "Drivers in your area will be notified. You'll receive updates when someone responds.",
+      const response = await fetch('/api/ride-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData),
       });
-      
-      onClose();
+
+      if (response.ok) {
+        toast({
+          title: "Ride request posted!",
+          description: "Drivers in your area will be notified. You'll receive updates when someone responds.",
+        });
+        onClose();
+      } else {
+        const data = await response.json();
+        toast({
+          title: "Error",
+          description: data.error || "Failed to post your ride request. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
