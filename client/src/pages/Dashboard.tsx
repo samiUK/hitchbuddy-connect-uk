@@ -745,7 +745,7 @@ const Dashboard = () => {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900">My Posted Rides</h3>
-                      <Badge variant="outline" className="text-green-600">
+                      <Badge variant="outline" className="text-blue-600">
                         {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active').length} active
                       </Badge>
                     </div>
@@ -759,13 +759,13 @@ const Dashboard = () => {
                     ) : (
                       <div className="grid gap-4">
                         {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active').map((ride) => (
-                          <Card key={ride.id} className="border-green-200 bg-green-50">
+                          <Card key={ride.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between mb-3">
-                                <Badge variant="outline" className="text-green-600 border-green-300">
+                                <Badge variant="outline" className="text-blue-600 border-blue-300">
                                   Posted Ride
                                 </Badge>
-                                <Badge className="bg-green-600">
+                                <Badge className="bg-blue-600">
                                   Active
                                 </Badge>
                               </div>
@@ -789,7 +789,7 @@ const Dashboard = () => {
                                     <span>{ride.availableSeats} seats</span>
                                   </div>
                                   <div className="flex items-center space-x-1">
-                                    <span className="font-semibold text-green-600">£{ride.price}</span>
+                                    <span className="font-semibold text-blue-600">£{ride.price}</span>
                                   </div>
                                 </div>
                                 {ride.notes && (
