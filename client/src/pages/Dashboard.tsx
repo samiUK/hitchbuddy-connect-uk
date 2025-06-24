@@ -348,18 +348,7 @@ const Dashboard = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {firstName}!
-          </h1>
-          <p className="text-gray-600">
-            {userType === 'driver' 
-              ? 'Manage your rides and connect with passengers' 
-              : 'Find your next ride and book with trusted drivers'
-            }
-          </p>
-        </div>
+        
 
         {/* Quick Actions & Notifications */}
         {notifications.length > 0 && (
