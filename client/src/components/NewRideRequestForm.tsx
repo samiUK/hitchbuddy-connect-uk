@@ -16,7 +16,7 @@ interface NewRideRequestFormProps {
 }
 
 export const NewRideRequestForm = ({ onClose, savedData, onDataChange }: NewRideRequestFormProps) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(savedData || {
     fromLocation: "",
     toLocation: "",
     departureDate: "",
@@ -30,17 +30,25 @@ export const NewRideRequestForm = ({ onClose, savedData, onDataChange }: NewRide
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
+    const newData = {
+      ...formData,
       [name]: value
-    }));
+    };
+    setFormData(newData);
+    if (onDataChange) {
+      onDataChange(newData);
+    }
   };
 
   const handleLocationChange = (name: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
+    const newData = {
+      ...formData,
       [name]: value
-    }));
+    };
+    setFormData(newData);
+    if (onDataChange) {
+      onDataChange(newData);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,6 +69,15 @@ export const NewRideRequestForm = ({ onClose, savedData, onDataChange }: NewRide
         toast({
           title: "Ride request posted!",
           description: "Drivers in your area will be notified. You'll receive updates when someone responds.",
+        });
+        setFormData({
+          fromLocation: "",
+          toLocation: "",
+          departureDate: "",
+          departureTime: "",
+          passengers: "1",
+          maxPrice: "",
+          notes: ""
         });
         onClose();
       } else {

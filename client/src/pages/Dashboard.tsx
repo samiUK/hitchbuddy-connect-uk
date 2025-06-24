@@ -557,30 +557,47 @@ const Dashboard = () => {
           </div>
         )}
 
+        {activeTab === 'post' && !showProfileEdit && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {userType === 'driver' ? 'Post a New Ride' : 'Request a Ride'}
+            </h2>
+            <div className="max-w-2xl">
+              {userType === 'driver' ? (
+                <PostNewRideForm 
+                  onClose={() => {
+                    clearSavedFormData();
+                    setActiveTab('overview');
+                    fetchData();
+                  }}
+                  savedData={getSavedFormData()}
+                  onDataChange={handleFormDataSave}
+                />
+              ) : (
+                <NewRideRequestForm 
+                  onClose={() => {
+                    clearSavedFormData();
+                    setActiveTab('overview');
+                    fetchData();
+                  }}
+                  savedData={getSavedFormData()}
+                  onDataChange={handleFormDataSave}
+                />
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Profile Edit Form */}
         {showProfileEdit && (
           <ProfileEditForm onClose={() => setShowProfileEdit(false)} />
         )}
 
-        {activeTab === 'rides' && !showRideRequestForm && !showPostRideForm && (
+        {activeTab === 'rides' && !showProfileEdit && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">
-                {userType === 'driver' ? 'Booking Requests' : 'Available Rides'}
-              </h2>
-              <Button 
-                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-                onClick={() => {
-                  if (userType === 'driver') {
-                    setShowPostRideForm(true);
-                  } else {
-                    setShowRideRequestForm(true);
-                  }
-                }}
-              >
-                {userType === 'driver' ? 'Post New Ride' : 'Request a Ride'}
-              </Button>
-            </div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {userType === 'driver' ? 'My Rides & Bookings' : 'Available Rides'}
+            </h2>
             
             <div className="grid gap-6">
               {userType === 'driver' ? (
@@ -793,19 +810,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {showRideRequestForm && (
-          <NewRideRequestForm onClose={() => {
-            setShowRideRequestForm(false);
-            fetchData();
-          }} />
-        )}
 
-        {showPostRideForm && (
-          <PostNewRideForm onClose={() => {
-            setShowPostRideForm(false);
-            fetchData();
-          }} />
-        )}
 
         {showBookingModal && selectedRide && (
           <BookRideModal 

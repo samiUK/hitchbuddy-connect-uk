@@ -22,7 +22,7 @@ interface PostNewRideFormProps {
 }
 
 export const PostNewRideForm = ({ onClose, savedData, onDataChange }: PostNewRideFormProps) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(savedData || {
     fromLocation: "",
     toLocation: "",
     departureDate: "",
@@ -57,17 +57,25 @@ export const PostNewRideForm = ({ onClose, savedData, onDataChange }: PostNewRid
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
+    const newData = {
+      ...formData,
       [name]: value
-    }));
+    };
+    setFormData(newData);
+    if (onDataChange) {
+      onDataChange({ ...newData, isRecurring, recurringData });
+    }
   };
 
   const handleLocationChange = (name: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
+    const newData = {
+      ...formData,
       [name]: value
-    }));
+    };
+    setFormData(newData);
+    if (onDataChange) {
+      onDataChange({ ...newData, isRecurring, recurringData });
+    }
   };
 
   const handleDayToggle = (day: string) => {

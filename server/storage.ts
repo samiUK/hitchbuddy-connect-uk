@@ -115,7 +115,7 @@ export class PostgreSQLStorage implements IStorage {
 
   // Rides methods
   async createRide(insertRide: InsertRide): Promise<Ride> {
-    const result = await db.insert(rides).values(insertRide).returning();
+    const result = await db.insert(rides).values([insertRide]).returning();
     return result[0];
   }
 
@@ -141,7 +141,7 @@ export class PostgreSQLStorage implements IStorage {
 
   // Ride Requests methods
   async createRideRequest(insertRequest: InsertRideRequest): Promise<RideRequest> {
-    const result = await db.insert(rideRequests).values(insertRequest).returning();
+    const result = await db.insert(rideRequests).values([insertRequest]).returning();
     return result[0];
   }
 
@@ -168,7 +168,7 @@ export class PostgreSQLStorage implements IStorage {
   async createBooking(insertBooking: InsertBooking): Promise<Booking> {
     const [booking] = await db
       .insert(bookings)
-      .values(insertBooking)
+      .values([insertBooking])
       .returning();
     return booking;
   }
