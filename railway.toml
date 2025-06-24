@@ -3,6 +3,3 @@
 
 [deploy]
   startCommand = "node api/index.js"
-
-[env]
-  NODE_ENV = "production"
