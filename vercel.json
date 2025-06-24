@@ -2,35 +2,25 @@
   "version": 2,
   "builds": [
     {
-      "src": "client/index.html",
+      "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "client/dist"
-      }
-    },
-    {
-      "src": "server/index.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["server/**", "shared/**"]
       }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/server/index.ts"
+      "dest": "/api/server.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/client/index.html"
+      "dest": "/client/dist/$1"
     }
   ],
-  "env": {
-    "DATABASE_URL": "@database-url"
-  },
   "functions": {
-    "server/index.ts": {
+    "api/server.js": {
       "maxDuration": 30
     }
   }
