@@ -112,16 +112,222 @@ const PREDEFINED_LOCATIONS: LocationOption[] = [
     address: 'Paddington, London W2, UK'
   },
   {
+    id: 'london-victoria',
+    name: 'London Victoria Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Victoria, London SW1V, UK'
+  },
+  {
+    id: 'london-waterloo',
+    name: 'London Waterloo Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Waterloo, London SE1, UK'
+  },
+  {
+    id: 'london-liverpool-street',
+    name: 'London Liverpool Street Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Liverpool Street, London EC2M, UK'
+  },
+  {
+    id: 'london-st-pancras',
+    name: 'London St Pancras International',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'St Pancras, London N1C, UK'
+  },
+  {
+    id: 'london-london-bridge',
+    name: 'London Bridge Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'London Bridge, London SE1, UK'
+  },
+  {
     id: 'manchester-piccadilly',
     name: 'Manchester Piccadilly Station',
     category: LOCATION_CATEGORIES.TRAIN_STATION,
     address: 'Piccadilly, Manchester M1, UK'
   },
   {
+    id: 'manchester-oxford-road',
+    name: 'Manchester Oxford Road Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Oxford Road, Manchester M1, UK'
+  },
+  {
+    id: 'manchester-victoria',
+    name: 'Manchester Victoria Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Victoria, Manchester M3, UK'
+  },
+  {
     id: 'birmingham-new-street',
     name: 'Birmingham New Street Station',
     category: LOCATION_CATEGORIES.TRAIN_STATION,
     address: 'New Street, Birmingham B2, UK'
+  },
+  {
+    id: 'birmingham-snow-hill',
+    name: 'Birmingham Snow Hill Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Snow Hill, Birmingham B3, UK'
+  },
+  {
+    id: 'birmingham-moor-street',
+    name: 'Birmingham Moor Street Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Moor Street, Birmingham B5, UK'
+  },
+  {
+    id: 'leeds-station',
+    name: 'Leeds Railway Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'New Station St, Leeds LS1, UK'
+  },
+  {
+    id: 'liverpool-lime-street',
+    name: 'Liverpool Lime Street Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Lime Street, Liverpool L1, UK'
+  },
+  {
+    id: 'liverpool-central',
+    name: 'Liverpool Central Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Central Station, Liverpool L1, UK'
+  },
+  {
+    id: 'glasgow-central',
+    name: 'Glasgow Central Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Gordon Street, Glasgow G1, UK'
+  },
+  {
+    id: 'glasgow-queen-street',
+    name: 'Glasgow Queen Street Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Queen Street, Glasgow G1, UK'
+  },
+  {
+    id: 'edinburgh-waverley',
+    name: 'Edinburgh Waverley Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Waverley Bridge, Edinburgh EH1, UK'
+  },
+  {
+    id: 'cardiff-central',
+    name: 'Cardiff Central Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Central Square, Cardiff CF10, UK'
+  },
+  {
+    id: 'bristol-temple-meads',
+    name: 'Bristol Temple Meads Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Temple Meads, Bristol BS1, UK'
+  },
+  {
+    id: 'newcastle-central',
+    name: 'Newcastle Central Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Neville Street, Newcastle NE1, UK'
+  },
+  {
+    id: 'nottingham-station',
+    name: 'Nottingham Railway Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Carrington Street, Nottingham NG2, UK'
+  },
+  {
+    id: 'sheffield-station',
+    name: 'Sheffield Railway Station',
+    category: LOCATION_CATEGORIES.TRAIN_STATION,
+    address: 'Sheaf Street, Sheffield S1, UK'
+  },
+  
+  // Bus Stations
+  {
+    id: 'london-victoria-coach',
+    name: 'Victoria Coach Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: '164 Buckingham Palace Rd, London SW1W, UK'
+  },
+  {
+    id: 'london-golders-green',
+    name: 'Golders Green Bus Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'Golders Green, London NW11, UK'
+  },
+  {
+    id: 'manchester-coach-station',
+    name: 'Manchester Coach Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'Chorlton St, Manchester M1, UK'
+  },
+  {
+    id: 'birmingham-coach-station',
+    name: 'Birmingham Coach Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'Mill Ln, Birmingham B5, UK'
+  },
+  {
+    id: 'birmingham-digbeth',
+    name: 'Digbeth Coach Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'Digbeth, Birmingham B5, UK'
+  },
+  {
+    id: 'leeds-bus-station',
+    name: 'Leeds Bus Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'Dyer Street, Leeds LS1, UK'
+  },
+  {
+    id: 'liverpool-one-bus-station',
+    name: 'Liverpool ONE Bus Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'Canning Place, Liverpool L1, UK'
+  },
+  {
+    id: 'glasgow-buchanan',
+    name: 'Buchanan Bus Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'Killermont Street, Glasgow G2, UK'
+  },
+  {
+    id: 'edinburgh-bus-station',
+    name: 'Edinburgh Bus Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'St Andrew Square, Edinburgh EH2, UK'
+  },
+  {
+    id: 'cardiff-bus-station',
+    name: 'Cardiff Bus Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'Wood Street, Cardiff CF10, UK'
+  },
+  {
+    id: 'bristol-bus-station',
+    name: 'Bristol Bus Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'Marlborough Street, Bristol BS1, UK'
+  },
+  {
+    id: 'newcastle-eldon-square',
+    name: 'Eldon Square Bus Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'Percy Street, Newcastle NE1, UK'
+  },
+  {
+    id: 'nottingham-broadmarsh',
+    name: 'Broadmarsh Bus Station',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'Collin Street, Nottingham NG1, UK'
+  },
+  {
+    id: 'sheffield-interchange',
+    name: 'Sheffield Interchange',
+    category: LOCATION_CATEGORIES.BUS_STATION,
+    address: 'Pond Street, Sheffield S1, UK'
   },
   
   // Shopping Centres
@@ -213,7 +419,7 @@ function searchLocations(query: string): LocationOption[] {
     location.name.toLowerCase().includes(searchTerm) ||
     location.address.toLowerCase().includes(searchTerm) ||
     location.category.toLowerCase().includes(searchTerm)
-  ).slice(0, 15);
+  ).slice(0, 20);
 }
 
 interface LocationAutocompleteProps {
@@ -319,8 +525,9 @@ export const LocationAutocomplete = ({
       const popularLocations = PREDEFINED_LOCATIONS.filter(loc => 
         loc.category === LOCATION_CATEGORIES.CITY_CENTRE ||
         loc.category === LOCATION_CATEGORIES.AIRPORT ||
-        loc.category === LOCATION_CATEGORIES.TRAIN_STATION
-      ).slice(0, 12);
+        loc.category === LOCATION_CATEGORIES.TRAIN_STATION ||
+        loc.category === LOCATION_CATEGORIES.BUS_STATION
+      ).slice(0, 15);
       setSuggestions(popularLocations);
       setShowSuggestions(true);
     }
