@@ -5,21 +5,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { 
   Car, 
   User, 
   MapPin, 
   Clock, 
   Star, 
-  Plus,
   Search,
   MessageCircle,
   Settings,
   LogOut,
-  Navigation
+  Navigation,
+  Edit,
+  RefreshCw,
+  Calendar
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { NewRideRequestForm } from "@/components/NewRideRequestForm";
 import { PostNewRideForm } from "@/components/PostNewRideForm";
+import { ProfileEditForm } from "@/components/ProfileEditForm";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,6 +40,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'rides' | 'messages'>('overview');
   const [showRideRequestForm, setShowRideRequestForm] = useState(false);
   const [showPostRideForm, setShowPostRideForm] = useState(false);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [isUpdatingUserType, setIsUpdatingUserType] = useState(false);
   
   const userType = user?.user_metadata?.user_type || 'rider';
@@ -39,11 +51,10 @@ const Dashboard = () => {
     await signOut();
   };
 
-  const handleUserTypeSwitch = async (isDriver: boolean) => {
+  const handleUserTypeSwitch = async (newUserType: 'rider' | 'driver') => {
     if (isUpdatingUserType) return;
     
     setIsUpdatingUserType(true);
-    const newUserType = isDriver ? 'driver' : 'rider';
     
     try {
       // Update user metadata
@@ -80,6 +91,46 @@ const Dashboard = () => {
     }
   };
 
+  // Mock ride data for testing
+  const mockRides = [
+    {
+      id: 1,
+      from: "London",
+      to: "Manchester",
+      date: "2025-01-15",
+      time: "09:00",
+      price: "£25",
+      availableSeats: 3,
+      driver: "John Doe",
+      rating: 4.8,
+      isRecurring: false
+    },
+    {
+      id: 2,
+      from: "Birmingham",
+      to: "Leeds",
+      date: "2025-01-16",
+      time: "14:30",
+      price: "£30",
+      availableSeats: 2,
+      driver: "Sarah Smith",
+      rating: 4.9,
+      isRecurring: true
+    },
+    {
+      id: 3,
+      from: "Bristol",
+      to: "Cardiff",
+      date: "2025-01-17",
+      time: "11:15",
+      price: "£15",
+      availableSeats: 4,
+      driver: "Mike Johnson",
+      rating: 4.7,
+      isRecurring: false
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Header */}
@@ -96,23 +147,6 @@ const Dashboard = () => {
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-4">
-                {/* User Type Switcher */}
-                <div className="flex items-center space-x-3 px-3 py-2 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <User className="h-4 w-4 text-gray-600" />
-                    <span className="text-sm text-gray-600">Rider</span>
-                  </div>
-                  <Switch
-                    checked={userType === 'driver'}
-                    onCheckedChange={handleUserTypeSwitch}
-                    disabled={isUpdatingUserType}
-                  />
-                  <div className="flex items-center space-x-2">
-                    <Car className="h-4 w-4 text-gray-600" />
-                    <span className="text-sm text-gray-600">Driver</span>
-                  </div>
-                </div>
-
                 {/* User Profile Info */}
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
@@ -130,12 +164,46 @@ const Dashboard = () => {
                   </Badge>
                 </div>
               </div>
-              <Button variant="ghost" size="sm">
-                <Settings className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4" />
-              </Button>
+              
+              {/* Settings Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-white">
+                  <DropdownMenuLabel>Settings</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setShowProfileEdit(true)}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    <span>Edit Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Switch Account Type</DropdownMenuLabel>
+                  <DropdownMenuItem 
+                    onClick={() => handleUserTypeSwitch('rider')}
+                    disabled={userType === 'rider' || isUpdatingUserType}
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Switch to Rider</span>
+                    {userType === 'rider' && <span className="ml-auto text-xs text-muted-foreground">Current</span>}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleUserTypeSwitch('driver')}
+                    disabled={userType === 'driver' || isUpdatingUserType}
+                  >
+                    <Car className="mr-2 h-4 w-4" />
+                    <span>Switch to Driver</span>
+                    {userType === 'driver' && <span className="ml-auto text-xs text-muted-foreground">Current</span>}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
@@ -178,7 +246,7 @@ const Dashboard = () => {
         </div>
 
         {/* Content based on active tab */}
-        {activeTab === 'overview' && (
+        {activeTab === 'overview' && !showProfileEdit && (
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Quick Actions */}
             <div className="lg:col-span-2">
@@ -196,16 +264,13 @@ const Dashboard = () => {
                   <div className="grid md:grid-cols-2 gap-4">
                     {userType === 'driver' ? (
                       <>
-                        <Button 
-                          className="h-24 flex-col space-y-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-                          onClick={() => setShowPostRideForm(true)}
-                        >
-                          <Plus className="h-6 w-6" />
-                          <span>Post New Ride</span>
+                        <Button className="h-24 flex-col space-y-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
+                          <Calendar className="h-6 w-6" />
+                          <span>My Upcoming Rides</span>
                         </Button>
                         <Button variant="outline" className="h-24 flex-col space-y-2">
-                          <Car className="h-6 w-6" />
-                          <span>Manage Vehicle</span>
+                          <RefreshCw className="h-6 w-6" />
+                          <span>Ride History</span>
                         </Button>
                       </>
                     ) : (
@@ -215,8 +280,8 @@ const Dashboard = () => {
                           <span>Find a Ride</span>
                         </Button>
                         <Button variant="outline" className="h-24 flex-col space-y-2">
-                          <Clock className="h-6 w-6" />
-                          <span>My Bookings</span>
+                          <Calendar className="h-6 w-6" />
+                          <span>My Upcoming Rides</span>
                         </Button>
                       </>
                     )}
@@ -319,61 +384,91 @@ const Dashboard = () => {
           </div>
         )}
 
-        {activeTab === 'rides' && (
+        {/* Profile Edit Form */}
+        {showProfileEdit && (
+          <ProfileEditForm onClose={() => setShowProfileEdit(false)} />
+        )}
+
+        {activeTab === 'rides' && !showRideRequestForm && !showPostRideForm && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">
-                {userType === 'driver' ? 'My Rides' : 'Available Rides'}
+                {userType === 'driver' ? 'Available Rides to Book' : 'Available Rides'}
               </h2>
-              {userType === 'driver' && (
-                <Button 
-                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-                  onClick={() => setShowPostRideForm(true)}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Post New Ride
-                </Button>
-              )}
+              <Button 
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                onClick={() => {
+                  if (userType === 'driver') {
+                    setShowPostRideForm(true);
+                  } else {
+                    setShowRideRequestForm(true);
+                  }
+                }}
+              >
+                {userType === 'driver' ? 'Post New Ride' : 'Request a Ride'}
+              </Button>
             </div>
             
-            {showRideRequestForm ? (
-              <NewRideRequestForm onClose={() => setShowRideRequestForm(false)} />
-            ) : showPostRideForm ? (
-              <PostNewRideForm onClose={() => setShowPostRideForm(false)} />
-            ) : (
-              <div className="text-center py-12">
-                <Car className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {userType === 'driver' ? 'No rides posted yet' : 'No rides available nearby'}
-                </h3>
-                <p className="text-gray-500 mb-4">
-                  {userType === 'driver' 
-                    ? 'Start earning by posting your first ride'
-                    : 'No drivers are offering rides in your area right now'
-                  }
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button 
-                    variant="outline"
-                    onClick={() => {
-                      if (userType === 'driver') {
-                        setShowPostRideForm(true);
-                      } else {
-                        setShowRideRequestForm(true);
-                      }
-                    }}
-                  >
-                    {userType === 'driver' ? 'Post Your First Ride' : 'Create Ride Request'}
-                  </Button>
-                  {userType === 'rider' && (
-                    <Button variant="outline">
-                      Set Up Ride Alerts
-                    </Button>
-                  )}
-                </div>
-              </div>
-            )}
+            {/* Mock rides list */}
+            <div className="grid gap-4">
+              {mockRides.map((ride) => (
+                <Card key={ride.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-4 mb-2">
+                          <div className="flex items-center space-x-2">
+                            <MapPin className="h-4 w-4 text-green-600" />
+                            <span className="font-medium">{ride.from}</span>
+                          </div>
+                          <span className="text-gray-400">→</span>
+                          <div className="flex items-center space-x-2">
+                            <MapPin className="h-4 w-4 text-red-600" />
+                            <span className="font-medium">{ride.to}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-6 text-sm text-gray-600">
+                          <div className="flex items-center space-x-1">
+                            <Clock className="h-4 w-4" />
+                            <span>{ride.date} at {ride.time}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <User className="h-4 w-4" />
+                            <span>{ride.availableSeats} seats available</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                            <span>{ride.rating}</span>
+                          </div>
+                          {ride.isRecurring && (
+                            <Badge variant="outline">Recurring</Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">Driver: {ride.driver}</p>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                          <p className="text-2xl font-bold text-green-600">{ride.price}</p>
+                          <p className="text-sm text-gray-500">per seat</p>
+                        </div>
+                        <Button size="sm">
+                          {userType === 'driver' ? 'View Details' : 'Book Now'}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
+        )}
+
+        {showRideRequestForm && (
+          <NewRideRequestForm onClose={() => setShowRideRequestForm(false)} />
+        )}
+
+        {showPostRideForm && (
+          <PostNewRideForm onClose={() => setShowPostRideForm(false)} />
         )}
 
         {activeTab === 'messages' && (
