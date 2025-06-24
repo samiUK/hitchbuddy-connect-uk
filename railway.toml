@@ -2,4 +2,4 @@
   builder = "nixpacks"
 
 [deploy]
-  startCommand = "node api/index.js"
+  startCommand = "node api-standalone.js"
