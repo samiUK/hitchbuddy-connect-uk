@@ -11,6 +11,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - **Deployment**: Replit-native deployment
 
 ## Recent Changes
+- ✅ Fixed production build port configuration to use dynamic PORT environment variable
+- ✅ Resolved missing Babel dependencies preventing deployment startup
+- ✅ Eliminated "connection refused" deployment errors through proper port binding
 - ✅ Removed SENDGRID_API_KEY dependency and replaced with production-ready email logging
 - ✅ Optimized notification polling from 30s to 2min intervals for reduced server load
 - ✅ Enhanced email processor frequency from 5min to 30min for better performance
