@@ -59,13 +59,13 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Standardized "Message Rider/Driver" button naming for clarity
 
 ## User Preferences
-- Available rides should only show in rider dashboard, not driver dashboard
-- Drivers should only see booking requests from riders (not ride requests)
-- Riders should see available rides posted by drivers
+- Available trips should only show in rider dashboard, not driver dashboard
+- Drivers should only see booking requests from riders (not trip requests)
+- Riders should see available trips posted by drivers
 - Quick actions area shows notifications only when there are pending actions
 - Confirmation options displayed under ride request tabs for ongoing communication
-- Confirmed rides move to "my upcoming rides" section
-- For testing purposes, riders can book their own rides (remove in production)
+- Confirmed trips move to "my upcoming trips" section
+- For testing purposes, riders can book their own trips (remove in production)
 - Removed redundant quick action buttons (user prefers minimal interface)
 - No automatic messages in chat - users only send real messages
 - Show only other person's photo in chat, not user's own photo
@@ -73,21 +73,21 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - User avatars only display beside sender's messages, current user messages show no avatar
 - Riders see driver name and photo; drivers see rider name and photo
 - Clear role identification in chat headers and interface
-- Navigation order: Overview, My Rides & Bookings, Find Requests/Find Rides, Post New Ride/Request a Ride
-- Both rider and driver dashboards have "My Rides & Bookings" as option 2 with Upcoming/Past segments
-- Added "Ride Completed" and "Cancel Ride" buttons for both drivers and riders
-- Completed rides automatically move to "Past Rides" section and appear grayed out
+- Navigation order: Overview, My Trips & Bookings, Find Requests/Find Trips, Post New Trip/Request a Trip
+- Both rider and driver dashboards have "My Trips & Bookings" as option 2 with Upcoming/Past segments
+- Added "Trip Completed" and "Cancel Trip" buttons for both drivers and riders
+- Completed trips automatically move to "Past Trips" section and appear grayed out
 - Added beta disclaimer popup that appears on first visit with localStorage persistence
 - Users can dismiss the disclaimer with "I understand" button
 - Enhanced address fields with addressLine1, addressLine2, city, county, postcode, country
 - Privacy protection: only city and country visible to other users publicly
 - Hidden profile completion prompts when profile is 100% complete
 - Profile considered complete when city field is populated (simplified completion criteria)
-- Find Rides section now shows only future available rides posted by drivers
-- Riders cannot see their own rides and only see future rides for booking
-- Exception: coolsami_uk@yahoo.com can see their own rides for testing purposes
-- Added "Confirm Ride" and "Counter Offer" buttons for drivers responding to ride requests
-- Drivers can confirm rides directly or send counter offers with different pricing
+- Find Trips section now shows only future available trips posted by drivers
+- Riders cannot see their own trips and only see future trips for booking
+- Exception: coolsami_uk@yahoo.com can see their own trips for testing purposes
+- Added "Confirm Trip" and "Counter Offer" buttons for drivers responding to trip requests
+- Drivers can confirm trips directly or send counter offers with different pricing
 - Counter offers create pending bookings that require rider confirmation
 - Implemented Job ID system (format: HB-YYYYMMDD-XXXXX) for all bookings
 - Job IDs displayed as badges on booking cards for easy reference
