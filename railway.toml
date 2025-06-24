@@ -3,8 +3,6 @@
 
 [deploy]
   startCommand = "node api/index.js"
-  restartPolicyType = "on-failure"
 
 [env]
   NODE_ENV = "production"
-  PORT = "5000"
