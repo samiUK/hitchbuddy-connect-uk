@@ -785,7 +785,12 @@ const Dashboard = () => {
                         <div className="text-lg font-bold text-green-600 mb-2">
                           £{booking.totalCost}
                         </div>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleMessageRider(booking)}
+                        >
+                          <MessageCircle className="h-4 w-4 mr-1" />
                           Start Chat
                         </Button>
                       </div>

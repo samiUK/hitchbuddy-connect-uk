@@ -40,7 +40,7 @@ export const ChatPopup = ({ isOpen, onClose, riderMessage, riderName, onSendMess
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 w-80 z-50">
+    <div className="fixed bottom-4 right-4 w-80 max-w-[calc(100vw-2rem)] z-50 md:w-80">
       <Card className="shadow-lg border-2 border-blue-200">
         <CardHeader className="bg-blue-600 text-white p-3 rounded-t-lg">
           <div className="flex items-center justify-between">
@@ -83,19 +83,19 @@ export const ChatPopup = ({ isOpen, onClose, riderMessage, riderName, onSendMess
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message..."
-                className="flex-1 min-h-0 resize-none"
+                className="flex-1 min-h-0 resize-none text-sm"
                 rows={2}
               />
               <Button
                 onClick={handleSendMessage}
                 disabled={!message.trim() || isSending}
                 size="sm"
-                className="self-end"
+                className="self-end px-3"
               >
                 <Send className="h-4 w-4" />
               </Button>
             </div>
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs text-gray-500 mt-1 hidden sm:block">
               Press Enter to send, Shift+Enter for new line
             </div>
           </div>
