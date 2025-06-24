@@ -315,13 +315,17 @@ const Dashboard = () => {
               <div className="flex items-center space-x-4">
                 {/* User Profile Info */}
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
-                    {userType === 'driver' ? (
-                      <Car className="h-4 w-4 text-white" />
-                    ) : (
-                      <User className="h-4 w-4 text-white" />
-                    )}
-                  </div>
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage 
+                      src={user?.avatarUrl || undefined} 
+                      alt={`${firstName} ${lastName}`}
+                      onError={() => console.log('Header avatar failed to load:', user?.avatarUrl)}
+                      onLoad={() => console.log('Header avatar loaded successfully:', user?.avatarUrl)}
+                    />
+                    <AvatarFallback className="bg-gradient-to-r from-blue-500 to-green-500 text-white text-xs">
+                      {firstName.charAt(0)}{lastName.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
                   <span className="text-sm font-medium text-gray-700">
                     {firstName} {lastName}
                   </span>
@@ -999,7 +1003,7 @@ const Dashboard = () => {
                                 onClick={() => handleMessageRider(booking)}
                               >
                                 <MessageCircle className="h-4 w-4 mr-1" />
-                                Chat with Driver
+                                Message Driver
                               </Button>
                             </div>
                           </div>

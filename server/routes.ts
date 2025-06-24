@@ -173,14 +173,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "Invalid session" });
       }
 
-      const { userType, firstName, lastName, phone } = req.body;
+      console.log('Routes: Updating user profile:', session.userId, req.body);
       
-      const updatedUser = await storage.updateUser(session.userId, {
-        userType,
-        firstName,
-        lastName,
-        phone
-      });
+      const updatedUser = await storage.updateUser(session.userId, req.body);
 
       if (!updatedUser) {
         return res.status(404).json({ error: "User not found" });
