@@ -31,6 +31,7 @@ import { useAuth } from "@/hooks/useAuthNew";
 import { NewRideRequestForm } from "@/components/NewRideRequestForm";
 import { PostNewRideForm } from "@/components/PostNewRideForm";
 import { ProfileEditForm } from "@/components/ProfileEditForm";
+import { BookRideModal } from "@/components/BookRideModal";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
@@ -44,6 +45,8 @@ const Dashboard = () => {
   const [rides, setRides] = useState([]);
   const [rideRequests, setRideRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRide, setSelectedRide] = useState(null);
+  const [showBookingModal, setShowBookingModal] = useState(false);
   
   const userType = user?.userType || 'rider';
   const firstName = user?.firstName || '';
@@ -460,10 +463,18 @@ const Dashboard = () => {
                       </div>
                       <div className="flex items-center space-x-4">
                         <div className="text-right">
-                          <p className="text-2xl font-bold text-green-600">{ride.price}</p>
+                          <p className="text-2xl font-bold text-green-600">£{ride.price}</p>
                           <p className="text-sm text-gray-500">per seat</p>
                         </div>
-                        <Button size="sm">
+                        <Button 
+                          size="sm"
+                          onClick={() => {
+                            if (userType === 'rider') {
+                              setSelectedRide(ride);
+                              setShowBookingModal(true);
+                            }
+                          }}
+                        >
                           {userType === 'driver' ? 'View Details' : 'Book Now'}
                         </Button>
                       </div>
@@ -476,11 +487,30 @@ const Dashboard = () => {
         )}
 
         {showRideRequestForm && (
-          <NewRideRequestForm onClose={() => setShowRideRequestForm(false)} />
+          <NewRideRequestForm onClose={() => {
+            setShowRideRequestForm(false);
+            fetchData();
+          }} />
         )}
 
         {showPostRideForm && (
-          <PostNewRideForm onClose={() => setShowPostRideForm(false)} />
+          <PostNewRideForm onClose={() => {
+            setShowPostRideForm(false);
+            fetchData();
+          }} />
+        )}
+
+        {showBookingModal && selectedRide && (
+          <BookRideModal 
+            ride={selectedRide}
+            onClose={() => {
+              setShowBookingModal(false);
+              setSelectedRide(null);
+            }}
+            onBookingComplete={() => {
+              fetchData();
+            }}
+          />
         )}
 
         {activeTab === 'messages' && (

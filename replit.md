@@ -20,6 +20,10 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Implemented rides and ride requests functionality
 - ✅ Connected frontend to backend APIs for ride-sharing
 - ✅ Real-time data display for drivers and riders
+- ✅ Added proper pricing display with £ symbol
+- ✅ Implemented booking system with phone number collection
+- ✅ Created booking modal for ride requests
+- ✅ Added database tables for bookings and messages
 
 ## User Preferences
 - Available rides should only show in rider dashboard, not driver dashboard
@@ -41,6 +45,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - `sessions` table: id, userId, expiresAt, createdAt
 - `rides` table: id, driverId, fromLocation, toLocation, departureDate, departureTime, availableSeats, price, vehicleInfo, notes, isRecurring, recurringData, status, createdAt, updatedAt
 - `ride_requests` table: id, riderId, fromLocation, toLocation, departureDate, departureTime, passengers, maxPrice, notes, status, createdAt, updatedAt
+- `bookings` table: id, rideId, riderId, driverId, seatsBooked, phoneNumber, message, totalCost, status, createdAt, updatedAt
+- `messages` table: id, bookingId, senderId, message, createdAt
 
 ## Authentication System
 - Session-based authentication with HTTP-only cookies
@@ -66,3 +72,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - POST /api/ride-requests - Create new ride request (riders)
 - GET /api/ride-requests - Get all ride requests
 - GET /api/ride-requests/my - Get user's own ride requests
+
+### Bookings
+- POST /api/bookings - Create new booking (riders)
+- GET /api/bookings - Get user's bookings (riders and drivers)

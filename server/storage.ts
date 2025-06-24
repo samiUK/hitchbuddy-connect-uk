@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { users, sessions, rides, rideRequests, type User, type InsertUser, type Session, type Ride, type RideRequest, type InsertRide, type InsertRideRequest } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { users, sessions, rides, rideRequests, bookings, type User, type InsertUser, type Session, type Ride, type RideRequest, type Booking, type InsertRide, type InsertRideRequest, type InsertBooking } from "@shared/schema";
+import { eq, or } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 
@@ -34,6 +34,10 @@ export interface IStorage {
   getRideRequestsByRider(riderId: string): Promise<RideRequest[]>;
   updateRideRequest(id: string, updates: Partial<RideRequest>): Promise<RideRequest | undefined>;
   deleteRideRequest(id: string): Promise<void>;
+  // Bookings
+  createBooking(booking: InsertBooking): Promise<Booking>;
+  getBookingsByUser(userId: string): Promise<Booking[]>;
+  getRide(id: string): Promise<Ride | undefined>;
 }
 
 export class PostgreSQLStorage implements IStorage {
@@ -155,6 +159,27 @@ export class PostgreSQLStorage implements IStorage {
 
   async deleteRideRequest(id: string): Promise<void> {
     await db.delete(rideRequests).where(eq(rideRequests.id, id));
+  }
+
+  async createBooking(insertBooking: InsertBooking): Promise<Booking> {
+    const [booking] = await db
+      .insert(bookings)
+      .values(insertBooking)
+      .returning();
+    return booking;
+  }
+
+  async getBookingsByUser(userId: string): Promise<Booking[]> {
+    const userBookings = await db
+      .select()
+      .from(bookings)
+      .where(or(eq(bookings.riderId, userId), eq(bookings.driverId, userId)));
+    return userBookings;
+  }
+
+  async getRide(id: string): Promise<Ride | undefined> {
+    const [ride] = await db.select().from(rides).where(eq(rides.id, id));
+    return ride || undefined;
   }
 }
 

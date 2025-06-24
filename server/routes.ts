@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema, insertRideSchema, insertRideRequestSchema } from "@shared/schema";
+import { insertUserSchema, insertRideSchema, insertRideRequestSchema, insertBookingSchema } from "@shared/schema";
 import { z } from "zod";
 
 const signInSchema = z.object({
@@ -309,6 +309,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ rideRequests });
     } catch (error) {
       console.error('Get my ride requests error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Booking routes
+  app.post("/api/bookings", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      // Get ride details to find the driver
+      const ride = await storage.getRide(req.body.rideId);
+      if (!ride) {
+        return res.status(404).json({ error: "Ride not found" });
+      }
+
+      const bookingData = {
+        ...req.body,
+        riderId: session.userId,
+        driverId: ride.driverId,
+        totalCost: (parseFloat(ride.price) * req.body.seatsBooked).toFixed(2)
+      };
+
+      const booking = await storage.createBooking(bookingData);
+      res.json({ booking });
+    } catch (error) {
+      console.error('Create booking error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/bookings", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const bookings = await storage.getBookingsByUser(session.userId);
+      res.json({ bookings });
+    } catch (error) {
+      console.error('Get bookings error:', error);
       res.status(500).json({ error: "Internal server error" });
     }
   });

@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, uuid, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -55,6 +55,28 @@ export const rideRequests = pgTable("ride_requests", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const bookings = pgTable("bookings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  rideId: uuid("ride_id").notNull().references(() => rides.id, { onDelete: "cascade" }),
+  riderId: uuid("rider_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  driverId: uuid("driver_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  seatsBooked: integer("seats_booked").notNull(),
+  phoneNumber: text("phone_number").notNull(),
+  message: text("message"),
+  totalCost: text("total_cost").notNull(),
+  status: text("status").notNull().default('pending').$type<'pending' | 'confirmed' | 'cancelled' | 'completed'>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const messages = pgTable("messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  bookingId: uuid("booking_id").notNull().references(() => bookings.id, { onDelete: "cascade" }),
+  senderId: uuid("sender_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   password: true,
@@ -67,6 +89,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export const insertSessionSchema = createInsertSchema(sessions);
 export const insertRideSchema = createInsertSchema(rides);
 export const insertRideRequestSchema = createInsertSchema(rideRequests);
+export const insertBookingSchema = createInsertSchema(bookings);
+export const insertMessageSchema = createInsertSchema(messages);
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -75,3 +99,7 @@ export type Ride = typeof rides.$inferSelect;
 export type RideRequest = typeof rideRequests.$inferSelect;
 export type InsertRide = z.infer<typeof insertRideSchema>;
 export type InsertRideRequest = z.infer<typeof insertRideRequestSchema>;
+export type Booking = typeof bookings.$inferSelect;
+export type InsertBooking = z.infer<typeof insertBookingSchema>;
+export type Message = typeof messages.$inferSelect;
+export type InsertMessage = z.infer<typeof insertMessageSchema>;
