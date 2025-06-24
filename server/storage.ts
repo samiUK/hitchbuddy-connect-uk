@@ -79,7 +79,12 @@ export class PostgreSQLStorage implements IStorage {
     if (updates.firstName !== undefined) updateData.firstName = updates.firstName;
     if (updates.lastName !== undefined) updateData.lastName = updates.lastName;
     if (updates.phone !== undefined) updateData.phone = updates.phone;
-    if (updates.address !== undefined) updateData.address = updates.address;
+    if (updates.addressLine1 !== undefined) updateData.addressLine1 = updates.addressLine1;
+    if (updates.addressLine2 !== undefined) updateData.addressLine2 = updates.addressLine2;
+    if (updates.city !== undefined) updateData.city = updates.city;
+    if (updates.county !== undefined) updateData.county = updates.county;
+    if (updates.postcode !== undefined) updateData.postcode = updates.postcode;
+    if (updates.country !== undefined) updateData.country = updates.country;
     if (updates.userType !== undefined) updateData.userType = updates.userType;
     if (updates.avatarUrl !== undefined) updateData.avatarUrl = updates.avatarUrl;
     

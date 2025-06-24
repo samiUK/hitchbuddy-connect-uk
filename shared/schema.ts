@@ -9,9 +9,14 @@ export const users = pgTable("users", {
   firstName: text("first_name"),
   lastName: text("last_name"),
   phone: text("phone"),
-  address: text("address"),
   userType: text("user_type").notNull().$type<'rider' | 'driver'>(),
   avatarUrl: text("avatar_url"),
+  addressLine1: text("address_line_1"),
+  addressLine2: text("address_line_2"),
+  city: text("city"),
+  county: text("county"),
+  postcode: text("postcode"),
+  country: text("country"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -84,9 +89,14 @@ export const insertUserSchema = createInsertSchema(users).pick({
   firstName: true,
   lastName: true,
   phone: true,
-  address: true,
   userType: true,
   avatarUrl: true,
+  addressLine1: true,
+  addressLine2: true,
+  city: true,
+  county: true,
+  postcode: true,
+  country: true,
 });
 
 export const insertSessionSchema = createInsertSchema(sessions);

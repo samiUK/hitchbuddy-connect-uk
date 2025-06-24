@@ -24,7 +24,12 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
     lastName: user?.lastName || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    address: user?.address || ''
+    addressLine1: user?.addressLine1 || '',
+    addressLine2: user?.addressLine2 || '',
+    city: user?.city || '',
+    county: user?.county || '',
+    postcode: user?.postcode || '',
+    country: user?.country || ''
   });
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +60,15 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
 
     try {
       const updateData = {
-        ...formData
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+        addressLine1: formData.addressLine1,
+        addressLine2: formData.addressLine2,
+        city: formData.city,
+        county: formData.county,
+        postcode: formData.postcode,
+        country: formData.country,
       };
       
       // Always include avatar URL if it exists and is different
@@ -207,17 +220,79 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="address">Address</Label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Textarea
-                id="address"
-                value={formData.address}
-                onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                className="pl-10 min-h-[80px]"
-                placeholder="Enter your full address..."
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <MapPin className="h-5 w-5" />
+              Address Information
+            </h3>
+            <p className="text-sm text-gray-600">Only your city and country will be visible to other users for privacy.</p>
+            
+            <div>
+              <Label htmlFor="addressLine1">Address Line 1</Label>
+              <Input
+                id="addressLine1"
+                value={formData.addressLine1}
+                onChange={(e) => setFormData(prev => ({ ...prev, addressLine1: e.target.value }))}
+                placeholder="Street address"
+                className="mt-1"
               />
+            </div>
+
+            <div>
+              <Label htmlFor="addressLine2">Address Line 2 (Optional)</Label>
+              <Input
+                id="addressLine2"
+                value={formData.addressLine2}
+                onChange={(e) => setFormData(prev => ({ ...prev, addressLine2: e.target.value }))}
+                placeholder="Apartment, suite, etc."
+                className="mt-1"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="city">City</Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                  placeholder="Enter your city"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="county">County</Label>
+                <Input
+                  id="county"
+                  value={formData.county}
+                  onChange={(e) => setFormData(prev => ({ ...prev, county: e.target.value }))}
+                  placeholder="Enter your county"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="postcode">Postcode</Label>
+                <Input
+                  id="postcode"
+                  value={formData.postcode}
+                  onChange={(e) => setFormData(prev => ({ ...prev, postcode: e.target.value }))}
+                  placeholder="Enter your postcode"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="country">Country</Label>
+                <Input
+                  id="country"
+                  value={formData.country}
+                  onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
+                  placeholder="Enter your country"
+                  className="mt-1"
+                />
+              </div>
             </div>
           </div>
 
