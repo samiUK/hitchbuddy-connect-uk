@@ -1,0 +1,69 @@
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error
+
+npm error While resolving: hitchbuddy@1.0.0
+npm error Found: drizzle-orm@0.39.3
+npm error node_modules/drizzle-orm
+npm error   drizzle-orm@"^0.29.0" from the root project
+npm error   peer drizzle-orm@">=0.36.0" from drizzle-zod@0.7.1
+npm error   node_modules/drizzle-zod
+npm error
+npm error Could not resolve dependency:
+npm error drizzle-orm@"^0.29.0" from the root project
+npm error
+npm error Conflicting peer dependency: react@19.1.0
+npm error node_modules/react
+npm error   peer react@"^19.1.0" from react-native@0.80.0
+npm error   node_modules/react-native
+npm error     peer react-native@"*" from expo-sqlite@15.2.12
+npm error     node_modules/expo-sqlite
+npm error       peerOptional expo-sqlite@">=13.2.0" from drizzle-orm@0.29.5
+npm error       node_modules/drizzle-orm
+npm error         drizzle-orm@"^0.29.0" from the root project
+npm error     peer react-native@"*" from expo@53.0.12
+npm error     node_modules/expo
+npm error       peer expo@"*" from expo-sqlite@15.2.12
+npm error       node_modules/expo-sqlite
+npm error         peerOptional expo-sqlite@">=13.2.0" from drizzle-orm@0.29.5
+npm error         node_modules/drizzle-orm
+npm error       1 more (@expo/dom-webview)
+npm error     3 more (@expo/dom-webview, @expo/metro-runtime, react-native-webview)
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /root/.npm/_logs/2025-06-24T23_09_05_350Z-eresolve-report.txt
+
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.4.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.4.2
+npm notice To update run: npm install -g npm@11.4.2
+npm notice
+
+npm error A complete log of this run can be found in: /root/.npm/_logs/2025-06-24T23_09_05_350Z-debug-0.log
+
+✕ [builder 4/6] RUN npm ci --only=production 
+process "/bin/sh -c npm ci --only=production" did not complete successfully: exit code: 1
+ 
+
+Dockerfile:8
+
+-------------------
+
+6 |     # Copy package files
+
+7 |     COPY package*.json ./
+
+8 | >>> RUN npm ci --only=production
+
+9 |
+
+10 |     # Copy source code
+
+-------------------
+
+ERROR: failed to solve: process "/bin/sh -c npm ci --only=production" did not complete successfully: exit code: 1
