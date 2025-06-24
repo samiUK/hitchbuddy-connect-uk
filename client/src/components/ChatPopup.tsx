@@ -134,7 +134,9 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
                 </AvatarFallback>
               </Avatar>
               <div>
-                <CardTitle className="text-base font-semibold">{otherUser.name}</CardTitle>
+                <CardTitle className="text-base font-semibold">
+                  {isCurrentUserDriver ? 'Rider' : 'Driver'}: {otherUser.name}
+                </CardTitle>
                 <div className="flex items-center space-x-2 text-sm opacity-90">
                   <Badge variant="secondary" className="bg-white/20 text-white border-0 text-xs">
                     {booking?.status || 'Active'}
@@ -226,7 +228,7 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder={`Message ${otherUser.name}...`}
+                placeholder={`Message ${isCurrentUserDriver ? 'rider' : 'driver'}...`}
                 className="flex-1 border-gray-300 focus:border-blue-500 text-sm"
                 disabled={isSending}
               />
