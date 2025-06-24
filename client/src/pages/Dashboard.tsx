@@ -72,9 +72,8 @@ const Dashboard = () => {
     const requiredFields = [
       { field: 'firstName', label: 'First Name', value: user.firstName },
       { field: 'lastName', label: 'Last Name', value: user.lastName },
-      { field: 'email', label: 'Email', value: user.email },
       { field: 'phone', label: 'Phone Number', value: user.phone },
-      { field: 'address', label: 'Address', value: user.address },
+      { field: 'city', label: 'City', value: user.city },
       { field: 'avatarUrl', label: 'Profile Photo', value: user.avatarUrl }
     ];
 
