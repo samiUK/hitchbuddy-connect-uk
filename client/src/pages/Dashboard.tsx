@@ -27,7 +27,9 @@ import {
   Edit,
   RefreshCw,
   Calendar,
-  PoundSterling
+  PoundSterling,
+  Check,
+  X
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuthNew";

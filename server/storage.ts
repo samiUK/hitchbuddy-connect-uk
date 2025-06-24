@@ -133,7 +133,11 @@ export class PostgreSQLStorage implements IStorage {
 
   // Rides methods
   async createRide(insertRide: InsertRide): Promise<Ride> {
-    const result = await db.insert(rides).values([insertRide]).returning();
+    const rideData = {
+      ...insertRide,
+      isRecurring: insertRide.isRecurring === 'true' ? 'true' : 'false'
+    };
+    const result = await db.insert(rides).values([rideData]).returning();
     return result[0];
   }
 
@@ -159,7 +163,11 @@ export class PostgreSQLStorage implements IStorage {
 
   // Ride Requests methods
   async createRideRequest(insertRequest: InsertRideRequest): Promise<RideRequest> {
-    const result = await db.insert(rideRequests).values([insertRequest]).returning();
+    const requestData = {
+      ...insertRequest,
+      status: (insertRequest.status || 'active') as 'active' | 'cancelled' | 'matched'
+    };
+    const result = await db.insert(rideRequests).values([requestData]).returning();
     return result[0];
   }
 
