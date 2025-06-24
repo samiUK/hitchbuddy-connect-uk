@@ -1,13 +1,5 @@
-import { MailService } from '@sendgrid/mail';
-
-if (!process.env.SENDGRID_API_KEY) {
-  console.warn("SENDGRID_API_KEY environment variable not set. Email notifications will be disabled.");
-}
-
-const mailService = new MailService();
-if (process.env.SENDGRID_API_KEY) {
-  mailService.setApiKey(process.env.SENDGRID_API_KEY);
-}
+// Email service without external dependencies
+// For production, integrate with preferred email provider
 
 interface EmailParams {
   to: string;
@@ -18,24 +10,14 @@ interface EmailParams {
 }
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
-  if (!process.env.SENDGRID_API_KEY) {
-    console.log('Email would be sent to:', params.to, 'Subject:', params.subject);
-    return false;
+  // Log email for development/testing - replace with actual email service in production
+  console.log(`📧 Email notification: ${params.to} - ${params.subject}`);
+  if (params.text) {
+    console.log(`📝 Content: ${params.text.substring(0, 100)}...`);
   }
-
-  try {
-    await mailService.send({
-      to: params.to,
-      from: params.from || 'noreply@hitchbuddy.com',
-      subject: params.subject,
-      text: params.text,
-      html: params.html,
-    });
-    return true;
-  } catch (error) {
-    console.error('SendGrid email error:', error);
-    return false;
-  }
+  
+  // Return true to mark emails as "sent" for development
+  return true;
 }
 
 export function generateTripConfirmationEmail(

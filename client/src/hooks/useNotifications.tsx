@@ -135,14 +135,14 @@ export const useNotifications = () => {
     }
   };
 
-  // Poll for new notifications every 30 seconds
+  // Poll for new notifications every 2 minutes (reduced frequency for production)
   useEffect(() => {
     if (!user) return;
 
     fetchNotifications();
     requestNotificationPermission();
 
-    const interval = setInterval(fetchNotifications, 30000);
+    const interval = setInterval(fetchNotifications, 120000);
     return () => clearInterval(interval);
   }, [user, fetchNotifications]);
 

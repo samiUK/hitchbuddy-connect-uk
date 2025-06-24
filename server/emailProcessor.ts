@@ -36,13 +36,13 @@ export async function processEmailQueue() {
   }
 }
 
-// Start email processor that runs every 5 minutes
+// Start email processor that runs every 30 minutes to reduce server load
 export function startEmailProcessor() {
   // Process immediately on start
   processEmailQueue();
   
-  // Then process every 5 minutes
-  setInterval(processEmailQueue, 5 * 60 * 1000);
+  // Then process every 30 minutes (reduced frequency for production)
+  setInterval(processEmailQueue, 30 * 60 * 1000);
   
-  console.log('Email processor started - checking queue every 5 minutes');
+  console.log('Email processor started - checking queue every 30 minutes');
 }
