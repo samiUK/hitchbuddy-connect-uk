@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hitchbuddy - Ride Sharing Platform</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; color: #333; }
+        .status { background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .api-test { background: #f0f8ff; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .form-group { margin: 10px 0; }
+        input { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚗 Hitchbuddy</h1>
+        <p>Ride Sharing Platform</p>
+    </div>
+    
+    <div class="status">
+        <h3>✅ Server Status: Online</h3>
+        <p>Node.js server is running successfully!</p>
+        <p>Timestamp: 2025-06-24T23:51:56.292Z</p>
+    </div>
+    
+    <div class="api-test">
+        <h3>API Test</h3>
+        <button onclick="testAPI()">Test Health Check</button>
+        <div id="api-result"></div>
+    </div>
+    
+    <div class="api-test">
+        <h3>User Registration Test</h3>
+        <div class="form-group">
+            <input type="email" id="email" placeholder="Email" value="test@example.com">
+            <input type="password" id="password" placeholder="Password" value="password123">
+        </div>
+        <div class="form-group">
+            <input type="text" id="firstName" placeholder="First Name" value="John">
+            <input type="text" id="lastName" placeholder="Last Name" value="Doe">
+        </div>
+        <div class="form-group">
+            <select id="userType">
+                <option value="rider">Rider</option>
+                <option value="driver">Driver</option>
+            </select>
+        </div>
+        <button onclick="testSignup()">Test Signup</button>
+        <div id="signup-result"></div>
+    </div>
+    
+    <script>
+        async function testAPI() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                document.getElementById('api-result').innerHTML = 
+                    '<p style="color: green;">✅ API Health Check: ' + JSON.stringify(data, null, 2) + '</p>';
+            } catch (error) {
+                document.getElementById('api-result').innerHTML = 
+                    '<p style="color: red;">❌ API Error: ' + error.message + '</p>';
+            }
+        }
+        
+        async function testSignup() {
+            try {
+                const userData = {
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value,
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    userType: document.getElementById('userType').value
+                };
+                
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+                
+                const data = await response.json();
+                document.getElementById('signup-result').innerHTML = 
+                    '<p style="color: ' + (response.ok ? 'green' : 'red') + ';">' +
+                    (response.ok ? '✅' : '❌') + ' Signup Response: ' + JSON.stringify(data, null, 2) + '</p>';
+            } catch (error) {
+                document.getElementById('signup-result').innerHTML = 
+                    '<p style="color: red;">❌ Signup Error: ' + error.message + '</p>';
+            }
+        }
+        
+        // Auto-test on load
+        window.onload = function() {
+            testAPI();
+        };
+    </script>
+</body>
+</html>
