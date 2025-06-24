@@ -218,12 +218,51 @@ const Dashboard = () => {
     setFormDataTimestamp(null);
   };
 
-  const handleMessageRider = (booking: any) => {
+  const handleMessageRider = async (booking: any) => {
+    const ride = rides.find(r => r.id === booking.rideId);
+    
+    // Get user details for the chat
+    let otherUserDetails = {};
+    if (user?.userType === 'driver') {
+      // Driver messaging rider - get rider details
+      try {
+        const response = await fetch(`/api/auth/user/${booking.riderId}`, {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const riderData = await response.json();
+          otherUserDetails = {
+            riderName: `${riderData.user.firstName} ${riderData.user.lastName}`,
+            riderAvatar: riderData.user.avatarUrl
+          };
+        }
+      } catch (error) {
+        console.error('Error fetching rider details:', error);
+      }
+    } else {
+      // Rider messaging driver - get driver details
+      try {
+        const response = await fetch(`/api/auth/user/${booking.driverId}`, {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const driverData = await response.json();
+          otherUserDetails = {
+            driverName: `${driverData.user.firstName} ${driverData.user.lastName}`,
+            driverAvatar: driverData.user.avatarUrl
+          };
+        }
+      } catch (error) {
+        console.error('Error fetching driver details:', error);
+      }
+    }
+
     setSelectedBooking({
       ...booking,
-      fromLocation: rides.find(r => r.id === booking.rideId)?.fromLocation || 'Unknown',
-      toLocation: rides.find(r => r.id === booking.rideId)?.toLocation || 'Unknown',
-      departureTime: rides.find(r => r.id === booking.rideId)?.departureTime || 'Unknown'
+      ...otherUserDetails,
+      fromLocation: ride?.fromLocation || 'Unknown',
+      toLocation: ride?.toLocation || 'Unknown',
+      departureTime: ride?.departureTime || 'Unknown'
     });
     setShowChatPopup(true);
   };

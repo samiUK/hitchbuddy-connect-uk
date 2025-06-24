@@ -34,8 +34,16 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
 
   const isCurrentUserDriver = currentUser?.id === booking?.driverId;
   const otherUser = isCurrentUserDriver 
-    ? { name: 'Rider', type: 'rider' as const }
-    : { name: 'Driver', type: 'driver' as const };
+    ? { 
+        name: booking?.riderName || 'Rider', 
+        type: 'rider' as const,
+        avatar: booking?.riderAvatar
+      }
+    : { 
+        name: booking?.driverName || 'Driver', 
+        type: 'driver' as const,
+        avatar: booking?.driverAvatar
+      };
 
   // Initialize messages with booking message
   useEffect(() => {
@@ -134,13 +142,14 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 w-96 max-w-[calc(100vw-2rem)] z-50 shadow-2xl">
+    <div className="fixed bottom-4 right-4 w-96 max-w-[calc(100vw-1rem)] md:max-w-[calc(100vw-2rem)] z-50 shadow-2xl">
       <Card className="border-0 overflow-hidden">
         {/* Header */}
         <CardHeader className="bg-gradient-to-r from-blue-600 to-green-600 text-white p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Avatar className="w-10 h-10 border-2 border-white/20">
+                <AvatarImage src={otherUser.avatar} alt={otherUser.name} />
                 <AvatarFallback className="bg-white/20 text-white">
                   {otherUser.type === 'driver' ? <Car className="h-5 w-5" /> : <User className="h-5 w-5" />}
                 </AvatarFallback>
@@ -183,15 +192,25 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
 
         {/* Messages */}
         <CardContent className="p-0">
-          <div className="h-80 overflow-y-auto p-4 space-y-4 bg-gray-50">
+          <div className="h-64 md:h-80 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 bg-gray-50">
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.senderId === currentUser.id ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${msg.senderId === currentUser.id ? 'justify-end' : 'justify-start'} items-end space-x-2`}
               >
-                <div className={`max-w-[80%] ${msg.senderId === currentUser.id ? 'order-2' : 'order-1'}`}>
+                {/* Avatar for other user's messages */}
+                {msg.senderId !== currentUser.id && (
+                  <Avatar className="w-6 h-6 md:w-8 md:h-8 mb-1">
+                    <AvatarImage src={otherUser.avatar} alt={otherUser.name} />
+                    <AvatarFallback className="text-xs">
+                      {otherUser.type === 'driver' ? <Car className="h-3 w-3" /> : <User className="h-3 w-3" />}
+                    </AvatarFallback>
+                  </Avatar>
+                )}
+                
+                <div className={`max-w-[75%] md:max-w-[80%] ${msg.senderId === currentUser.id ? 'order-2' : 'order-1'}`}>
                   <div
-                    className={`px-4 py-2 rounded-2xl ${
+                    className={`px-3 md:px-4 py-2 rounded-2xl ${
                       msg.senderId === currentUser.id
                         ? 'bg-blue-600 text-white rounded-br-md'
                         : msg.senderType === 'rider'
@@ -212,6 +231,16 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
                     )}
                   </div>
                 </div>
+                
+                {/* Current user's avatar */}
+                {msg.senderId === currentUser.id && (
+                  <Avatar className="w-6 h-6 md:w-8 md:h-8 mb-1">
+                    <AvatarImage src={currentUser?.avatarUrl} alt={currentUser?.firstName} />
+                    <AvatarFallback className="text-xs bg-blue-600 text-white">
+                      {currentUser?.firstName?.[0] || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                )}
               </div>
             ))}
             
@@ -232,7 +261,7 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
           </div>
 
           {/* Input */}
-          <div className="p-4 bg-white border-t">
+          <div className="p-3 md:p-4 bg-white border-t">
             <div className="flex items-center space-x-2">
               <Input
                 ref={inputRef}
@@ -240,23 +269,25 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder={`Message ${otherUser.name}...`}
-                className="flex-1 border-gray-300 focus:border-blue-500"
+                className="flex-1 border-gray-300 focus:border-blue-500 text-sm"
                 disabled={isSending}
               />
               <Button 
                 onClick={handleSendMessage} 
                 disabled={!message.trim() || isSending}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4"
+                size="sm"
               >
                 {isSending ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 ) : (
-                  <Send className="h-4 w-4" />
+                  <Send className="h-3 w-3 md:h-4 md:w-4" />
                 )}
               </Button>
             </div>
             <div className="mt-2 text-xs text-gray-500 flex items-center justify-between">
-              <span>Press Enter to send</span>
+              <span className="hidden md:inline">Press Enter to send</span>
+              <span className="md:hidden">Tap send</span>
               <div className="flex items-center space-x-1">
                 <Phone className="h-3 w-3" />
                 <span>{booking?.phoneNumber}</span>
