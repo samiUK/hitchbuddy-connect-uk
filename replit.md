@@ -78,6 +78,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Completed rides automatically move to "Past Rides" section and appear grayed out
 - Added beta disclaimer popup that appears on first visit with localStorage persistence
 - Users can dismiss the disclaimer with "I understand" button
+- Enhanced address fields with addressLine1, addressLine2, city, county, postcode, country
+- Privacy protection: only city and country visible to other users publicly
 
 ## Technical Stack
 - Node.js 20
@@ -90,7 +92,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Radix UI
 
 ## Database Schema
-- `users` table: id, email, password, firstName, lastName, phone, userType, avatarUrl, createdAt, updatedAt
+- `users` table: id, email, password, firstName, lastName, phone, userType, avatarUrl, addressLine1, addressLine2, city, county, postcode, country, createdAt, updatedAt
 - `sessions` table: id, userId, expiresAt, createdAt
 - `rides` table: id, driverId, fromLocation, toLocation, departureDate, departureTime, availableSeats, price, vehicleInfo, notes, isRecurring, recurringData, status, createdAt, updatedAt
 - `ride_requests` table: id, riderId, fromLocation, toLocation, departureDate, departureTime, passengers, maxPrice, notes, status, createdAt, updatedAt
