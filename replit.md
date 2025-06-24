@@ -24,11 +24,18 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Implemented booking system with phone number collection
 - ✅ Created booking modal for ride requests
 - ✅ Added database tables for bookings and messages
+- ✅ Implemented notification system for new ride requests
+- ✅ Added confirmation workflow with approve/decline options
+- ✅ Created "My Upcoming Rides" section for confirmed bookings
+- ✅ Added quick actions area with notification badges
 
 ## User Preferences
 - Available rides should only show in rider dashboard, not driver dashboard
-- Drivers should only see ride requests from riders
+- Drivers should only see booking requests from riders (not ride requests)
 - Riders should see available rides posted by drivers
+- Quick actions area shows notifications for new ride requests from specific users
+- Confirmation options displayed under ride request tabs for ongoing communication
+- Confirmed rides move to "my upcoming rides" section
 
 ## Technical Stack
 - Node.js 20

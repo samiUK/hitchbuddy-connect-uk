@@ -37,6 +37,7 @@ export interface IStorage {
   // Bookings
   createBooking(booking: InsertBooking): Promise<Booking>;
   getBookingsByUser(userId: string): Promise<Booking[]>;
+  updateBooking(id: string, updates: Partial<Booking>): Promise<Booking | undefined>;
   getRide(id: string): Promise<Ride | undefined>;
 }
 
@@ -175,6 +176,15 @@ export class PostgreSQLStorage implements IStorage {
       .from(bookings)
       .where(or(eq(bookings.riderId, userId), eq(bookings.driverId, userId)));
     return userBookings;
+  }
+
+  async updateBooking(id: string, updates: Partial<Booking>): Promise<Booking | undefined> {
+    const [booking] = await db
+      .update(bookings)
+      .set(updates)
+      .where(eq(bookings.id, id))
+      .returning();
+    return booking || undefined;
   }
 
   async getRide(id: string): Promise<Ride | undefined> {

@@ -47,6 +47,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedRide, setSelectedRide] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [bookings, setBookings] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   
   const userType = user?.userType || 'rider';
   const firstName = user?.firstName || '';
@@ -236,12 +238,41 @@ const Dashboard = () => {
           </p>
         </div>
 
+        {/* Quick Actions & Notifications */}
+        {notifications.length > 0 && (
+          <Card className="mb-6 border-orange-200 bg-orange-50">
+            <CardHeader>
+              <CardTitle className="text-lg text-orange-800">Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {notifications.map((notification) => (
+                  <div key={notification.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-orange-200">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span className="font-medium">{notification.message}</span>
+                      <Badge variant="secondary">New</Badge>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => setActiveTab('rides')}
+                    >
+                      View Request
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Navigation Tabs */}
         <div className="flex space-x-1 mb-8 bg-gray-100 p-1 rounded-lg w-fit">
           {[
             { id: 'overview', label: 'Overview', icon: Navigation },
-            { id: 'rides', label: userType === 'driver' ? 'Ride Requests' : 'Find Rides', icon: Car },
-            { id: 'messages', label: 'Messages', icon: MessageCircle }
+            { id: 'rides', label: userType === 'driver' ? 'Booking Requests' : 'Find Rides', icon: Car },
+            { id: 'messages', label: 'My Upcoming Rides', icon: MessageCircle }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -254,6 +285,11 @@ const Dashboard = () => {
             >
               <tab.icon className="h-4 w-4" />
               <span>{tab.label}</span>
+              {tab.id === 'rides' && notifications.length > 0 && (
+                <Badge variant="destructive" className="ml-1 text-xs">
+                  {notifications.length}
+                </Badge>
+              )}
             </button>
           ))}
         </div>
@@ -406,7 +442,7 @@ const Dashboard = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">
-                {userType === 'driver' ? 'Ride Requests' : 'Available Rides'}
+                {userType === 'driver' ? 'Booking Requests' : 'Available Rides'}
               </h2>
               <Button 
                 className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
@@ -422,66 +458,138 @@ const Dashboard = () => {
               </Button>
             </div>
             
-            {/* Mock rides list */}
             <div className="grid gap-4">
-              {(userType === 'driver' ? rideRequests : rides).map((ride: any) => (
-                <Card key={ride.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-4 mb-2">
-                          <div className="flex items-center space-x-2">
-                            <MapPin className="h-4 w-4 text-green-600" />
-                            <span className="font-medium">{ride.fromLocation}</span>
+              {userType === 'driver' ? (
+                // Drivers see bookings for their rides with confirmation options
+                <div className="space-y-4">
+                  {bookings.filter(booking => booking.driverId === user?.id).map((booking: any) => {
+                    const relatedRide = rides.find(r => r.id === booking.rideId);
+                    return (
+                      <Card key={booking.id} className={`p-4 ${booking.status === 'pending' ? 'border-orange-300 bg-orange-50' : ''}`}>
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <MapPin className="h-4 w-4 text-gray-500" />
+                              <span className="font-medium">{relatedRide?.fromLocation} → {relatedRide?.toLocation}</span>
+                              <Badge variant={booking.status === 'pending' ? 'destructive' : 'default'}>
+                                {booking.status}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                              {relatedRide?.departureDate && (
+                                <div className="flex items-center space-x-1">
+                                  <Calendar className="h-4 w-4" />
+                                  <span>{relatedRide.departureDate}</span>
+                                </div>
+                              )}
+                              <div className="flex items-center space-x-1">
+                                <Clock className="h-4 w-4" />
+                                <span>{relatedRide?.departureTime}</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <Users className="h-4 w-4" />
+                                <span>{booking.seatsBooked} seats requested</span>
+                              </div>
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              <p><strong>Phone:</strong> {booking.phoneNumber}</p>
+                              {booking.message && <p><strong>Message:</strong> {booking.message}</p>}
+                            </div>
                           </div>
-                          <span className="text-gray-400">→</span>
-                          <div className="flex items-center space-x-2">
-                            <MapPin className="h-4 w-4 text-red-600" />
-                            <span className="font-medium">{ride.toLocation}</span>
+                          <div className="text-right">
+                            <div className="text-lg font-bold text-green-600 mb-2">
+                              £{booking.totalCost}
+                            </div>
+                            {booking.status === 'pending' ? (
+                              <div className="flex space-x-2">
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => handleBookingAction(booking.id, 'confirmed')}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  Confirm
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleBookingAction(booking.id, 'cancelled')}
+                                >
+                                  Decline
+                                </Button>
+                              </div>
+                            ) : (
+                              <Button size="sm" variant="outline">
+                                Message Rider
+                              </Button>
+                            )}
                           </div>
                         </div>
-                        <div className="flex items-center space-x-6 text-sm text-gray-600">
-                          <div className="flex items-center space-x-1">
-                            <Clock className="h-4 w-4" />
-                            <span>{ride.departureDate || 'Not specified'} at {ride.departureTime}</span>
+                      </Card>
+                    );
+                  })}
+                  {bookings.filter(booking => booking.driverId === user?.id).length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No booking requests yet.</p>
+                      <p className="text-sm">Riders will book your posted rides here.</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Riders see available rides
+                rides.map((ride: any) => (
+                  <Card key={ride.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-4 mb-2">
+                            <div className="flex items-center space-x-2">
+                              <MapPin className="h-4 w-4 text-green-600" />
+                              <span className="font-medium">{ride.fromLocation}</span>
+                            </div>
+                            <span className="text-gray-400">→</span>
+                            <div className="flex items-center space-x-2">
+                              <MapPin className="h-4 w-4 text-red-600" />
+                              <span className="font-medium">{ride.toLocation}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center space-x-1">
-                            <User className="h-4 w-4" />
-                            <span>{ride.availableSeats || ride.passengers} {userType === 'driver' ? 'passengers' : 'seats'} available</span>
+                          <div className="flex items-center space-x-6 text-sm text-gray-600">
+                            <div className="flex items-center space-x-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{ride.departureDate || 'Not specified'} at {ride.departureTime}</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <User className="h-4 w-4" />
+                              <span>{ride.availableSeats} seats available</span>
+                            </div>
+                            {ride.isRecurring === 'true' && (
+                              <Badge variant="outline">Recurring</Badge>
+                            )}
                           </div>
-                          <div className="flex items-center space-x-1">
-                            <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                            <span>New</span>
-                          </div>
-                          {ride.isRecurring === 'true' && (
-                            <Badge variant="outline">Recurring</Badge>
+                          {ride.notes && (
+                            <p className="text-sm text-gray-600 mt-1">{ride.notes}</p>
                           )}
                         </div>
-                        {ride.notes && (
-                          <p className="text-sm text-gray-600 mt-1">{ride.notes}</p>
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-green-600">£{ride.price}</p>
-                          <p className="text-sm text-gray-500">per seat</p>
-                        </div>
-                        <Button 
-                          size="sm"
-                          onClick={() => {
-                            if (userType === 'rider') {
+                        <div className="flex items-center space-x-4">
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-green-600">£{ride.price}</p>
+                            <p className="text-sm text-gray-500">per seat</p>
+                          </div>
+                          <Button 
+                            size="sm"
+                            onClick={() => {
                               setSelectedRide(ride);
                               setShowBookingModal(true);
-                            }
-                          }}
-                        >
-                          {userType === 'driver' ? 'View Details' : 'Book Now'}
-                        </Button>
+                            }}
+                          >
+                            Book Now
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           </div>
         )}
@@ -523,6 +631,69 @@ const Dashboard = () => {
               <p className="text-gray-500">
                 Your conversations with other users will appear here
               </p>
+            </div>
+          </div>
+        )}
+        {activeTab === 'messages' && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900">My Upcoming Rides</h2>
+            <div className="grid gap-4">
+              {bookings.filter(booking => booking.status === 'confirmed').map((booking: any) => {
+                const relatedRide = rides.find(r => r.id === booking.rideId);
+                const isDriver = booking.driverId === user?.id;
+                return (
+                  <Card key={booking.id} className="p-4 border-green-300 bg-green-50">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <MapPin className="h-4 w-4 text-gray-500" />
+                          <span className="font-medium">{relatedRide?.fromLocation} → {relatedRide?.toLocation}</span>
+                          <Badge variant="default" className="bg-green-600">
+                            Confirmed
+                          </Badge>
+                        </div>
+                        <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                          {relatedRide?.departureDate && (
+                            <div className="flex items-center space-x-1">
+                              <Calendar className="h-4 w-4" />
+                              <span>{relatedRide.departureDate}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center space-x-1">
+                            <Clock className="h-4 w-4" />
+                            <span>{relatedRide?.departureTime}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Users className="h-4 w-4" />
+                            <span>{booking.seatsBooked} seats</span>
+                          </div>
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          <p><strong>{isDriver ? 'Rider' : 'Driver'} Phone:</strong> {booking.phoneNumber}</p>
+                          {booking.message && <p><strong>Message:</strong> {booking.message}</p>}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-green-600 mb-2">
+                          £{booking.totalCost}
+                        </div>
+                        <Button size="sm" variant="outline">
+                          Start Chat
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+              {bookings.filter(booking => booking.status === 'confirmed').length === 0 && (
+                <div className="text-center py-12">
+                  <MessageCircle className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No confirmed rides yet</h3>
+                  <p className="text-gray-500">
+                    Your confirmed rides will appear here
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}

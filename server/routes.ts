@@ -369,6 +369,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/bookings/:id", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const { id } = req.params;
+      const { status } = req.body;
+
+      const updatedBooking = await storage.updateBooking(id, { status });
+      if (!updatedBooking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+
+      res.json({ booking: updatedBooking });
+    } catch (error) {
+      console.error('Update booking error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
