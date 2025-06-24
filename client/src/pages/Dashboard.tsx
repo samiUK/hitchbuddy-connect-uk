@@ -1183,13 +1183,15 @@ const Dashboard = () => {
                     to: ride.toLocation,
                     driverId: ride.driverId,
                     currentUserId: user?.id,
+                    currentUserEmail: user?.email,
                     isOwnRide: ride.driverId === user?.id,
+                    isTestUser: user?.email === 'coolsami_uk@yahoo.com',
                     departureDate: ride.departureDate,
                     isRecurring: ride.isRecurring
                   });
                   
-                  // Don't show user's own rides
-                  if (ride.driverId === user?.id) {
+                  // Don't show user's own rides (except for test user)
+                  if (ride.driverId === user?.id && user?.email !== 'coolsami_uk@yahoo.com') {
                     console.log('Filtered out: own ride');
                     return false;
                   }
@@ -1274,7 +1276,7 @@ const Dashboard = () => {
                 ))}
                 {rides.filter((ride: any) => {
                   // Filter logic same as above for consistency
-                  if (ride.driverId === user?.id) return false;
+                  if (ride.driverId === user?.id && user?.email !== 'coolsami_uk@yahoo.com') return false;
                   
                   if (ride.isRecurring === 'true' || ride.isRecurring === true) {
                     return true;

@@ -84,6 +84,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Profile considered complete when city field is populated (simplified completion criteria)
 - Find Rides section now shows only future available rides posted by drivers
 - Riders cannot see their own rides and only see future rides for booking
+- Exception: coolsami_uk@yahoo.com can see their own rides for testing purposes
 - Added "Confirm Ride" and "Counter Offer" buttons for drivers responding to ride requests
 - Drivers can confirm rides directly or send counter offers with different pricing
 - Counter offers create pending bookings that require rider confirmation
