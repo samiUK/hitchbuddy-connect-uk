@@ -333,6 +333,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Ride not found" });
       }
 
+      // For testing purposes, allow riders to book their own rides
+      // In production, you would add: if (ride.driverId === session.userId) return error
+      
       const bookingData = {
         ...req.body,
         riderId: session.userId,

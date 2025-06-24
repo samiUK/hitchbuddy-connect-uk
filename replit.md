@@ -36,6 +36,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - Quick actions area shows notifications for new ride requests from specific users
 - Confirmation options displayed under ride request tabs for ongoing communication
 - Confirmed rides move to "my upcoming rides" section
+- For testing purposes, riders can book their own rides (remove in production)
 
 ## Technical Stack
 - Node.js 20

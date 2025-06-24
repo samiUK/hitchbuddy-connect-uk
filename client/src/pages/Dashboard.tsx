@@ -15,6 +15,7 @@ import {
 import { 
   Car, 
   User, 
+  Users,
   MapPin, 
   Clock, 
   Star, 
@@ -101,10 +102,68 @@ const Dashboard = () => {
           setRideRequests(data.rideRequests || []);
         }
       }
+
+      // Fetch bookings for all users
+      const bookingsResponse = await fetch('/api/bookings', {
+        credentials: 'include'
+      });
+      if (bookingsResponse.ok) {
+        const bookingsData = await bookingsResponse.json();
+        setBookings(bookingsData.bookings || []);
+        
+        // Create notifications for drivers about new ride requests
+        if (userType === 'driver') {
+          const pendingBookings = bookingsData.bookings.filter(b => 
+            b.status === 'pending' && b.driverId === user?.id
+          );
+          setNotifications(pendingBookings.map(booking => ({
+            id: booking.id,
+            type: 'booking_request',
+            message: `New ride request from rider`,
+            booking: booking
+          })));
+        }
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBookingAction = async (bookingId: string, action: 'confirmed' | 'cancelled') => {
+    try {
+      const response = await fetch(`/api/bookings/${bookingId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ status: action }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: action === 'confirmed' ? "Booking confirmed!" : "Booking declined",
+          description: action === 'confirmed' 
+            ? "The rider has been notified and can now contact you."
+            : "The booking has been declined.",
+        });
+        fetchData(); // Refresh data
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to update booking status. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error updating booking:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update booking status. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -487,7 +546,7 @@ const Dashboard = () => {
                                 <span>{relatedRide?.departureTime}</span>
                               </div>
                               <div className="flex items-center space-x-1">
-                                <Users className="h-4 w-4" />
+                                <User className="h-4 w-4" />
                                 <span>{booking.seatsBooked} seats requested</span>
                               </div>
                             </div>
@@ -664,7 +723,7 @@ const Dashboard = () => {
                             <span>{relatedRide?.departureTime}</span>
                           </div>
                           <div className="flex items-center space-x-1">
-                            <Users className="h-4 w-4" />
+                            <User className="h-4 w-4" />
                             <span>{booking.seatsBooked} seats</span>
                           </div>
                         </div>
