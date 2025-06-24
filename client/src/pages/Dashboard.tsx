@@ -62,6 +62,32 @@ const Dashboard = () => {
   const firstName = user?.firstName || '';
   const lastName = user?.lastName || '';
 
+  // Calculate profile completeness
+  const calculateProfileCompleteness = () => {
+    if (!user) return { score: 0, total: 0, missing: [] };
+    
+    const requiredFields = [
+      { field: 'firstName', label: 'First Name', value: user.firstName },
+      { field: 'lastName', label: 'Last Name', value: user.lastName },
+      { field: 'email', label: 'Email', value: user.email },
+      { field: 'phone', label: 'Phone Number', value: user.phone },
+      { field: 'address', label: 'Address', value: user.address },
+      { field: 'avatarUrl', label: 'Profile Photo', value: user.avatarUrl }
+    ];
+
+    const completed = requiredFields.filter(field => field.value && field.value.trim() !== '');
+    const missing = requiredFields.filter(field => !field.value || field.value.trim() === '');
+    
+    return {
+      score: completed.length,
+      total: requiredFields.length,
+      percentage: Math.round((completed.length / requiredFields.length) * 100),
+      missing: missing.map(field => field.label)
+    };
+  };
+
+  const profileCompleteness = calculateProfileCompleteness();
+
   useEffect(() => {
     if (user) {
       fetchData();
@@ -492,55 +518,105 @@ const Dashboard = () => {
                       <span className="text-sm text-gray-600">
                         {userType === 'driver' ? 'Rides Offered' : 'Rides Taken'}
                       </span>
-                      <span className="font-semibold">0</span>
+                      <span className="font-semibold">{rides.filter(r => userType === 'driver' ? r.driverId === user?.id : false).length}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">Rating</span>
                       <div className="flex items-center space-x-1">
                         <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span className="font-semibold">New User</span>
+                        <span className="font-semibold">
+                          {profileCompleteness.percentage === 100 ? '5.0' : 'New User'}
+                        </span>
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">
                         {userType === 'driver' ? 'Earnings' : 'Money Saved'}
                       </span>
-                      <span className="font-semibold">£0</span>
+                      <span className="font-semibold">£{bookings.filter(b => b.status === 'completed').reduce((sum, b) => sum + parseFloat(b.totalCost || '0'), 0).toFixed(2)}</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setShowProfileEdit(true)}>
                 <CardHeader>
-                  <CardTitle>Profile Completion</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Profile Completion</CardTitle>
+                    <Badge variant={profileCompleteness.percentage === 100 ? "default" : "secondary"} className="ml-2">
+                      {profileCompleteness.percentage}%
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    {profileCompleteness.percentage === 100 
+                      ? "Your profile is complete!" 
+                      : "Click to complete your profile"
+                    }
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <span>Profile Info</span>
-                      <span className="text-green-600">✓</span>
+                  <div className="space-y-4">
+                    {/* Progress Bar */}
+                    <div>
+                      <div className="bg-gray-200 rounded-full h-3">
+                        <div 
+                          className={`h-3 rounded-full transition-all duration-500 ${
+                            profileCompleteness.percentage === 100 
+                              ? 'bg-green-500' 
+                              : profileCompleteness.percentage >= 75 
+                                ? 'bg-blue-500' 
+                                : profileCompleteness.percentage >= 50 
+                                  ? 'bg-yellow-500' 
+                                  : 'bg-red-500'
+                          }`}
+                          style={{ width: `${profileCompleteness.percentage}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {profileCompleteness.score} of {profileCompleteness.total} fields completed
+                      </p>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span>Phone Verification</span>
-                      <span className="text-gray-400">○</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span>Profile Photo</span>
-                      <span className="text-gray-400">○</span>
-                    </div>
-                    {userType === 'driver' && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span>Vehicle Details</span>
-                        <span className="text-gray-400">○</span>
+
+                    {/* Missing Fields */}
+                    {profileCompleteness.missing.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-gray-700">Missing:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {profileCompleteness.missing.slice(0, 3).map((field) => (
+                            <Badge key={field} variant="outline" className="text-xs">
+                              {field}
+                            </Badge>
+                          ))}
+                          {profileCompleteness.missing.length > 3 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{profileCompleteness.missing.length - 3} more
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     )}
-                    <div className="pt-2">
-                      <div className="bg-gray-200 rounded-full h-2">
-                        <div className="bg-blue-600 h-2 rounded-full w-1/4"></div>
+
+                    {/* Complete Button */}
+                    {profileCompleteness.percentage < 100 && (
+                      <Button 
+                        size="sm" 
+                        className="w-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowProfileEdit(true);
+                        }}
+                      >
+                        Complete Profile
+                      </Button>
+                    )}
+
+                    {/* Success Message */}
+                    {profileCompleteness.percentage === 100 && (
+                      <div className="flex items-center space-x-2 text-green-600">
+                        <User className="h-4 w-4" />
+                        <span className="text-sm font-medium">Profile Complete!</span>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">25% complete</p>
-                    </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
