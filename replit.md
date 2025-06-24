@@ -28,6 +28,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Added confirmation workflow with approve/decline options
 - ✅ Created "My Upcoming Rides" section for confirmed bookings
 - ✅ Added quick actions area with notification badges
+- ✅ Reorganized dashboard layout with "Post New Ride" in header
+- ✅ Consolidated "My Upcoming Rides" with booking requests in same tab
+- ✅ Added "Find Requests" tab for drivers to see rider requests
 
 ## User Preferences
 - Available rides should only show in rider dashboard, not driver dashboard

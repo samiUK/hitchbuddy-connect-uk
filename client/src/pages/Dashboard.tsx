@@ -39,7 +39,7 @@ import { useToast } from "@/hooks/use-toast";
 const Dashboard = () => {
   const { user, signOut, updateProfile } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'overview' | 'rides' | 'messages'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'rides' | 'requests'>('overview');
   const [showRideRequestForm, setShowRideRequestForm] = useState(false);
   const [showPostRideForm, setShowPostRideForm] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -370,31 +370,49 @@ const Dashboard = () => {
           </Card>
         )}
 
-        {/* Navigation Tabs */}
-        <div className="flex space-x-1 mb-8 bg-gray-100 p-1 rounded-lg w-fit">
-          {[
-            { id: 'overview', label: 'Overview', icon: Navigation },
-            { id: 'rides', label: userType === 'driver' ? 'Booking Requests' : 'Find Rides', icon: Car },
-            { id: 'messages', label: 'My Upcoming Rides', icon: MessageCircle }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === tab.id
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <tab.icon className="h-4 w-4" />
-              <span>{tab.label}</span>
-              {tab.id === 'rides' && notifications.length > 0 && (
-                <Badge variant="destructive" className="ml-1 text-xs">
-                  {notifications.length}
-                </Badge>
-              )}
-            </button>
-          ))}
+        {/* Header with Navigation and Action Button */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          {/* Navigation Tabs */}
+          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+            {[
+              { id: 'overview', label: 'Overview', icon: Navigation },
+              { id: 'rides', label: userType === 'driver' ? 'My Rides & Bookings' : 'Find Rides', icon: Car },
+              { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'My Requests', icon: Search }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === tab.id
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <tab.icon className="h-4 w-4" />
+                <span>{tab.label}</span>
+                {tab.id === 'rides' && notifications.length > 0 && (
+                  <Badge variant="destructive" className="ml-1 text-xs">
+                    {notifications.length}
+                  </Badge>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Action Button */}
+          <Button 
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+            onClick={() => {
+              if (userType === 'driver') {
+                setShowPostRideForm(true);
+              } else {
+                setShowRideRequestForm(true);
+              }
+            }}
+          >
+            <Calendar className="h-4 w-4 mr-2" />
+            {userType === 'driver' ? 'Post New Ride' : 'Request a Ride'}
+          </Button>
         </div>
 
         {/* Content based on active tab */}
@@ -561,11 +579,14 @@ const Dashboard = () => {
               </Button>
             </div>
             
-            <div className="grid gap-4">
+            <div className="grid gap-6">
               {userType === 'driver' ? (
-                // Drivers see bookings for their rides with confirmation options
-                <div className="space-y-4">
-                  {bookings.filter(booking => booking.driverId === user?.id).map((booking: any) => {
+                <div className="space-y-6">
+                  {/* Booking Requests Section */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Booking Requests</h3>
+                    <div className="space-y-4">
+                      {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending').map((booking: any) => {
                     const relatedRide = rides.find(r => r.id === booking.rideId);
                     return (
                       <Card key={booking.id} className={`p-4 ${booking.status === 'pending' ? 'border-orange-300 bg-orange-50' : ''}`}>
@@ -632,16 +653,83 @@ const Dashboard = () => {
                             )}
                           </div>
                         </div>
-                      </Card>
-                    );
-                  })}
-                  {bookings.filter(booking => booking.driverId === user?.id).length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
-                      <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No booking requests yet.</p>
-                      <p className="text-sm">Riders will book your posted rides here.</p>
+                        </Card>
+                      );
+                    })}
+                    {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending').length === 0 && (
+                      <div className="text-center py-8 text-gray-500">
+                        <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No pending booking requests.</p>
+                        <p className="text-sm">New requests will appear here.</p>
+                      </div>
+                    )}
                     </div>
-                  )}
+                  </div>
+
+                  {/* My Upcoming Rides Section */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">My Upcoming Rides</h3>
+                    <div className="space-y-4">
+                      {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'confirmed').map((booking: any) => {
+                        const relatedRide = rides.find(r => r.id === booking.rideId);
+                        return (
+                          <Card key={booking.id} className="p-4 border-green-300 bg-green-50">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2 mb-2">
+                                  <MapPin className="h-4 w-4 text-gray-500" />
+                                  <span className="font-medium">{relatedRide?.fromLocation} → {relatedRide?.toLocation}</span>
+                                  <Badge variant="default" className="bg-green-600">
+                                    Confirmed
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                                  {relatedRide?.departureDate && (
+                                    <div className="flex items-center space-x-1">
+                                      <Calendar className="h-4 w-4" />
+                                      <span>{relatedRide.departureDate}</span>
+                                    </div>
+                                  )}
+                                  <div className="flex items-center space-x-1">
+                                    <Clock className="h-4 w-4" />
+                                    <span>{relatedRide?.departureTime}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <User className="h-4 w-4" />
+                                    <span>{booking.seatsBooked} seats</span>
+                                  </div>
+                                </div>
+                                <div className="text-sm text-gray-600">
+                                  <p><strong>Rider Phone:</strong> {booking.phoneNumber}</p>
+                                  {booking.message && <p><strong>Message:</strong> {booking.message}</p>}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-lg font-bold text-green-600 mb-2">
+                                  £{booking.totalCost}
+                                </div>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleMessageRider(booking)}
+                                >
+                                  <MessageCircle className="h-4 w-4 mr-1" />
+                                  Start Chat
+                                </Button>
+                              </div>
+                            </div>
+                          </Card>
+                        );
+                      })}
+                      {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'confirmed').length === 0 && (
+                        <div className="text-center py-8 text-gray-500">
+                          <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                          <p>No confirmed rides yet.</p>
+                          <p className="text-sm">Confirmed bookings will appear here.</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ) : (
                 // Riders see available rides
