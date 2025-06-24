@@ -190,7 +190,7 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async getRideRequests(): Promise<RideRequest[]> {
-    return await db.select().from(rideRequests).where(eq(rideRequests.status, 'active'));
+    return await db.select().from(rideRequests).where(eq(rideRequests.status, 'pending'));
   }
 
   async getRideRequestsByRider(riderId: string): Promise<RideRequest[]> {
