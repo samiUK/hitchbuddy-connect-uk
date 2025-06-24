@@ -117,6 +117,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Added comprehensive location database including airports, train stations, shopping centres, universities
 - ✅ Implemented smart location search with category icons and visual indicators
 - ✅ Popular destinations shown on focus for better user experience
+- ✅ Added comprehensive UK rail and bus stations to location database
+- ✅ Implemented "My Live Requests" section for riders to track active trip requests
+- ✅ Enhanced My Trips & Bookings with separate sections for pending requests and confirmed bookings
 
 ## Technical Stack
 - Node.js 20
