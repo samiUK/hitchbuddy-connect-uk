@@ -219,7 +219,12 @@ const Dashboard = () => {
   };
 
   const handleMessageRider = (booking: any) => {
-    setSelectedBooking(booking);
+    setSelectedBooking({
+      ...booking,
+      fromLocation: rides.find(r => r.id === booking.rideId)?.fromLocation || 'Unknown',
+      toLocation: rides.find(r => r.id === booking.rideId)?.toLocation || 'Unknown',
+      departureTime: rides.find(r => r.id === booking.rideId)?.departureTime || 'Unknown'
+    });
     setShowChatPopup(true);
   };
 
