@@ -42,6 +42,7 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
       const reader = new FileReader();
       reader.onload = (event) => {
         const imageUrl = event.target?.result as string;
+        console.log('Image uploaded, data URL length:', imageUrl.length);
         setProfileImage(imageUrl);
       };
       reader.readAsDataURL(file);
@@ -55,8 +56,10 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
     try {
       const updateData = {
         ...formData,
-        ...(profileImage !== user?.avatarUrl && { avatarUrl: profileImage })
+        ...(profileImage && profileImage !== user?.avatarUrl && { avatarUrl: profileImage })
       };
+      
+      console.log('Submitting profile update:', updateData);
       
       const result = await updateProfile(updateData);
       
@@ -74,6 +77,7 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
         onClose();
       }
     } catch (error) {
+      console.error('Profile update submission error:', error);
       toast({
         title: "Error",
         description: "Something went wrong",
@@ -103,7 +107,12 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
               <Avatar className="w-24 h-24">
-                <AvatarImage src={profileImage} alt="Profile" />
+                <AvatarImage 
+                  src={profileImage || undefined} 
+                  alt="Profile"
+                  onError={() => console.log('Profile image failed to load:', profileImage)}
+                  onLoad={() => console.log('Profile image loaded successfully:', profileImage)}
+                />
                 <AvatarFallback className="text-lg">
                   {formData.firstName.charAt(0)}{formData.lastName.charAt(0)}
                 </AvatarFallback>
