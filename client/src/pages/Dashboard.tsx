@@ -39,7 +39,7 @@ import { useToast } from "@/hooks/use-toast";
 const Dashboard = () => {
   const { user, signOut, updateProfile } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'overview' | 'rides' | 'requests'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'post' | 'rides' | 'requests'>('overview');
   const [showRideRequestForm, setShowRideRequestForm] = useState(false);
   const [showPostRideForm, setShowPostRideForm] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -370,49 +370,32 @@ const Dashboard = () => {
           </Card>
         )}
 
-        {/* Header with Navigation and Action Button */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-          {/* Navigation Tabs */}
-          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
-            {[
-              { id: 'overview', label: 'Overview', icon: Navigation },
-              { id: 'rides', label: userType === 'driver' ? 'My Rides & Bookings' : 'Find Rides', icon: Car },
-              { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'My Requests', icon: Search }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <tab.icon className="h-4 w-4" />
-                <span>{tab.label}</span>
-                {tab.id === 'rides' && notifications.length > 0 && (
-                  <Badge variant="destructive" className="ml-1 text-xs">
-                    {notifications.length}
-                  </Badge>
-                )}
-              </button>
-            ))}
-          </div>
-
-          {/* Action Button */}
-          <Button 
-            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-            onClick={() => {
-              if (userType === 'driver') {
-                setShowPostRideForm(true);
-              } else {
-                setShowRideRequestForm(true);
-              }
-            }}
-          >
-            <Calendar className="h-4 w-4 mr-2" />
-            {userType === 'driver' ? 'Post New Ride' : 'Request a Ride'}
-          </Button>
+        {/* Navigation Tabs */}
+        <div className="flex space-x-1 mb-8 bg-gray-100 p-1 rounded-lg w-fit">
+          {[
+            { id: 'overview', label: 'Overview', icon: Navigation },
+            { id: 'post', label: userType === 'driver' ? 'Post New Ride' : 'Request a Ride', icon: Calendar },
+            { id: 'rides', label: userType === 'driver' ? 'My Rides & Bookings' : 'Find Rides', icon: Car },
+            { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'My Requests', icon: Search }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <tab.icon className="h-4 w-4" />
+              <span>{tab.label}</span>
+              {tab.id === 'rides' && notifications.length > 0 && (
+                <Badge variant="destructive" className="ml-1 text-xs">
+                  {notifications.length}
+                </Badge>
+              )}
+            </button>
+          ))}
         </div>
 
         {/* Content based on active tab */}
