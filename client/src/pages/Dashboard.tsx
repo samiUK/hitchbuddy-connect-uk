@@ -972,11 +972,11 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900">My Live Requests</h3>
                       <Badge variant="outline" className="text-blue-600">
-                        {allMyRideRequests.filter(req => req.status === 'pending').length} active
+                        {myRideRequests.filter(req => req.status === 'pending').length} active
                       </Badge>
                     </div>
                     
-                    {allMyRideRequests.filter(req => req.status === 'pending').length === 0 ? (
+                    {myRideRequests.filter(req => req.status === 'pending').length === 0 ? (
                       <div className="text-center py-6 text-gray-500">
                         <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No active trip requests</p>
@@ -984,7 +984,7 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="grid gap-4">
-                        {allMyRideRequests.filter(req => req.status === 'pending').map((request) => (
+                        {myRideRequests.filter(req => req.status === 'pending').map((request) => (
                           <Card key={request.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between mb-3">
@@ -1033,6 +1033,27 @@ const Dashboard = () => {
                                     <p className="text-sm text-gray-600 italic">"{request.notes}"</p>
                                   </div>
                                 )}
+                                
+                                <div className="flex justify-end space-x-2 pt-3 border-t border-blue-200">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => handleModifyRequest(request.id)}
+                                    className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                                  >
+                                    <Edit className="h-3 w-3 mr-1" />
+                                    Modify
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => handleCancelRequest(request.id)}
+                                    className="text-red-600 border-red-300 hover:bg-red-50"
+                                  >
+                                    <X className="h-3 w-3 mr-1" />
+                                    Cancel
+                                  </Button>
+                                </div>
                               </div>
                             </CardContent>
                           </Card>
