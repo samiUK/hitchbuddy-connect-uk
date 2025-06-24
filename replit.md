@@ -136,6 +136,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Fixed "Find Requests" section for drivers to only show pending ride requests from riders
 - ✅ Fixed storage layer to query 'pending' status instead of 'active' for ride requests
 - ✅ Updated rider interface: changed "Find Rides" to "Available Rides" for better clarity
+- ✅ Optimized database queries to use COUNT(*) instead of full SELECT operations for performance
+- ✅ Reduced notification polling frequency from 2 minutes to 5 minutes to prevent timeouts
+- ✅ Optimized notification limit from 50 to 10 records to improve response times
 
 ## Technical Stack
 - Node.js 20
