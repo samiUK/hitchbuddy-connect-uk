@@ -975,20 +975,18 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900">My Live Requests</h3>
                       <Badge variant="outline" className="text-blue-600">
-                        {rideRequests.filter(req => req.status === 'active').length} active
+                        {rideRequests.filter(req => req.status === 'pending').length} active
                       </Badge>
                     </div>
                     
                     {/* Debug info - remove after testing */}
                     {process.env.NODE_ENV === 'development' && (
                       <div className="text-xs text-gray-500 bg-gray-100 p-2 rounded">
-                        Debug: Total requests: {rideRequests.length}, 
-                        Active: {rideRequests.filter(req => req.status === 'active').length},
-                        User ID: {user?.id}
+
                       </div>
                     )}
                     
-                    {rideRequests.filter(req => req.status === 'active').length === 0 ? (
+                    {rideRequests.filter(req => req.status === 'pending').length === 0 ? (
                       <div className="text-center py-6 text-gray-500">
                         <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No active trip requests</p>
@@ -996,15 +994,15 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="grid gap-4">
-                        {rideRequests.filter(req => req.status === 'active').map((request) => (
+                        {rideRequests.filter(req => req.status === 'pending').map((request) => (
                           <Card key={request.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between mb-3">
                                 <Badge variant="outline" className="text-blue-600 border-blue-300">
                                   Trip Request
                                 </Badge>
-                                <Badge className="bg-blue-600">
-                                  Active
+                                <Badge className="bg-orange-600">
+                                  Pending
                                 </Badge>
                               </div>
                               
