@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,9 +17,11 @@ import { cn } from "@/lib/utils";
 
 interface PostNewRideFormProps {
   onClose: () => void;
+  savedData?: any;
+  onDataChange?: (data: any) => void;
 }
 
-export const PostNewRideForm = ({ onClose }: PostNewRideFormProps) => {
+export const PostNewRideForm = ({ onClose, savedData, onDataChange }: PostNewRideFormProps) => {
   const [formData, setFormData] = useState({
     fromLocation: "",
     toLocation: "",

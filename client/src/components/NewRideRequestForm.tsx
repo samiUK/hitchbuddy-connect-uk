@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,9 +11,11 @@ import { LocationAutocomplete } from "./LocationAutocomplete";
 
 interface NewRideRequestFormProps {
   onClose: () => void;
+  savedData?: any;
+  onDataChange?: (data: any) => void;
 }
 
-export const NewRideRequestForm = ({ onClose }: NewRideRequestFormProps) => {
+export const NewRideRequestForm = ({ onClose, savedData, onDataChange }: NewRideRequestFormProps) => {
   const [formData, setFormData] = useState({
     fromLocation: "",
     toLocation: "",

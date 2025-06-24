@@ -53,6 +53,8 @@ const Dashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const [showChatPopup, setShowChatPopup] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [savedFormData, setSavedFormData] = useState<any>(null);
+  const [formDataTimestamp, setFormDataTimestamp] = useState<number | null>(null);
   
   const userType = user?.userType || 'rider';
   const firstName = user?.firstName || '';
@@ -168,6 +170,24 @@ const Dashboard = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleFormDataSave = (formData: any) => {
+    setSavedFormData(formData);
+    setFormDataTimestamp(Date.now());
+  };
+
+  const getSavedFormData = () => {
+    // Data expires after 5 minutes
+    if (formDataTimestamp && Date.now() - formDataTimestamp < 5 * 60 * 1000) {
+      return savedFormData;
+    }
+    return null;
+  };
+
+  const clearSavedFormData = () => {
+    setSavedFormData(null);
+    setFormDataTimestamp(null);
   };
 
   const handleMessageRider = (booking: any) => {
