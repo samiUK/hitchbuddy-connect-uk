@@ -4,6 +4,8 @@ import { registerRoutes } from "./routes";
 import path from "path";
 import fs from "fs";
 
+// Start server initialization immediately
+console.log('Starting Hitchbuddy server initialization...');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -90,6 +92,7 @@ app.use((req, res, next) => {
       });
       console.log(`${formattedTime} [express] serving on port ${port}`);
       console.log(`Health check available at http://0.0.0.0:${port}/health`);
+      console.log('Server is ready to accept connections');
     });
   } catch (error) {
     console.error('Failed to start server:', error);
