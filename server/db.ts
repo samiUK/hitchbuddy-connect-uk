@@ -8,10 +8,10 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Configure Neon database connection using postgres-js
+// Configure database connection using postgres-js
 const queryClient = postgres(process.env.DATABASE_URL, {
   prepare: false,
-  ssl: 'require',
+  ssl: process.env.DATABASE_URL.includes('neon') ? 'require' : false,
 });
 
 export const db = drizzle(queryClient, { schema });
