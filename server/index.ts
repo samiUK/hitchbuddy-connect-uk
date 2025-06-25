@@ -72,7 +72,7 @@ app.use((req, res, next) => {
   }
 
   // Use PORT environment variable for deployment, with fallbacks for different platforms
-  const port = parseInt(process.env.PORT || "5000", 10);
+  const port = process.env.REPL_ID ? 5000 : parseInt(process.env.PORT || process.env.RAILWAY_PORT || "8080", 10);
 
   server.listen(port, "0.0.0.0", () => {
     const formattedTime = new Date().toLocaleTimeString("en-US", {
