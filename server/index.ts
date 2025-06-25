@@ -66,9 +66,9 @@ app.use((req, res, next) => {
     const { setupVite } = await import("./vite.js");
     await setupVite(app, server);
   } else {
-    // In production, serve static files using dedicated production module
-    const { serveStatic } = await import("./production.js");
-    serveStatic(app);
+    // Production uses fast deployment server (deploy-server.js)
+    // Static files served by deploy-server.js directly
+    console.log("Production mode: deploy-server.js handles static files");
   }
 
   // Use PORT environment variable for deployment, with fallbacks for different platforms
