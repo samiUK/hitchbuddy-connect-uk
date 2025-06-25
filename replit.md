@@ -6,7 +6,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 ## Architecture
 - **Frontend**: React with TypeScript, Tailwind CSS, Radix UI components
 - **Backend**: Express.js with TypeScript
-- **Database**: PostgreSQL (Supabase) with Drizzle ORM
+- **Database**: PostgreSQL (Neon) with Drizzle ORM
 - **Authentication**: Session-based auth with secure cookies
 - **Deployment**: Replit-native deployment
 
@@ -16,7 +16,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Configured Replit native deployment with proper .replit configuration
 - ✅ Set up deployment target as cloudrun for production hosting
 - ✅ Updated port configuration for Replit deployment (5000)
-- ✅ Database configured to use Replit's built-in PostgreSQL
+- ✅ Database configured and working with Neon PostgreSQL
 - ✅ Ready for one-click deployment via Replit's deploy button
 
 ## Previous Changes
