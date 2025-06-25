@@ -30,31 +30,30 @@ DATABASE_URL=postgresql://username:password@host:port/database
 
 **Note**: Vercel has limitations with server-side applications. Consider using serverless functions.
 
-### Render
+### Render (Recommended: Docker)
 
+**Docker Deployment (Recommended):**
 1. Connect your GitHub repository to Render
 2. Choose "Web Service"
-3. Use Docker or set the following:
-   - **Build Command**: `./render-build.sh` or `npm install && npm run build`
-   - **Start Command**: `npm start`
-   - **Node Version**: 20
-4. Add environment variables in Render dashboard:
+3. Select "Docker" as the environment
+4. Render will automatically detect and use the Dockerfile
+5. Add environment variables in Render dashboard:
    - `NODE_ENV=production`
    - `DATABASE_URL=your_supabase_connection_string`
-5. Deploy
+6. Deploy
 
-**Troubleshooting Render Build Issues:**
-- If you get "command not found" errors, use the custom build script: `node build.js`
-- Ensure Node.js 20 is selected in Render settings
-- Alternative build commands to try:
-  - `node build.js`
-  - `npx npm install && npx npm run build`
-  - Use Docker deployment if npm issues persist
+**Alternative: Node.js Deployment (if Docker fails):**
+1. Choose "Node.js" environment
+2. Set build command: `npm ci && npm run build`
+3. Set start command: `npm start`
+4. Set Node version: 20
+5. Add same environment variables
 
-**For Render Docker Deployment:**
-1. Choose "Docker" instead of "Node.js" environment
-2. Render will automatically use the Dockerfile
-3. Set environment variables as usual
+**Troubleshooting Render Issues:**
+- **"npm command not found"**: Use Docker deployment instead
+- **Build timeouts**: Increase build timeout in Render settings
+- **Memory issues**: Upgrade to a higher plan temporarily for build
+- **Docker build fails**: Check Docker logs in Render dashboard
 
 ### Railway
 

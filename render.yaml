@@ -1,13 +1,13 @@
 services:
   - type: web
     name: hitchbuddy
-    env: node
+    env: docker
     plan: starter
-    buildCommand: node build.js
-    startCommand: npm start
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     envVars:
       - key: NODE_ENV
         value: production
-      - key: NODE_VERSION
-        value: 20
+      - key: PORT
+        value: 5000
     autoDeploy: false
