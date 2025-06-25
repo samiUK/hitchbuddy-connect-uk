@@ -70,6 +70,8 @@ app.use((req, res, next) => {
   }
 
   const port = parseInt(process.env.PORT || "5000", 10);
+  
+  console.log(`Starting production server on port ${port} with NODE_ENV=${process.env.NODE_ENV}`);
 
   server.listen(port, "0.0.0.0", () => {
     const formattedTime = new Date().toLocaleTimeString("en-US", {
