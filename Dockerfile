@@ -20,14 +20,13 @@ RUN npm run build
 RUN npm prune --production
 
 # Create non-root user for security
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
+RUN addgroup -S appuser && adduser -S appuser -G appuser
 
-# Change ownership of the app directory
-RUN chown -R nextjs:nodejs /app
-USER nextjs
+# Change ownership of the app directory and set the user
+RUN chown -R appuser:appuser /app
+USER appuser
 
-# Expose port
+# Expose the correct application port (based on fly.toml and likely render needs)
 EXPOSE 5000
 
 # Set environment variables

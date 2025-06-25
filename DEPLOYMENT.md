@@ -15,7 +15,7 @@ Set these environment variables in your hosting platform:
 ```bash
 NODE_ENV=production
 PORT=5000  # Optional, most platforms set this automatically
-DATABASE_URL=postgresql://username:password@host:port/database
+DATABASE_URL=ostgresql://postgres.vgcplxhabpujgcwglrfb:7286707$Bdt@aws-0-eu-west-2.pooler.supabase.com:6543/postgres
 ```
 
 ## Platform-Specific Deployment
