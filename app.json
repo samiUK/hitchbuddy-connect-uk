@@ -1,0 +1,32 @@
+{
+  "name": "Hitchbuddy",
+  "description": "A modern ride-sharing platform built with React, TypeScript, Express.js, and PostgreSQL",
+  "keywords": ["node", "express", "react", "typescript", "ride-sharing", "drizzle"],
+  "website": "https://github.com/your-username/hitchbuddy",
+  "repository": "https://github.com/your-username/hitchbuddy",
+  "success_url": "/",
+  "env": {
+    "NODE_ENV": {
+      "description": "Environment mode",
+      "value": "production"
+    },
+    "DATABASE_URL": {
+      "description": "PostgreSQL database connection string",
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    "heroku-postgresql:mini"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
