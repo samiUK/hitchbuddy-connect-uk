@@ -8,5 +8,10 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-const sql = neon(process.env.DATABASE_URL);
+// Configure Neon connection with proper serverless configuration
+const sql = neon(process.env.DATABASE_URL, {
+  arrayMode: false,
+  fullResults: false,
+});
+
 export const db = drizzle(sql, { schema });
