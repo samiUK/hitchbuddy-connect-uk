@@ -65,7 +65,11 @@ app.use((req, res, next) => {
   }
 
   // Use PORT environment variable for deployment, fallback to 5000 for development
-  const port = process.env.PORT || 5000;
+  const port = process.env.PORT;
+
+  if (!port) {
+    throw new Error('PORT environment variable is required.');
+  }
 
   server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
