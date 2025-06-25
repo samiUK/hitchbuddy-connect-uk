@@ -19,19 +19,19 @@ RUN npm run build
 # Remove dev dependencies to reduce image size
 RUN npm prune --production
 
-# Create non-root user for security
-RUN addgroup -S appuser && adduser -S appuser -G appuser
-
-# Change ownership of the app directory and set the user
+# Create a non-root user and group with explicit IDs in a single command
+RUN addgroup -g 1001 -S appuser && adduser -S appuser -u 1001 -G appuser
 RUN chown -R appuser:appuser /app
-USER appuser
 
 # Expose the correct application port (based on fly.toml and likely render needs)
-EXPOSE 5000
+EXPOSE 8080
 
 # Set environment variables
 ENV NODE_ENV=production
 ENV PORT=5000
+
+# Switch to the non-root user
+USER appuser
 
 # Start the application
 CMD ["npm", "start"]
