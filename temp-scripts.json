@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "build:frontend": "vite build",
+    "build:production": "./build-production.sh"
+  }
+}
