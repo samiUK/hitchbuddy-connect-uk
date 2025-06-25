@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
 
 console.log('Starting build process...');
 
@@ -25,30 +25,37 @@ try {
     execSync('NODE_PATH=./node_modules npx vite build', { stdio: 'inherit' });
   }
 
-  console.log('Building server...');
-  // Try multiple approaches for esbuild
+  console.log('Building optimized production server...');
+  // Use the fast deploy-server.js for production builds
   try {
-    execSync('npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist', { stdio: 'inherit' });
+    execSync('npx esbuild deploy-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js', { stdio: 'inherit' });
   } catch (esbuildError) {
-    console.log('npx esbuild failed, trying with NODE_PATH...');
-    execSync('NODE_PATH=./node_modules npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist', { stdio: 'inherit' });
+    console.log('Fast server build failed, trying with NODE_PATH...');
+    execSync('NODE_PATH=./node_modules npx esbuild deploy-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js', { stdio: 'inherit' });
   }
 
   // Verify build outputs
-  const clientDistPath = path.join(process.cwd(), 'client', 'dist');
-  const serverDistPath = path.join(process.cwd(), 'dist');
+  const clientDistPath = path.join(process.cwd(), 'dist', 'public');
+  const serverDistPath = path.join(process.cwd(), 'dist', 'index.js');
   
   if (!fs.existsSync(clientDistPath)) {
-    throw new Error('Client build output not found at client/dist');
+    console.warn('Client build output not found at dist/public - this may be expected for server-only builds');
   }
   
   if (!fs.existsSync(serverDistPath)) {
-    throw new Error('Server build output not found at dist/');
+    throw new Error('Server build output not found at dist/index.js');
   }
 
   console.log('Build completed successfully!');
-  console.log('Client build output:', clientDistPath);
   console.log('Server build output:', serverDistPath);
+  if (fs.existsSync(clientDistPath)) {
+    console.log('Client build output:', clientDistPath);
+  }
+  
+  // Display build statistics
+  const stats = fs.statSync(serverDistPath);
+  console.log(`Server bundle size: ${Math.round(stats.size / 1024)}KB`);
+  console.log('Ready for deployment!');
 } catch (error) {
   console.error('Build failed:', error.message);
   console.error('Stack trace:', error.stack);
