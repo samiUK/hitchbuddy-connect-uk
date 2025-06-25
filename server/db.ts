@@ -8,10 +8,10 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Configure Replit database connection using postgres-js
+// Configure Neon database connection using postgres-js
 const queryClient = postgres(process.env.DATABASE_URL, {
   prepare: false,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  ssl: 'require',
 });
 
 export const db = drizzle(queryClient, { schema });
