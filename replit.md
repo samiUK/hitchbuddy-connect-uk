@@ -6,16 +6,16 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 ## Architecture
 - **Frontend**: React with TypeScript, Tailwind CSS, Radix UI components
 - **Backend**: Express.js with TypeScript
-- **Database**: PostgreSQL (Neon) with Drizzle ORM
+- **Database**: PostgreSQL (Supabase) with Drizzle ORM
 - **Authentication**: Session-based auth with secure cookies
 - **Deployment**: Replit-native deployment
 
 ## Recent Changes
+- ✅ Migrated from Neon to Supabase database with postgres-js driver
+- ✅ Updated database configuration to use Supabase connection string
+- ✅ Replaced @neondatabase/serverless with postgres package for better compatibility
 - ✅ Fixed PORT environment variable configuration with proper fallbacks (PORT → REPL_PORT → 5000)
-- ✅ Resolved Neon HTTP driver compatibility issues with enhanced configuration
-- ✅ Added proper Neon driver options for Drizzle ORM compatibility
-- ✅ Server now uses dynamic port configuration from environment variables
-- ✅ Enhanced database configuration with logging and caching controls
+- ✅ Database connection fully operational with Supabase PostgreSQL
 - ✅ Fixed critical database stack overflow error in notifications system
 - ✅ Optimized database queries to prevent browser timeouts (500ms vs 1749ms)
 - ✅ Reduced notification polling from 2min to 5min for better performance

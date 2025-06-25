@@ -1,5 +1,5 @@
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import * as schema from "@shared/schema";
 
 if (!process.env.DATABASE_URL) {
@@ -8,10 +8,9 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Configure Neon connection with proper serverless configuration
-const sql = neon(process.env.DATABASE_URL, {
-  arrayMode: false,
-  fullResults: false,
+// Configure Supabase connection using postgres-js
+const queryClient = postgres(process.env.DATABASE_URL, {
+  prepare: false,
 });
 
-export const db = drizzle(sql, { schema });
+export const db = drizzle(queryClient, { schema });
