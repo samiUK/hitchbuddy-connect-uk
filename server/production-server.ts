@@ -1,6 +1,8 @@
 import express, { type Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./routes";
+import path from "path";
+import fs from "fs";
 
 const app = express();
 app.use(express.json());
@@ -9,7 +11,7 @@ app.use(cookieParser());
 
 app.use((req, res, next) => {
   const start = Date.now();
-  const path = req.path;
+  const pathReq = req.path;
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
   const originalResJson = res.json;
@@ -20,8 +22,8 @@ app.use((req, res, next) => {
 
   res.on("finish", () => {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+    if (pathReq.startsWith("/api")) {
+      let logLine = `${req.method} ${pathReq} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
@@ -49,29 +51,24 @@ app.use((req, res, next) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    // Log error in development, but don't expose stack traces in production
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Server error:', err);
-    } else {
-      console.error('Server error:', message);
-    }
-
+    console.error('Server error:', message);
     res.status(status).json({ message });
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (process.env.NODE_ENV === "development") {
-    const { setupVite } = await import("./vite.js");
-    await setupVite(app, server);
+  // In production, serve static files directly
+  const distPath = path.resolve(process.cwd(), "dist", "public");
+  
+  if (fs.existsSync(distPath)) {
+    app.use(express.static(distPath));
+    app.use("*", (_req, res) => {
+      res.sendFile(path.resolve(distPath, "index.html"));
+    });
   } else {
-    // In production, serve static files using dedicated production module
-    const { serveStatic } = await import("./production.js");
-    serveStatic(app);
+    app.use("*", (_req, res) => {
+      res.status(404).send("Application not built properly");
+    });
   }
 
-  // Use PORT environment variable for deployment, with fallbacks for different platforms
   const port = parseInt(process.env.PORT || "5000", 10);
 
   server.listen(port, "0.0.0.0", () => {

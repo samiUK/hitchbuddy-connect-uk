@@ -14,8 +14,8 @@ timeout 300 npx vite build --mode production || {
     echo '<!DOCTYPE html><html><head><title>Loading...</title></head><body><div id="root">Building...</div></body></html>' > dist/public/index.html
 }
 
-# Build the backend server (to dist/index.js)
-npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+# Build the backend server (to dist/index.js) using production entry point
+npx esbuild server/production-server.ts --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js
 
 # Verify build outputs
 ls -la dist/
