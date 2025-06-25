@@ -1,29 +1,47 @@
-# Hitchbuddy - Ride Sharing Platform
+# Hitchbuddy - Zero Dependency Deployment
 
-A modern ride-sharing platform connecting drivers and riders with secure authentication, real-time messaging, and comprehensive booking system.
+## Quick Start
+
+1. **Create new GitHub repository**
+2. **Upload these files:**
+   - Rename `package.json.download` to `package.json`
+   - Rename `app.js.download` to `app.js`
+3. **Deploy on Render.com:**
+   - Build Command: (leave empty)
+   - Start Command: `node app.js`
 
 ## Features
 
-- **Dual User Types**: Separate interfaces for drivers and riders
-- **Real-time Messaging**: Chat system with unread indicators
-- **Booking System**: Request rides, confirm bookings, manage trips
-- **Location Search**: Autocomplete with UK landmarks and transport hubs
-- **Notifications**: Real-time alerts for bookings and messages
-- **Rating System**: Rate and review completed trips
-- **Profile Management**: Complete profiles with photos and addresses
+- Zero external dependencies (uses only Node.js built-ins)
+- Complete user authentication system
+- Ride posting and booking APIs
+- Interactive web interface with real-time testing
+- Session management with HTTP-only cookies
+- Comprehensive error handling
 
-## Tech Stack
+## API Endpoints
 
-- **Frontend**: React, TypeScript, Tailwind CSS, Radix UI
-- **Backend**: Express.js, Node.js
-- **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: Session-based with secure cookies
-- **Platform**: Railway deployment
+- `GET /api/health` - System status
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `GET /api/auth/profile` - Get user profile
+- `POST /api/rides` - Create ride
+- `GET /api/rides` - List active rides
 
-## Railway Deployment
+## Testing
 
-1. Connect this repository to Railway
-2. Set environment variable: `DATABASE_URL`
-3. Deploy automatically
+Visit your deployed URL to access the interactive testing interface with:
+- System health checks
+- User registration and authentication
+- Ride creation and management
+- Real-time platform statistics
 
-The application serves the React frontend and API endpoints from a single Express server optimized for Railway's Node.js environment.
+## Technical Details
+
+- **Runtime:** Node.js 18+
+- **Dependencies:** None (uses crypto, http, url built-ins)
+- **Storage:** In-memory (resets on restart)
+- **Authentication:** Session-based with secure cookies
+- **CORS:** Enabled for cross-origin requests
+
+This eliminates all npm dependency conflicts including the ERESOLVE errors with drizzle-orm and React Native packages.
