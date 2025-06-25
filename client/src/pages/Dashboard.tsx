@@ -46,18 +46,18 @@ import { useToast } from "@/hooks/use-toast";
 const Dashboard = () => {
   const { user, signOut, updateProfile } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'overview' | 'post' | 'rides' | 'requests' | 'messages'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'post' | 'rides' | 'requests'>('overview');
   const [showRideRequestForm, setShowRideRequestForm] = useState(false);
   const [showPostRideForm, setShowPostRideForm] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [isUpdatingUserType, setIsUpdatingUserType] = useState(false);
-  const [rides, setRides] = useState<any[]>([]);
-  const [rideRequests, setRideRequests] = useState<any[]>([]);
+  const [rides, setRides] = useState([]);
+  const [rideRequests, setRideRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedRide, setSelectedRide] = useState<any>(null);
+  const [selectedRide, setSelectedRide] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [bookings, setBookings] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [showChatPopup, setShowChatPopup] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [savedFormData, setSavedFormData] = useState<any>(null);
@@ -320,86 +320,6 @@ const Dashboard = () => {
         variant: "destructive",
       });
     }
-  };
-
-  // Add missing handler functions
-  const handleModifyRide = async (rideId: string) => {
-    toast({
-      title: "Modify Ride",
-      description: "Ride modification feature coming soon.",
-    });
-  };
-
-  const handleCancelRide = async (rideId: string) => {
-    try {
-      const response = await fetch(`/api/rides/${rideId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        toast({
-          title: "Ride cancelled",
-          description: "Your ride has been cancelled successfully.",
-        });
-        fetchData();
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to cancel ride. Please try again.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('Error cancelling ride:', error);
-      toast({
-        title: "Error",
-        description: "Failed to cancel ride. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleModifyRequest = async (requestId: string) => {
-    toast({
-      title: "Modify Request",
-      description: "Request modification feature coming soon.",
-    });
-  };
-
-  const handleCancelRequest = async (requestId: string) => {
-    try {
-      const response = await fetch(`/api/ride-requests/${requestId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        toast({
-          title: "Request cancelled",
-          description: "Your ride request has been cancelled successfully.",
-        });
-        fetchData();
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to cancel request. Please try again.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('Error cancelling request:', error);
-      toast({
-        title: "Error",
-        description: "Failed to cancel request. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleBookRide = (ride: any) => {
-    setSelectedRide(ride);
-    setShowBookingModal(true);
   };
 
   const handleSignOut = async () => {
@@ -1596,6 +1516,19 @@ const Dashboard = () => {
           />
         )}
 
+        {activeTab === 'messages' && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900">Messages</h2>
+            
+            <div className="text-center py-12">
+              <MessageCircle className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No messages yet</h3>
+              <p className="text-gray-500">
+                Your conversations with other users will appear here
+              </p>
+            </div>
+          </div>
+        )}
         {activeTab === 'messages' && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900">My Upcoming Rides</h2>

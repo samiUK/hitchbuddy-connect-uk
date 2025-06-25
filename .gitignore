@@ -1,11 +1,6 @@
-node_modules/
-.env
-.env.local
-*.log
-dist/
-build/
+node_modules
+dist
 .DS_Store
-.vscode/
-.idea/
-*.swp
-*.swo
+server/public
+vite.config.ts.*
+*.tar.gz
