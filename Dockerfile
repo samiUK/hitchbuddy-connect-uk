@@ -26,12 +26,12 @@ RUN npm run build
 # Remove dev dependencies to reduce image size
 RUN npm prune --production
 
-# Expose port 8080 to match fly.toml
-EXPOSE 8080
+# Expose port 5000 to match render.yaml
+EXPOSE 5000
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV PORT=5000
 
 # Start the application
 CMD ["npm", "start"]
