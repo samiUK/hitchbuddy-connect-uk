@@ -45,41 +45,54 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(app);
+  try {
+    console.log('Initializing server and database connection...');
+    const server = await registerRoutes(app);
+    console.log('Routes registered successfully');
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    console.error('Server error:', message);
-    res.status(status).json({ message });
-  });
-
-  // In production, serve static files directly
-  const distPath = path.resolve(process.cwd(), "dist", "public");
-  
-  if (fs.existsSync(distPath)) {
-    app.use(express.static(distPath));
-    app.use("*", (_req, res) => {
-      res.sendFile(path.resolve(distPath, "index.html"));
+    // Health check endpoint for deployment readiness
+    app.get('/health', (_req, res) => {
+      res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
     });
-  } else {
-    app.use("*", (_req, res) => {
-      res.status(404).send("Application not built properly");
+
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
+
+      console.error('Server error:', message);
+      res.status(status).json({ message });
     });
+
+    // In production, serve static files directly
+    const distPath = path.resolve(process.cwd(), "dist", "public");
+    
+    if (fs.existsSync(distPath)) {
+      app.use(express.static(distPath));
+      app.use("*", (_req, res) => {
+        res.sendFile(path.resolve(distPath, "index.html"));
+      });
+    } else {
+      app.use("*", (_req, res) => {
+        res.status(404).send("Application not built properly");
+      });
+    }
+
+    const port = parseInt(process.env.PORT || "5000", 10);
+    
+    console.log(`Starting production server on port ${port} with NODE_ENV=${process.env.NODE_ENV}`);
+
+    server.listen(port, "0.0.0.0", () => {
+      const formattedTime = new Date().toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      });
+      console.log(`${formattedTime} [express] serving on port ${port}`);
+      console.log(`Health check available at http://0.0.0.0:${port}/health`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
   }
-
-  const port = parseInt(process.env.PORT || "5000", 10);
-  
-  console.log(`Starting production server on port ${port} with NODE_ENV=${process.env.NODE_ENV}`);
-
-  server.listen(port, "0.0.0.0", () => {
-    const formattedTime = new Date().toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    });
-    console.log(`${formattedTime} [express] serving on port ${port}`);
-  });
 })();
