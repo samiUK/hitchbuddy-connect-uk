@@ -34,10 +34,27 @@ DATABASE_URL=postgresql://username:password@host:port/database
 
 1. Connect your GitHub repository to Render
 2. Choose "Web Service"
-3. Set build command: `npm install && npm run build`
-4. Set start command: `npm start`
-5. Add environment variables in Render dashboard
-6. Deploy
+3. Use Docker or set the following:
+   - **Build Command**: `./render-build.sh` or `npm install && npm run build`
+   - **Start Command**: `npm start`
+   - **Node Version**: 20
+4. Add environment variables in Render dashboard:
+   - `NODE_ENV=production`
+   - `DATABASE_URL=your_supabase_connection_string`
+5. Deploy
+
+**Troubleshooting Render Build Issues:**
+- If you get "command not found" errors, use the custom build script: `node build.js`
+- Ensure Node.js 20 is selected in Render settings
+- Alternative build commands to try:
+  - `node build.js`
+  - `npx npm install && npx npm run build`
+  - Use Docker deployment if npm issues persist
+
+**For Render Docker Deployment:**
+1. Choose "Docker" instead of "Node.js" environment
+2. Render will automatically use the Dockerfile
+3. Set environment variables as usual
 
 ### Railway
 
