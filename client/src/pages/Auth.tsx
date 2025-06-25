@@ -38,7 +38,7 @@ const Auth = () => {
         if (error) {
           toast({
             title: "Password reset failed",
-            description: error.message,
+            description: error,
             variant: "destructive"
           });
         } else {
@@ -56,7 +56,7 @@ const Auth = () => {
           if (error) {
             toast({
               title: "Sign in failed",
-              description: error.message,
+              description: error,
               variant: "destructive"
             });
           } else {
@@ -73,7 +73,7 @@ const Auth = () => {
           if (error) {
             toast({
               title: "Sign up failed", 
-              description: error.message,
+              description: error,
               variant: "destructive"
             });
           } else {
