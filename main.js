@@ -187,12 +187,12 @@ const getHTML = () => `<!DOCTYPE html>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Hitchbuddy</h1>
+            <h1>🚗 Hitchbuddy</h1>
             <p>Connect. Ride. Share the Journey.</p>
         </div>
         
         <div class="card status">
-            <h3>Platform Status</h3>
+            <h3>✅ Platform Status</h3>
             <div class="stats">
                 <div><div class="stat-number" id="users">0</div><div>Users</div></div>
                 <div><div class="stat-number" id="rides">0</div><div>Rides</div></div>
@@ -201,44 +201,52 @@ const getHTML = () => `<!DOCTYPE html>
         </div>
         
         <div class="card">
-            <h3>System Test</h3>
+            <h3>🔧 System Test</h3>
             <button onclick="testHealth()">Health Check</button>
             <div id="health-result"></div>
         </div>
         
         <div class="card">
-            <h3>User Registration</h3>
+            <h3>👤 User Registration</h3>
             <div class="grid">
-                <input id="email" placeholder="Email" value="demo@test.com">
+                <input id="email" placeholder="Email" value="demo@hitchbuddy.com">
                 <input id="password" type="password" placeholder="Password" value="demo123">
                 <input id="name" placeholder="Full Name" value="Demo User">
                 <select id="type">
-                    <option value="rider">Rider</option>
-                    <option value="driver">Driver</option>
+                    <option value="rider">🏃 Rider</option>
+                    <option value="driver">🚗 Driver</option>
                 </select>
             </div>
-            <button onclick="testRegister()">Register</button>
+            <button onclick="testRegister()">Register User</button>
             <div id="register-result"></div>
         </div>
         
         <div class="card">
-            <h3>Authentication</h3>
+            <h3>🔑 Authentication</h3>
             <button onclick="testLogin()">Login</button>
-            <button onclick="testProfile()">Profile</button>
+            <button onclick="testProfile()">Get Profile</button>
             <div id="auth-result"></div>
         </div>
         
         <div class="card">
-            <h3>Ride Management</h3>
+            <h3>🚗 Ride Management</h3>
             <div class="grid">
-                <input id="from" placeholder="From" value="City Center">
+                <input id="from" placeholder="From" value="Downtown">
                 <input id="to" placeholder="To" value="Airport">
                 <input id="time" type="datetime-local">
-                <input id="price" type="number" placeholder="Price" value="25">
+                <input id="price" type="number" placeholder="Price (£)" value="25">
             </div>
-            <button onclick="testCreateRide()">Create Ride</button>
-            <button onclick="testGetRides()">View Rides</button>
+            <button onclick="testCreateRide()">Post Ride</button>
+            <button onclick="testGetRides()">View All Rides</button>
             <div id="ride-result"></div>
+        </div>
+        
+        <div class="card">
+            <h3>📊 Deployment Info</h3>
+            <p><strong>Platform:</strong> Replit</p>
+            <p><strong>Server:</strong> Node.js ${process.version}</p>
+            <p><strong>Memory:</strong> ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB</p>
+            <p><strong>Started:</strong> ${new Date().toLocaleString()}</p>
         </div>
     </div>
     
@@ -376,8 +384,10 @@ const server = http.createServer((req, res) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
-  console.log('Hitchbuddy running on port ' + PORT);
-  console.log('Node.js ' + process.version + ' on ' + process.platform);
+  console.log('🚗 Hitchbuddy Platform Online');
+  console.log('📍 Port: ' + PORT);
+  console.log('🌐 URL: https://' + process.env.REPL_SLUG + '--' + process.env.REPL_OWNER + '.replit.app/');
+  console.log('⚡ Node.js ' + process.version);
 });
 
 process.on('SIGTERM', () => server.close(() => process.exit(0)));
