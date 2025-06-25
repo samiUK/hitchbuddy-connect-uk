@@ -65,7 +65,7 @@ app.use((req, res, next) => {
   }
 
   // Use PORT environment variable for deployment, with fallbacks for different platforms
-  const port = process.env.PORT || process.env.REPL_PORT || process.env.RAILWAY_PORT || 8080;
+  const port = process.env.PORT || 5000;
 
   server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
