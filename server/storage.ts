@@ -1,16 +1,10 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { db } from "./db";
 import { users, sessions, rides, rideRequests, bookings, messages, notifications, ratings, type User, type InsertUser, type Session, type Ride, type RideRequest, type Booking, type Message, type Notification, type Rating, type InsertRide, type InsertRideRequest, type InsertBooking, type InsertMessage, type InsertNotification, type InsertRating } from "@shared/schema";
 import { eq, or, desc, and } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable is required");
-}
-
-const sql = neon(process.env.DATABASE_URL);
-const db = drizzle(sql, { schema: { users, sessions, rides, rideRequests, bookings, messages, notifications, ratings } });
+// Database connection imported from db.ts
 
 
 export interface IStorage {
