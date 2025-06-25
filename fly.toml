@@ -2,6 +2,7 @@ app = "hitchbuddy"
 primary_region = "dfw"
 
 [build]
+  dockerfile = "Dockerfile"
 
 [env]
   NODE_ENV = "production"
