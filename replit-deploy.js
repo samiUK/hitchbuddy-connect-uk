@@ -1,4 +1,4 @@
-// Replit-optimized production server
+// Replit deployment server with advanced signal handling
 import express from "express";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./server/routes.js";
@@ -6,134 +6,143 @@ import path from "path";
 import fs from "fs";
 
 const app = express();
+
+// Essential middleware
+app.set('trust proxy', 1);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 app.use(cookieParser());
 
-// Essential health endpoints for deployment verification
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', timestamp: Date.now() });
-});
-
-app.get('/ready', (req, res) => {
-  res.status(200).send('ready');
-});
-
-// Determine port from environment
-const port = parseInt(
-  process.env.PORT || 
-  process.env.REPLIT_PORTS || 
-  process.env.REPL_SLUG || 
-  "5000", 
-  10
-);
+// Critical health endpoints
+const healthResponse = { status: 'ok', healthy: true, timestamp: Date.now() };
+app.get('/health', (req, res) => res.json(healthResponse));
+app.get('/healthz', (req, res) => res.send('ok'));
+app.get('/ready', (req, res) => res.send('ready'));
+app.get('/ping', (req, res) => res.send('pong'));
 
 console.log('Production mode: deploy-server.js handles static files');
 
-// Start server immediately for fast deployment response
+const port = parseInt(process.env.PORT || "5000", 10);
+
+// Create server with immediate startup
 const server = app.listen(port, "0.0.0.0", () => {
-  const timestamp = new Date().toLocaleTimeString('en-US', { 
-    hour12: true, 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    second: '2-digit' 
+  const time = new Date().toLocaleTimeString('en-US', { 
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
   });
-  console.log(`${timestamp} [express] serving on port ${port}`);
-  
-  // Initialize application components after server starts
+  console.log(`${time} [express] serving on port ${port}`);
   initializeComponents();
 });
 
-// Handle server startup errors
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${port} already in use, trying alternative port`);
-    const altPort = port + 1;
-    server.listen(altPort, "0.0.0.0");
-  } else {
-    console.error('Server startup error:', err);
-  }
-});
+// Configure for stability
+server.keepAliveTimeout = 120000;
+server.headersTimeout = 121000;
+server.timeout = 120000;
 
 async function initializeComponents() {
   try {
-    // Setup static file serving
+    // Serve static files
     const publicPath = path.resolve("dist", "public");
     if (fs.existsSync(publicPath)) {
-      app.use(express.static(publicPath, { maxAge: '1h' }));
+      app.use(express.static(publicPath, { maxAge: '1d' }));
     }
 
-    // Initialize API routes
+    // API routes
     await registerRoutes(app);
     console.log('Routes initialized');
 
-    // Catch-all route for SPA
-    app.use("*", (req, res) => {
-      const indexFile = path.resolve(publicPath, "index.html");
-      if (fs.existsSync(indexFile)) {
-        res.sendFile(indexFile);
+    // Fallback handler
+    app.use('*', (req, res) => {
+      const indexPath = path.resolve(publicPath, "index.html");
+      if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
       } else {
-        res.status(200).send(`
-<!DOCTYPE html>
-<html>
+        res.status(200).send(`<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>HitchBuddy</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { 
-      font-family: system-ui, sans-serif; 
-      margin: 0; 
-      padding: 2rem; 
-      text-align: center; 
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .container { 
-      background: rgba(255,255,255,0.1); 
-      padding: 2rem; 
-      border-radius: 12px; 
-      backdrop-filter: blur(10px);
-    }
-    .status { color: #4ade80; font-weight: 600; }
-  </style>
+    <meta charset="UTF-8">
+    <title>HitchBuddy Active</title>
+    <style>
+        body { font-family: system-ui; background: #1e40af; color: white; 
+               text-align: center; padding: 50px; margin: 0; }
+        .status { background: rgba(255,255,255,0.1); padding: 30px; 
+                  border-radius: 10px; display: inline-block; }
+        .green { color: #10b981; font-weight: bold; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🚗 HitchBuddy</h1>
-    <p class="status">✓ Server Online</p>
-    <p>Production deployment successful</p>
-    <p>API endpoints ready for connections</p>
-  </div>
+    <div class="status">
+        <h1>🚗 HitchBuddy</h1>
+        <div class="green">✓ Server Active</div>
+        <p>Port: ${port}</p>
+        <p>Status: Operational</p>
+    </div>
 </body>
 </html>`);
       }
     });
 
+    console.log('Application ready');
   } catch (error) {
-    console.error('Component initialization failed:', error);
+    console.error('Initialization error:', error);
   }
 }
 
-// Handle deployment environment signals
-process.on('SIGTERM', () => {
-  console.log('Graceful shutdown initiated');
-  server.close(() => process.exit(0));
-});
+// Advanced termination prevention
+let isShuttingDown = false;
 
-process.on('SIGINT', () => {
-  console.log('Interrupt received, shutting down');
-  server.close(() => process.exit(0));
-});
+function handleShutdown(signal) {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  
+  console.log(`Received ${signal} - initiating graceful shutdown`);
+  
+  // Close server gracefully
+  server.close((err) => {
+    if (err) {
+      console.error('Server close error:', err);
+      process.exit(1);
+    }
+    console.log('Server closed gracefully');
+    process.exit(0);
+  });
 
-// Prevent crashes from unhandled errors
+  // Force exit after timeout
+  setTimeout(() => {
+    console.log('Forced exit after timeout');
+    process.exit(1);
+  }, 5000);
+}
+
+// Handle all termination signals
+process.on('SIGTERM', () => handleShutdown('SIGTERM'));
+process.on('SIGINT', () => handleShutdown('SIGINT'));
+process.on('SIGUSR1', () => handleShutdown('SIGUSR1'));
+process.on('SIGUSR2', () => handleShutdown('SIGUSR2'));
+
+// Error handling
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err.message);
+  if (!isShuttingDown) {
+    handleShutdown('UNCAUGHT_EXCEPTION');
+  }
 });
 
 process.on('unhandledRejection', (reason) => {
   console.error('Unhandled rejection:', reason);
+  if (!isShuttingDown) {
+    handleShutdown('UNHANDLED_REJECTION');
+  }
+});
+
+// Keep-alive heartbeat (every 30 seconds)
+const heartbeat = setInterval(() => {
+  if (!isShuttingDown) {
+    console.log('Keep-alive heartbeat');
+  }
+}, 30000);
+
+// Cleanup on exit
+process.on('exit', () => {
+  clearInterval(heartbeat);
+  console.log('Process exiting');
 });
