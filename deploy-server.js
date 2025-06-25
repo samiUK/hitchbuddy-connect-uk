@@ -1,10 +1,12 @@
 // Immediate startup production server for Replit deployment
 import express from "express";
+import cookieParser from "cookie-parser";
 import { registerRoutes } from "./server/routes.js";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // Health check - must be first and immediate
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
