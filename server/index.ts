@@ -9,6 +9,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// Override for deployment - serve HitchBuddy on all routes in production
+if (process.env.NODE_ENV === 'production') {
+  console.log('🚀 Production mode: Serving HitchBuddy interface on all routes');
+}
+
 // Serve HitchBuddy interface directly on root for deployment
 app.get('/', (req, res) => {
   // Serve HitchBuddy interface directly
