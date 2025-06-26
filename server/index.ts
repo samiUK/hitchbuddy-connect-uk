@@ -103,8 +103,7 @@ async function startServer() {
   const PORT = 5000;
   server.listen(PORT, "0.0.0.0", () => {
     console.log(`[express] serving on port ${PORT}`);
-    console.log(`Test page: http://localhost:${PORT}/test`);
-    console.log(`HitchBuddy interface: http://localhost:${PORT}/`);
+    console.log(`HitchBuddy interface accessible at port ${PORT}`);
   });
 }
 

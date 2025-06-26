@@ -87,6 +87,8 @@ if (staticDir) {
 
 // HitchBuddy interface route - serves complete app interface
 app.get('*', (req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache');
   const hitchbuddyHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
