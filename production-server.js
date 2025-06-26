@@ -132,7 +132,7 @@ app.get('*', (req, res) => {
     </style>
 </head>
 <body>
-    <div class="status-bar">HitchBuddy is live at https://hitchbuddyapp.replit.app - Deployment successful!</div>
+    <div class="status-bar">HitchBuddy is now live at https://hitchbuddyapp.replit.app - Production deployment active!</div>
     <div class="gradient-bg">
         <nav class="nav">
             <div class="nav-container">
