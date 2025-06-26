@@ -11,9 +11,8 @@ app.use(cookieParser());
 
 // Serve HitchBuddy interface directly on root for deployment
 app.get('/', (req, res) => {
-  // Always serve HitchBuddy interface for browser requests
-    // Serve HitchBuddy interface directly instead of redirecting
-    const hitchbuddyHtml = `<!DOCTYPE html>
+  // Serve HitchBuddy interface directly
+  const hitchbuddyHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
