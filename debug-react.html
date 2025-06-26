@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HitchBuddy - Debug</title>
+    <script>
+        // Debug React loading
+        setTimeout(() => {
+            fetch('/src/main.tsx')
+                .then(response => response.text())
+                .then(code => {
+                    console.log('Main.tsx loaded successfully');
+                    console.log('Code length:', code.length);
+                })
+                .catch(error => {
+                    console.error('Failed to load main.tsx:', error);
+                });
+        }, 100);
+    </script>
+</head>
+<body>
+    <h1>Debug Page</h1>
+    <div id="debug">
+        <p>Testing React application loading...</p>
+        <div id="test-root"></div>
+    </div>
+</body>
+</html>
