@@ -11,6 +11,11 @@ app.use(cookieParser());
 
 const server = createServer(app);
 
+// Parse command line arguments for port
+const args = process.argv.slice(2);
+const portArgIndex = args.findIndex(arg => arg === '--port');
+const commandLinePort = portArgIndex !== -1 ? parseInt(args[portArgIndex + 1]) : null;
+
 async function startServer() {
   // API routes for authentication, rides, bookings, etc.
   await registerRoutes(app);
