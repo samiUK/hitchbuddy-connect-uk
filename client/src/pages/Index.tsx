@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,31 +14,31 @@ const Index = () => {
   const [showAuth, setShowAuth] = useState(false);
   const [userType, setUserType] = useState<'rider' | 'driver' | null>(null);
   const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const [location, setLocation] = useLocation();
 
   // Redirect authenticated users to dashboard
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      setLocation('/dashboard');
     }
-  }, [user, navigate]);
+  }, [user, setLocation]);
 
   const handleUserTypeSelect = (type: 'rider' | 'driver') => {
     if (user) {
       // User is already logged in, redirect to dashboard
-      navigate('/dashboard');
+      setLocation('/dashboard');
     } else {
       setUserType(type);
-      navigate('/auth');
+      setLocation('/auth');
     }
   };
 
   const handleGetStarted = () => {
     if (user) {
       // User is already logged in, redirect to dashboard
-      navigate('/dashboard');
+      setLocation('/dashboard');
     } else {
-      navigate('/auth');
+      setLocation('/auth');
     }
   };
 
@@ -96,12 +96,12 @@ const Index = () => {
                 </>
               ) : (
                 <>
-                  <Button variant="ghost" onClick={() => navigate('/auth')}>
+                  <Button variant="ghost" onClick={() => setLocation('/auth')}>
                     Sign In
                   </Button>
                   <Button 
                     className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
-                    onClick={() => navigate('/auth')}
+                    onClick={() => setLocation('/auth')}
                   >
                     Get Started
                   </Button>

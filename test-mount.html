@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test React Mount</title>
+</head>
+<body>
+    <div id="test-root">Loading...</div>
+    <script>
+        setTimeout(() => {
+            fetch('http://localhost:5000/')
+                .then(response => response.text())
+                .then(html => {
+                    const hasContent = !html.includes('<div id="root"></div>');
+                    document.getElementById('test-root').innerHTML = 
+                        hasContent ? 'React is mounting!' : 'React failed to mount - root div empty';
+                })
+                .catch(err => {
+                    document.getElementById('test-root').innerHTML = 'Error: ' + err.message;
+                });
+        }, 1000);
+    </script>
+</body>
+</html>

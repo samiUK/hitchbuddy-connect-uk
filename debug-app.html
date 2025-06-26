@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug HitchBuddy App</title>
+</head>
+<body>
+    <script>
+        // Check if React app is loading
+        fetch('http://localhost:5000/')
+            .then(response => response.text())
+            .then(html => {
+                console.log('App HTML loaded:', html.includes('root'));
+                
+                // Check if main.tsx is loading
+                return fetch('http://localhost:5000/src/main.tsx');
+            })
+            .then(response => response.text())
+            .then(js => {
+                console.log('Main.tsx loaded:', js.includes('createRoot'));
+                
+                // Check API endpoint
+                return fetch('http://localhost:5000/api/auth/me');
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('API working:', data);
+            })
+            .catch(error => {
+                console.error('Debug failed:', error);
+            });
+    </script>
+</body>
+</html>
