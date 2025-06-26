@@ -1,53 +1,4 @@
-import express from "express";
-import { createServer } from "http";
-import cookieParser from "cookie-parser";
-import { registerRoutes } from "./routes.js";
-import { setupVite } from "./vite.js";
-
-const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      console.log(`${new Date().toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit", 
-        second: "2-digit",
-        hour12: true,
-      })} [express] ${logLine}`);
-    }
-  });
-
-  next();
-});
-
-(async () => {
-  // Direct HitchBuddy interface serving - must be before registerRoutes
-  app.get('/hitchbuddy', (req, res) => {
-    const hitchbuddyHtml = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -64,10 +15,10 @@ app.use((req, res, next) => {
         .car-icon { width: 24px; height: 24px; color: white; }
         .brand { font-size: 24px; font-weight: 700; color: #1f2937; }
         .nav-buttons { display: flex; gap: 12px; align-items: center; }
-        .btn { padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: all 0.2s; cursor: pointer; border: none; }
-        .btn-ghost { color: #6b7280; background: transparent; }
+        .btn { padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: all 0.2s; }
+        .btn-ghost { color: #6b7280; background: transparent; border: none; }
         .btn-ghost:hover { color: #374151; background: #f3f4f6; }
-        .btn-primary { background: linear-gradient(45deg, #2563eb, #16a34a); color: white; }
+        .btn-primary { background: linear-gradient(45deg, #2563eb, #16a34a); color: white; border: none; }
         .btn-primary:hover { background: linear-gradient(45deg, #1d4ed8, #15803d); }
         .hero { padding: 80px 20px; text-align: center; }
         .hero-container { max-width: 800px; margin: 0 auto; }
@@ -83,7 +34,6 @@ app.use((req, res, next) => {
         .feature-icon { width: 48px; height: 48px; margin-bottom: 16px; color: #2563eb; }
         .feature-title { font-size: 20px; font-weight: 600; color: #1f2937; margin-bottom: 8px; }
         .feature-description { color: #6b7280; line-height: 1.6; }
-        .status-bar { background: #10b981; color: white; text-align: center; padding: 8px; font-weight: 500; }
         @media (max-width: 768px) {
             .hero-title { font-size: 36px; }
             .nav-buttons { gap: 8px; }
@@ -92,21 +42,25 @@ app.use((req, res, next) => {
     </style>
 </head>
 <body>
-    <div class="status-bar">✓ HitchBuddy is now running! Server responding correctly.</div>
     <div class="gradient-bg">
         <nav class="nav">
             <div class="nav-container">
                 <div class="logo">
                     <div class="logo-icon">
                         <svg class="car-icon" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0-1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                            <path d="M5 13l4 0l0 -4l-2 0l0 -2l-2 0l0 6z"/>
+                            <path d="M5 11l4 0l0 4l-4 0l0 -4z"/>
+                            <path d="M11 13l4 0l0 -4l-2 0l0 -2l-2 0l0 6z"/>
+                            <path d="M11 11l4 0l0 4l-4 0l0 -4z"/>
+                            <path d="M3 17l18 0l-2 4l-14 0l-2 -4z"/>
+                            <path d="M6 12l12 0l2 -6l-16 0l2 6z"/>
                         </svg>
                     </div>
                     <span class="brand">HitchBuddy</span>
                 </div>
                 <div class="nav-buttons">
-                    <button class="btn btn-ghost" onclick="showAuthModal()">Sign In</button>
-                    <button class="btn btn-primary" onclick="showAuthModal()">Get Started</button>
+                    <a href="#" class="btn btn-ghost">Sign In</a>
+                    <a href="#" class="btn btn-primary">Get Started</a>
                 </div>
             </div>
         </nav>
@@ -119,8 +73,8 @@ app.use((req, res, next) => {
                     HitchBuddy makes ride sharing safe, reliable, and rewarding.
                 </p>
                 <div class="hero-buttons">
-                    <button class="btn btn-primary btn-large" onclick="findRide()">Find a Ride</button>
-                    <button class="btn btn-ghost btn-large" onclick="offerRide()">Offer a Ride</button>
+                    <a href="#" class="btn btn-primary btn-large">Find a Ride</a>
+                    <a href="#" class="btn btn-ghost btn-large">Offer a Ride</a>
                 </div>
             </div>
         </section>
@@ -165,67 +119,13 @@ app.use((req, res, next) => {
     </div>
 
     <script>
-        function showAuthModal() {
-            alert('Authentication system is being loaded. The full React app with login functionality will be available shortly.');
-        }
-        
-        function findRide() {
-            alert('Find Ride feature is loading. Please wait for the full application to initialize.');
-        }
-        
-        function offerRide() {
-            alert('Offer Ride feature is loading. Please wait for the full application to initialize.');
-        }
-        
-        // Check if React app loads in background
-        setTimeout(() => {
-            fetch('/api/auth/me')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error === 'Not authenticated') {
-                        console.log('API is working correctly - authentication system operational');
-                    }
-                })
-                .catch(err => console.log('API check:', err.message));
-        }, 1000);
+        // Simple interactivity
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('HitchBuddy is loading... Please wait for the full React app to initialize.');
+            });
+        });
     </script>
 </body>
-</html>`;
-    res.setHeader('Content-Type', 'text/html');
-    res.send(hitchbuddyHtml);
-  });
-
-  const server = await registerRoutes(app);
-
-  app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Server error:', err);
-    } else {
-      console.error('Server error:', message);
-    }
-
-    res.status(status).json({ message });
-  });
-
-  // Setup Vite for development and static serving for production
-  if (process.env.NODE_ENV === "development") {
-    await setupVite(app, server);
-  } else {
-    app.use(express.static("dist/client"));
-  }
-
-  const port = parseInt(process.env.PORT || "5000", 10);
-
-  server.listen(port, "0.0.0.0", () => {
-    const formattedTime = new Date().toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    });
-    console.log(`${formattedTime} [express] serving on port ${port}`);
-  });
-})();
+</html>

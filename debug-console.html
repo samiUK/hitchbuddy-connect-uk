@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Console Errors</title>
+</head>
+<body>
+    <div id="debug-output">Checking console errors...</div>
+    <script>
+        // Capture all console errors
+        const originalError = console.error;
+        const errors = [];
+        
+        console.error = function(...args) {
+            errors.push(args.join(' '));
+            originalError.apply(console, arguments);
+        };
+        
+        // Capture runtime errors
+        window.addEventListener('error', (e) => {
+            errors.push(`Runtime Error: ${e.message} at ${e.filename}:${e.lineno}`);
+        });
+        
+        // Load the main app
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = '/src/main.tsx';
+        script.onerror = (e) => {
+            errors.push(`Script load error: ${e.message}`);
+        };
+        document.head.appendChild(script);
+        
+        // Check results after 3 seconds
+        setTimeout(() => {
+            const output = document.getElementById('debug-output');
+            if (errors.length > 0) {
+                output.innerHTML = '<h3>Console Errors Found:</h3><ul>' + 
+                    errors.map(err => `<li>${err}</li>`).join('') + '</ul>';
+            } else {
+                const rootDiv = document.getElementById('root');
+                if (rootDiv && rootDiv.innerHTML.trim() === '') {
+                    output.innerHTML = '<h3>No console errors, but React not mounting</h3>';
+                } else {
+                    output.innerHTML = '<h3>React mounted successfully!</h3>';
+                }
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

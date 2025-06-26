@@ -20,18 +20,14 @@ const App = () => (
       <Sonner />
       <AuthProvider>
         <Router>
-          <Switch>
-            <Route path="/" component={Index} />
-            <Route path="/auth" component={Auth} />
-            <Route path="/dashboard">
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            </Route>
-            <Route>
-              <NotFound />
-            </Route>
-          </Switch>
+          <Route path="/" component={Index} />
+          <Route path="/auth" component={Auth} />
+          <Route path="/dashboard">
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          </Route>
+          <Route path="/:rest*" component={NotFound} />
         </Router>
       </AuthProvider>
     </TooltipProvider>
