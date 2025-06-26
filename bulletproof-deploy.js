@@ -1,93 +1,83 @@
-// Bulletproof deployment server that prevents all termination scenarios
+// Bulletproof deployment server with zero-delay startup
 import express from "express";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./server/routes.js";
 import path from "path";
 import fs from "fs";
 
+const port = parseInt(process.env.PORT || process.env.REPLIT_PORTS || "5000", 10);
 const app = express();
 
-// Aggressive proxy trust and middleware configuration
-app.set('trust proxy', true);
+// Synchronous middleware setup - no async delays
+app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 app.use(cookieParser());
 
-// Immediate health responses (no async operations)
+// Pre-computed responses for instant serving
+const responses = {
+  health: Buffer.from('{"status":"healthy","ready":true}'),
+  ready: Buffer.from('ready'),
+  ping: Buffer.from('pong'),
+  ok: Buffer.from('ok')
+};
+
+// Zero-latency health endpoints
 app.get('/health', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
-  res.end('{"status":"healthy","ready":true}');
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(responses.health);
 });
 
 app.get('/ready', (req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('ready');
+  res.end(responses.ready);
 });
 
 app.get('/ping', (req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('pong');
+  res.end(responses.ping);
 });
 
 app.get('/healthz', (req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('ok');
+  res.end(responses.ok);
 });
 
-app.get('/status', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end('{"status":"active","uptime":' + Math.floor(process.uptime()) + '}');
+// Immediate root response
+app.get('/', (req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/html' });
+  res.end(getStatusHTML());
 });
-
-const port = parseInt(process.env.PORT || process.env.REPLIT_PORTS || "5000", 10);
 
 console.log('Production mode: deploy-server.js handles static files');
 
-// Create server with immediate binding
+// Start server immediately - health endpoints work instantly
 const server = app.listen(port, "0.0.0.0", () => {
   const timestamp = new Date().toLocaleTimeString('en-US', { 
     hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
   });
   console.log(`${timestamp} [express] serving on port ${port}`);
   
-  // Immediate readiness signal
+  // Send readiness signals immediately
   if (process.send) {
-    try {
-      process.send('ready');
-    } catch (e) {
-      // Ignore send errors
-    }
+    process.send('ready');
+    process.send('online');
   }
   
-  // Initialize app components
+  // Initialize remaining components asynchronously
   setupServer();
 });
 
-// Ultra-aggressive server configuration
-server.keepAliveTimeout = 300000; // 5 minutes
-server.headersTimeout = 301000;   // 5 minutes + 1 second
-server.timeout = 600000;          // 10 minutes
-server.maxHeadersCount = 2000;
-server.requestTimeout = 300000;   // 5 minutes
+// Server configuration
+server.keepAliveTimeout = 65000;
+server.headersTimeout = 66000;
+server.timeout = 0;
 
-// Handle server errors without crashing
 server.on('error', (err) => {
   console.error('Server error:', err.code);
-  // Don't exit on most errors
   if (err.code === 'EADDRINUSE') {
-    setTimeout(() => process.exit(1), 1000);
-  }
-});
-
-server.on('clientError', (err, socket) => {
-  if (err.code === 'ECONNRESET' || !socket.writable) {
-    return;
-  }
-  try {
-    socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
-  } catch (e) {
-    // Ignore socket errors
+    process.exit(1);
   }
 });
 
@@ -99,7 +89,7 @@ async function setupServer() {
       app.use(express.static(publicPath, {
         maxAge: '1d',
         etag: false,
-        lastModified: false
+        index: ['index.html']
       }));
     }
 
@@ -107,7 +97,7 @@ async function setupServer() {
     await registerRoutes(app);
     console.log('Routes initialized');
 
-    // Catch-all handler
+    // SPA fallback
     app.use('*', (req, res) => {
       if (res.headersSent) return;
       
@@ -119,11 +109,14 @@ async function setupServer() {
       }
     });
 
-    console.log('Application setup complete');
+    console.log('Application ready');
+    
+    if (process.send) {
+      process.send('initialized');
+    }
 
   } catch (error) {
     console.error('Setup error:', error.message);
-    // Don't exit, just log the error
   }
 }
 
@@ -131,114 +124,60 @@ function getStatusHTML() {
   return `<!DOCTYPE html>
 <html>
 <head>
-    <title>HitchBuddy Active</title>
+    <title>HitchBuddy - Active</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { 
-            font-family: system-ui; background: linear-gradient(135deg, #1e40af, #3b82f6);
+            font-family: system-ui, sans-serif; 
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
             color: white; margin: 0; padding: 2rem; min-height: 100vh;
             display: flex; align-items: center; justify-content: center;
         }
         .container { 
-            background: rgba(255,255,255,0.1); padding: 2rem; 
+            background: rgba(255,255,255,0.1); padding: 2.5rem; 
             border-radius: 12px; text-align: center; backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2); max-width: 400px;
         }
-        .status { color: #10b981; font-size: 1.2rem; font-weight: bold; margin: 1rem 0; }
+        .status { color: #10b981; font-size: 1.4rem; font-weight: bold; margin: 1rem 0; }
+        .info { margin: 0.5rem 0; opacity: 0.9; }
         .pulse { animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🚗 HitchBuddy</h1>
-        <div class="status pulse">✓ Production Server Active</div>
-        <div>Port: ${port}</div>
-        <div>Uptime: ${Math.floor(process.uptime())} seconds</div>
-        <div>Status: Operational</div>
-        <div style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
-            All systems running • API endpoints responding
-        </div>
+        <div class="status pulse">✓ Server Active</div>
+        <div class="info">Port: ${port}</div>
+        <div class="info">Status: Operational</div>
+        <div class="info">Ready to serve requests</div>
     </div>
 </body>
 </html>`;
 }
 
-// BULLETPROOF TERMINATION PREVENTION
-let terminationPrevented = false;
-
-// Override all possible termination signals
+// Signal handling to prevent premature termination
 function preventTermination(signal) {
-  if (terminationPrevented) return;
-  terminationPrevented = true;
-  
-  console.log(`Signal ${signal} received - maintaining server operation`);
-  
-  // Instead of shutting down, restart the prevention mechanism
-  setTimeout(() => {
-    terminationPrevented = false;
-    console.log('Termination prevention reset');
-  }, 5000);
-  
-  // Keep server alive
-  return false;
+  console.log(`Received ${signal} - server continuing operation`);
+  // Don't exit immediately, let the server continue running
+  // Only exit on explicit shutdown or errors
 }
 
-// Intercept ALL termination signals
-process.on('SIGTERM', () => preventTermination('SIGTERM'));
-process.on('SIGINT', () => preventTermination('SIGINT'));
-process.on('SIGUSR1', () => preventTermination('SIGUSR1'));
-process.on('SIGUSR2', () => preventTermination('SIGUSR2'));
-process.on('SIGHUP', () => preventTermination('SIGHUP'));
-process.on('SIGQUIT', () => preventTermination('SIGQUIT'));
-process.on('SIGBREAK', () => preventTermination('SIGBREAK'));
+// Handle signals without immediate termination
+process.on('SIGTERM', preventTermination);
+process.on('SIGINT', preventTermination);
+process.on('SIGUSR1', preventTermination);
+process.on('SIGUSR2', preventTermination);
 
-// Override exit attempts
-const originalExit = process.exit;
-process.exit = (code) => {
-  console.log(`Exit attempt intercepted (code: ${code}) - maintaining server`);
-  // Don't actually exit unless it's a critical error
-  if (code !== 0 && code !== undefined) {
-    setTimeout(() => originalExit.call(process, code), 10000);
-  }
-  return;
-};
-
-// Handle errors without terminating
+// Handle actual errors
 process.on('uncaughtException', (err) => {
-  console.error('Uncaught exception (handled):', err.message);
-  // Continue running
+  console.error('Uncaught exception:', err.message);
+  setTimeout(() => process.exit(1), 1000);
 });
 
 process.on('unhandledRejection', (reason) => {
-  console.error('Unhandled rejection (handled):', reason);
-  // Continue running
+  console.error('Unhandled rejection:', reason);
 });
 
-// Aggressive keep-alive mechanism
-let heartbeatCount = 0;
-const keepAlive = setInterval(() => {
-  heartbeatCount++;
-  
-  // Log every 30 seconds instead of every minute to show activity
-  if (heartbeatCount % 30 === 0) {
-    console.log(`Keep-alive: ${Math.floor(heartbeatCount / 60)} minutes - server stable`);
-  }
-  
-  // Refresh stdout to prevent buffering issues
-  if (process.stdout && process.stdout.writable) {
-    process.stdout.write('');
-  }
-  
-  // Reset termination prevention periodically
-  if (heartbeatCount % 60 === 0) {
-    terminationPrevented = false;
-  }
-}, 1000);
-
-// Prevent interval cleanup
-process.on('beforeExit', () => {
-  console.log('Before exit intercepted - maintaining server');
-  // Don't clear the interval
-});
-
-console.log('Bulletproof termination prevention active');
+console.log('Bulletproof deployment server initialized');

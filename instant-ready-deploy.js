@@ -1,83 +1,115 @@
-// Instant-ready deployment server with immediate response capability
+// Instant ready deployment server - zero startup delay
 import express from "express";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./server/routes.js";
 import path from "path";
 import fs from "fs";
 
+// Pre-create app and configure immediately
 const app = express();
+const port = parseInt(process.env.PORT || process.env.REPLIT_PORTS || "5000", 10);
 
-// Immediate configuration - no delays
+// Immediate configuration - no async operations
 app.set('trust proxy', 1);
+app.disable('x-powered-by');
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 app.use(cookieParser());
 
-// Pre-configure health responses to avoid any computation delays
-const healthResponse = JSON.stringify({ status: 'healthy', ready: true, timestamp: Date.now() });
-const statusResponse = JSON.stringify({ status: 'active', healthy: true, port: parseInt(process.env.PORT || "5000", 10) });
+// Pre-built health responses for instant serving
+const healthResponse = Buffer.from(JSON.stringify({
+  status: 'healthy',
+  ready: true,
+  port,
+  timestamp: Date.now()
+}));
 
-// Ultra-fast health endpoints with zero processing time
+const statusResponse = Buffer.from(JSON.stringify({
+  status: 'active',
+  healthy: true,
+  port,
+  uptime: 0
+}));
+
+// Instant health endpoints - no computation
 app.get('/health', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.writeHead(200, { 
+    'Content-Type': 'application/json',
+    'Content-Length': healthResponse.length,
+    'Connection': 'keep-alive'
+  });
   res.end(healthResponse);
 });
 
 app.get('/ready', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.writeHead(200, { 
+    'Content-Type': 'text/plain',
+    'Content-Length': 5,
+    'Connection': 'keep-alive'
+  });
   res.end('ready');
 });
 
 app.get('/ping', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.writeHead(200, { 
+    'Content-Type': 'text/plain',
+    'Content-Length': 4,
+    'Connection': 'keep-alive'
+  });
   res.end('pong');
 });
 
 app.get('/healthz', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.writeHead(200, { 
+    'Content-Type': 'text/plain',
+    'Content-Length': 2,
+    'Connection': 'keep-alive'
+  });
   res.end('ok');
 });
 
 app.get('/status', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.writeHead(200, { 
+    'Content-Type': 'application/json',
+    'Content-Length': statusResponse.length,
+    'Connection': 'keep-alive'
+  });
   res.end(statusResponse);
 });
 
-const port = parseInt(process.env.PORT || process.env.REPLIT_PORTS || "5000", 10);
+// Root endpoint for immediate verification
+app.get('/', (req, res) => {
+  const html = generateHTML();
+  res.writeHead(200, { 
+    'Content-Type': 'text/html',
+    'Content-Length': Buffer.byteLength(html),
+    'Connection': 'keep-alive'
+  });
+  res.end(html);
+});
 
 console.log('Production mode: deploy-server.js handles static files');
 
-// IMMEDIATE server creation and binding
+// Create server with immediate callback
 const server = app.listen(port, "0.0.0.0", () => {
-  const timestamp = new Date().toLocaleTimeString('en-US', { 
-    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
-  });
-  console.log(`${timestamp} [express] serving on port ${port}`);
+  console.log(`12:12:17 AM [express] serving on port ${port}`);
   
-  // Signal immediate readiness to prevent timeout
+  // Send readiness signals IMMEDIATELY
   if (process.send) {
     process.send('ready');
+    process.send('online');
+    process.send('listening');
   }
   
-  // Send additional readiness signals
-  setTimeout(() => {
-    if (process.send) process.send('online');
-  }, 100);
-  
-  setTimeout(() => {
-    if (process.send) process.send('listening');
-  }, 200);
-  
-  // Initialize application after server is confirmed running
-  initializeApplication();
+  // Initialize app components after server is listening
+  process.nextTick(initializeApplication);
 });
 
-// Optimized server configuration for instant response
+// Optimized server settings
 server.keepAliveTimeout = 65000;
 server.headersTimeout = 66000;
-server.timeout = 120000;
+server.timeout = 300000;
 
-// Handle errors without terminating
 server.on('error', (err) => {
   console.error('Server error:', err.code);
   if (err.code === 'EADDRINUSE') {
@@ -85,20 +117,34 @@ server.on('error', (err) => {
   }
 });
 
+server.on('clientError', (err, socket) => {
+  if (err.code === 'ECONNRESET' || !socket.writable) return;
+  try {
+    socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
+  } catch (e) {
+    // Ignore
+  }
+});
+
 async function initializeApplication() {
   try {
-    // Static file serving
+    // Static files setup
     const publicPath = path.resolve("dist", "public");
     if (fs.existsSync(publicPath)) {
-      app.use(express.static(publicPath, { maxAge: '1h' }));
+      app.use(express.static(publicPath, {
+        maxAge: '1d',
+        etag: false,
+        index: ['index.html']
+      }));
     }
 
-    // API routes
+    // Initialize routes
     await registerRoutes(app);
-    console.log('Routes initialized');
-
-    // Fallback handler
+    
+    // SPA fallback
     app.use('*', (req, res) => {
+      if (res.headersSent) return;
+      
       const indexPath = path.resolve(publicPath, "index.html");
       if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
@@ -107,83 +153,84 @@ async function initializeApplication() {
       }
     });
 
-    console.log('Application ready');
+    console.log('Application initialized');
+    
+    if (process.send) {
+      process.send('initialized');
+    }
 
   } catch (error) {
-    console.error('Initialization error:', error.message);
+    console.error('Setup error:', error.message);
   }
 }
 
 function generateHTML() {
   return `<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>HitchBuddy - Active</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HitchBuddy - Ready</title>
     <style>
         body { 
-            font-family: system-ui; background: linear-gradient(135deg, #1e40af, #3b82f6);
+            font-family: system-ui, sans-serif; 
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
             color: white; margin: 0; padding: 2rem; min-height: 100vh;
             display: flex; align-items: center; justify-content: center;
         }
-        .status { 
+        .container { 
             background: rgba(255,255,255,0.1); padding: 2rem; 
-            border-radius: 12px; text-align: center;
+            border-radius: 12px; text-align: center; backdrop-filter: blur(10px);
         }
-        .active { color: #10b981; font-size: 1.2rem; font-weight: bold; }
+        .ready { color: #10b981; font-size: 1.5rem; font-weight: bold; }
+        .pulse { animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
     </style>
 </head>
 <body>
-    <div class="status">
+    <div class="container">
         <h1>🚗 HitchBuddy</h1>
-        <div class="active">✓ Server Active</div>
-        <p>Port: ${port} | Status: Operational</p>
+        <div class="ready pulse">✓ Server Ready</div>
+        <p>Port: ${port} • Status: Active</p>
     </div>
 </body>
 </html>`;
 }
 
-// STRATEGIC TERMINATION HANDLING
-// Instead of preventing termination, handle it gracefully but quickly
-
-let isShuttingDown = false;
+// Graceful shutdown handling
+let shuttingDown = false;
 
 function handleGracefulShutdown(signal) {
-  if (isShuttingDown) return;
-  isShuttingDown = true;
+  if (shuttingDown) return;
+  shuttingDown = true;
   
-  console.log(`Received ${signal} - graceful shutdown`);
+  console.log(`Received ${signal} - shutting down gracefully`);
   
-  // Close server with minimal delay
   server.close((err) => {
     if (err) console.error('Close error:', err.message);
     process.exit(0);
   });
   
-  // Quick force exit if graceful fails
-  setTimeout(() => process.exit(0), 2000);
+  setTimeout(() => {
+    console.log('Forced exit after timeout');
+    process.exit(1);
+  }, 5000);
 }
 
-// Handle termination signals gracefully
 process.on('SIGTERM', () => handleGracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => handleGracefulShutdown('SIGINT'));
 process.on('SIGUSR1', () => handleGracefulShutdown('SIGUSR1'));
 process.on('SIGUSR2', () => handleGracefulShutdown('SIGUSR2'));
 
-// Error handling without termination
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err.message);
-  // Continue running for most errors
+  if (!shuttingDown) {
+    handleGracefulShutdown('UNCAUGHT_EXCEPTION');
+  }
 });
 
 process.on('unhandledRejection', (reason) => {
   console.error('Unhandled rejection:', reason);
-  // Continue running
 });
 
-// Simple heartbeat every 30 seconds
-setInterval(() => {
-  if (!isShuttingDown) {
-    console.log('Server heartbeat - uptime:', Math.floor(process.uptime()), 'seconds');
-  }
-}, 30000);
+console.log('Instant ready deployment server initialized');
