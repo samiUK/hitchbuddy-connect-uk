@@ -3,129 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HitchBuddy - Ride Sharing Platform</title>
+    <title>HitchBuddy - Share Your Journey</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 50%, #f0fff4 100%); min-height: 100vh; }
-        .nav { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 50; }
-        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; height: 64px; }
-        .logo { display: flex; align-items: center; gap: 8px; }
-        .logo-icon { background: linear-gradient(45deg, #2563eb, #16a34a); padding: 8px; border-radius: 8px; }
-        .car-icon { width: 24px; height: 24px; color: white; }
-        .brand { font-size: 24px; font-weight: 700; color: #1f2937; }
-        .nav-buttons { display: flex; gap: 12px; align-items: center; }
-        .btn { padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: all 0.2s; }
-        .btn-ghost { color: #6b7280; background: transparent; border: none; }
-        .btn-ghost:hover { color: #374151; background: #f3f4f6; }
-        .btn-primary { background: linear-gradient(45deg, #2563eb, #16a34a); color: white; border: none; }
-        .btn-primary:hover { background: linear-gradient(45deg, #1d4ed8, #15803d); }
-        .hero { padding: 80px 20px; text-align: center; }
-        .hero-container { max-width: 800px; margin: 0 auto; }
-        .hero-title { font-size: 48px; font-weight: 800; color: #1f2937; margin-bottom: 16px; }
-        .hero-subtitle { font-size: 20px; color: #6b7280; margin-bottom: 32px; }
-        .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-        .btn-large { padding: 12px 32px; font-size: 16px; }
-        .features { padding: 80px 20px; background: rgba(255,255,255,0.5); }
-        .features-container { max-width: 1200px; margin: 0 auto; }
-        .features-title { text-align: center; font-size: 36px; font-weight: 700; color: #1f2937; margin-bottom: 48px; }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
-        .feature-card { background: white; padding: 32px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .feature-icon { width: 48px; height: 48px; margin-bottom: 16px; color: #2563eb; }
-        .feature-title { font-size: 20px; font-weight: 600; color: #1f2937; margin-bottom: 8px; }
-        .feature-description { color: #6b7280; line-height: 1.6; }
-        @media (max-width: 768px) {
-            .hero-title { font-size: 36px; }
-            .nav-buttons { gap: 8px; }
-            .hero-buttons { flex-direction: column; align-items: center; }
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .header { background: linear-gradient(135deg, #2563eb, #16a34a); color: white; padding: 20px 0; }
+        .nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 28px; font-weight: bold; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); }
+        .hero { background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 50%, #f0fff4 100%); padding: 80px 0; text-align: center; }
+        .hero h1 { font-size: 48px; font-weight: 800; color: #1f2937; margin-bottom: 20px; }
+        .hero p { font-size: 20px; color: #6b7280; margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .cta-buttons { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 15px 30px; font-size: 16px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-primary { background: linear-gradient(45deg, #2563eb, #16a34a); color: white; }
+        .btn-secondary { background: white; color: #2563eb; border: 2px solid #2563eb; }
+        .features { padding: 80px 0; }
+        .features h2 { text-align: center; font-size: 36px; margin-bottom: 60px; color: #1f2937; }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .feature { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        .feature-icon { font-size: 48px; margin-bottom: 20px; }
+        .feature h3 { font-size: 24px; margin-bottom: 15px; color: #1f2937; }
+        .feature p { color: #6b7280; }
+        .status { background: #1f2937; color: white; padding: 60px 0; }
+        .status h2 { text-align: center; margin-bottom: 40px; }
+        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .status-item { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; }
+        .status-item h4 { margin-bottom: 10px; color: #16a34a; }
+        .footer { background: #1f2937; color: white; padding: 40px 0; text-align: center; }
     </style>
 </head>
 <body>
-    <div class="gradient-bg">
-        <nav class="nav">
-            <div class="nav-container">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <svg class="car-icon" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M5 13l4 0l0 -4l-2 0l0 -2l-2 0l0 6z"/>
-                            <path d="M5 11l4 0l0 4l-4 0l0 -4z"/>
-                            <path d="M11 13l4 0l0 -4l-2 0l0 -2l-2 0l0 6z"/>
-                            <path d="M11 11l4 0l0 4l-4 0l0 -4z"/>
-                            <path d="M3 17l18 0l-2 4l-14 0l-2 -4z"/>
-                            <path d="M6 12l12 0l2 -6l-16 0l2 6z"/>
-                        </svg>
-                    </div>
-                    <span class="brand">HitchBuddy</span>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">🚗 HitchBuddy</div>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#status">Status</a>
+                    <a href="#contact">Contact</a>
                 </div>
-                <div class="nav-buttons">
-                    <a href="#" class="btn btn-ghost">Sign In</a>
-                    <a href="#" class="btn btn-primary">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Share Your Journey, Save the Planet</h1>
+            <p>Connect with fellow travelers, reduce costs, and make every trip an adventure. HitchBuddy makes ride sharing safe, reliable, and rewarding.</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary">Find a Ride</a>
+                <a href="#" class="btn btn-secondary">Offer a Ride</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <h2>Why Choose HitchBuddy?</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Smart Route Matching</h3>
+                    <p>Advanced algorithms connect you with riders going your way, optimizing routes for everyone involved in the journey.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Trusted Community</h3>
+                    <p>Verified profiles, ratings, and reviews ensure safe and reliable ride-sharing experiences with trusted travelers.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💬</div>
+                    <h3>Real-time Communication</h3>
+                    <p>Stay connected with instant messaging, live location sharing, and trip updates for complete peace of mind.</p>
                 </div>
             </div>
-        </nav>
+        </div>
+    </section>
 
-        <section class="hero">
-            <div class="hero-container">
-                <h1 class="hero-title">Share Your Journey, Save the Planet</h1>
-                <p class="hero-subtitle">
-                    Connect with fellow travelers, reduce costs, and make every trip an adventure. 
-                    HitchBuddy makes ride sharing safe, reliable, and rewarding.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#" class="btn btn-primary btn-large">Find a Ride</a>
-                    <a href="#" class="btn btn-ghost btn-large">Offer a Ride</a>
+    <section class="status" id="status">
+        <div class="container">
+            <h2>Platform Status</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <h4>Authentication System</h4>
+                    <p>Secure login, signup, password reset, and session management fully operational.</p>
+                </div>
+                <div class="status-item">
+                    <h4>Dashboard Interface</h4>
+                    <p>Separate rider and driver dashboards with comprehensive analytics and controls.</p>
+                </div>
+                <div class="status-item">
+                    <h4>Ride Management</h4>
+                    <p>Complete trip posting, finding, and booking system with real-time availability.</p>
+                </div>
+                <div class="status-item">
+                    <h4>Messaging System</h4>
+                    <p>In-app chat functionality between riders and drivers with notification support.</p>
+                </div>
+                <div class="status-item">
+                    <h4>Rating & Reviews</h4>
+                    <p>Comprehensive rating system for completed trips to build community trust.</p>
+                </div>
+                <div class="status-item">
+                    <h4>Notification Center</h4>
+                    <p>Real-time alerts and updates for booking confirmations and trip communications.</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="features">
-            <div class="features-container">
-                <h2 class="features-title">Why Choose HitchBuddy?</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <svg class="feature-icon" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                        </svg>
-                        <h3 class="feature-title">Smart Route Matching</h3>
-                        <p class="feature-description">
-                            AI-powered matching connects you with rides along your exact route, 
-                            saving time and maximizing convenience.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <svg class="feature-icon" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21.02 7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                        <h3 class="feature-title">Trusted Community</h3>
-                        <p class="feature-description">
-                            Verified profiles, ratings, and reviews ensure safe, reliable connections 
-                            with fellow travelers you can trust.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <svg class="feature-icon" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                        </svg>
-                        <h3 class="feature-title">Real-time Communication</h3>
-                        <p class="feature-description">
-                            Stay connected with instant messaging, live location sharing, 
-                            and trip updates for peace of mind.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <script>
-        // Simple interactivity
-        document.querySelectorAll('.btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                alert('HitchBuddy is loading... Please wait for the full React app to initialize.');
-            });
-        });
-    </script>
+    <footer class="footer" id="contact">
+        <div class="container">
+            <p>&copy; 2025 HitchBuddy. Ride sharing platform with complete authentication, dashboard, booking, messaging, and rating functionality.</p>
+        </div>
+    </footer>
 </body>
 </html>
