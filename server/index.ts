@@ -1,6 +1,30 @@
 import express, { type Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./routes";
+import { spawn } from "child_process";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+// Check if we should use production deployment server
+if (process.env.NODE_ENV === 'production') {
+  console.log('Production mode detected - switching to optimized deployment server');
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const productionServer = join(__dirname, '..', 'deploy-production.js');
+  
+  const server = spawn('node', [productionServer], {
+    env: { ...process.env },
+    stdio: 'inherit'
+  });
+  
+  process.on('SIGTERM', () => server.kill('SIGTERM'));
+  process.on('SIGINT', () => server.kill('SIGINT'));
+  
+  server.on('exit', (code) => process.exit(code || 0));
+  
+  // Exit early - don't continue with development server
+  process.exit(0);
+}
 
 const app = express();
 app.use(express.json());
