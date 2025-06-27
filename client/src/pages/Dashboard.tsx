@@ -1394,18 +1394,18 @@ const Dashboard = () => {
               ) : (
                 // Riders see their bookings with same structure
                 <div className="space-y-6">
-                  {/* Counter Offers Section - only show actual counter offers (with rideRequestId but no rideId) */}
-                  {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).length > 0 && (
+                  {/* Counter Offers Section - show all counter offers received by this rider */}
+                  {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.message && booking.message.includes('Counter offer')).length > 0 && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-gray-900">Counter Offers</h3>
                         <Badge variant="outline" className="text-orange-600">
-                          {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).length} pending
+                          {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.message && booking.message.includes('Counter offer')).length} pending
                         </Badge>
                       </div>
                       
                       <div className="grid gap-4">
-                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).map((offer: any) => {
+                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.message && booking.message.includes('Counter offer')).map((offer: any) => {
                           const relatedRequest = rideRequests.find(req => req.id === offer.rideRequestId);
                           return (
                             <Card key={offer.id} className="border-orange-200 bg-orange-50">

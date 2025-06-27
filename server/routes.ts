@@ -555,6 +555,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const booking = await storage.createBooking(bookingData);
+      
+      // Create notification for counter offers
+      if (bookingData.message && bookingData.message.includes('Counter offer')) {
+        await storage.createNotification({
+          userId: bookingData.riderId,
+          type: 'counter_offer',
+          title: 'Counter Offer Received',
+          message: `You have received a counter offer of £${bookingData.totalCost} for your ride request`,
+          relatedId: booking.id,
+          isRead: false
+        });
+      }
+      
       res.json({ booking });
     } catch (error) {
       console.error('Create booking error:', error);
