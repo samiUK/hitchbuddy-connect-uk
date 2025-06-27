@@ -713,7 +713,7 @@ const Dashboard = () => {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      {userType === 'driver' ? 'Total Rides' : 'Pending Requests'}
+                      {userType === 'driver' ? 'Total Rides' : 'Active Requests'}
                     </CardTitle>
                     <Car className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
@@ -721,11 +721,12 @@ const Dashboard = () => {
                     <div className="text-2xl font-bold">
                       {userType === 'driver' 
                         ? rides.filter(r => r.driverId === user?.id).length 
-                        : rideRequests.filter(req => req.status === 'active').length
+                        : rideRequests.filter(req => req.status === 'active').length + 
+                          bookings.filter(booking => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId).length
                       }
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {userType === 'driver' ? 'Rides you\'ve posted' : 'Your active ride requests'}
+                      {userType === 'driver' ? 'Rides you\'ve posted' : 'Requests awaiting approval'}
                     </p>
                   </CardContent>
                 </Card>

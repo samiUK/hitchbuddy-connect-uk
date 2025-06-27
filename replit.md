@@ -27,6 +27,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ "Upcoming Rides" shows all driver-accepted rides at agreed price (confirmed bookings)
 - ✅ Fixed Counter Offers logic: Only shows actual counter offers (with rideRequestId, no rideId)
 - ✅ Booking requests from available rides now properly stay in "My Live Requests" until approved
+- ✅ Updated overview stats: Changed "Pending Requests" to "Active Requests" showing total count of requests awaiting approval
 - ✅ Proper separation between pending requests and confirmed rides for clear user experience
 - ✅ Improved UI consistency: Removed duplicate h2 headers that replicated navigation tab names while maintaining proper subsection organization
 - ✅ Restored "Booking Requests" section header with left-alignment for clear content hierarchy
