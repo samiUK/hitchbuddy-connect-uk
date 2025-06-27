@@ -522,7 +522,7 @@ const Dashboard = () => {
                     <div className="text-2xl font-bold">
                       {userType === 'driver' 
                         ? rides.filter(r => r.driverId === user?.id).length 
-                        : rideRequests.filter(req => req.status === 'pending').length
+                        : rideRequests.filter(req => req.status === 'active').length
                       }
                     </div>
                     <p className="text-xs text-muted-foreground">
@@ -1081,7 +1081,7 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="grid gap-4">
-                        {rideRequests.filter(req => req.status === 'pending').map((request) => (
+                        {rideRequests.filter(req => req.status === 'active').map((request) => (
                           <Card key={request.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between mb-3">
@@ -1315,7 +1315,7 @@ const Dashboard = () => {
             {userType === 'driver' ? (
               // Drivers see ride requests from riders
               <div className="space-y-4">
-                {rideRequests.filter((request: any) => request.status === 'pending').map((request: any) => (
+                {rideRequests.filter((request: any) => request.status === 'active').map((request: any) => (
                   <Card key={request.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
@@ -1371,7 +1371,7 @@ const Dashboard = () => {
                     </CardContent>
                   </Card>
                 ))}
-                {rideRequests.filter((request: any) => request.status === 'pending').length === 0 && (
+                {rideRequests.filter((request: any) => request.status === 'active').length === 0 && (
                   <div className="text-center py-12">
                     <Search className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No ride requests</h3>
