@@ -1001,7 +1001,7 @@ const Dashboard = () => {
 
                   {/* Upcoming Rides Section */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Rides</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Upcoming Rides</h3>
                     <div className="space-y-4">
                       {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'confirmed').map((booking: any) => {
                         const relatedRide = rides.find(r => r.id === booking.rideId);
@@ -1092,7 +1092,7 @@ const Dashboard = () => {
 
                   {/* Past Rides Section */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Past Rides</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Past Rides</h3>
                     <div className="space-y-4">
                       {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'completed').map((booking: any) => {
                         const relatedRide = rides.find(r => r.id === booking.rideId);
@@ -1304,7 +1304,7 @@ const Dashboard = () => {
 
                   {/* Upcoming Rides Section */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Rides</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Upcoming Rides</h3>
                     <div className="space-y-4">
                       {bookings.filter(booking => booking.riderId === user?.id && booking.status === 'confirmed').map((booking: any) => {
                         const relatedRide = rides.find(r => r.id === booking.rideId);
@@ -1391,7 +1391,7 @@ const Dashboard = () => {
 
                   {/* Past Rides Section */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Past Rides</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Past Rides</h3>
                     <div className="space-y-4">
                       {bookings.filter(booking => booking.riderId === user?.id && booking.status === 'completed').map((booking: any) => {
                         const relatedRide = rides.find(r => r.id === booking.rideId);
