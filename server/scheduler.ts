@@ -160,17 +160,6 @@ export class RideScheduler {
             departureDate = booking.selectedDate || ride[0].departureDate;
             departureTime = ride[0].departureTime;
           }
-        } else if (booking.rideRequestId) {
-          const request = await db
-            .select()
-            .from(rideRequests)
-            .where(eq(rideRequests.id, booking.rideRequestId))
-            .limit(1);
-          
-          if (request.length > 0) {
-            departureDate = request[0].departureDate;
-            departureTime = request[0].departureTime;
-          }
         }
 
         if (departureDate && departureTime && this.isExpired(departureDate, departureTime, cutoffTime)) {

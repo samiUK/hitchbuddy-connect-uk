@@ -64,8 +64,7 @@ export const rideRequests = pgTable("ride_requests", {
 
 export const bookings = pgTable("bookings", {
   id: uuid("id").primaryKey().defaultRandom(),
-  rideId: uuid("ride_id").references(() => rides.id, { onDelete: "cascade" }), // Allow null for counter offers
-  rideRequestId: uuid("ride_request_id").references(() => rideRequests.id, { onDelete: "cascade" }), // Link to ride request
+  rideId: uuid("ride_id").notNull().references(() => rides.id, { onDelete: "cascade" }),
   riderId: uuid("rider_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   driverId: uuid("driver_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   seatsBooked: integer("seats_booked").notNull(),

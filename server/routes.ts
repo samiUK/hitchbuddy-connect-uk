@@ -509,8 +509,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           toLocation: rideRequest.toLocation,
           departureDate: rideRequest.departureDate || new Date().toISOString().split('T')[0],
           departureTime: rideRequest.departureTime,
-          availableSeats: parseInt(rideRequest.passengers.toString()),
-          price: req.body.totalCost.toString(),
+          availableSeats: parseInt(rideRequest.passengers),
+          price: req.body.totalCost,
           vehicleInfo: 'Counter Offer',
           notes: req.body.message,
           isRecurring: 'false',
@@ -552,7 +552,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             departureDate: originalRide.departureDate,
             departureTime: originalRide.departureTime,
             availableSeats: originalBooking?.seatsBooked || 1,
-            price: req.body.totalCost.toString(),
+            price: req.body.totalCost,
             vehicleInfo: 'Counter Offer',
             notes: req.body.message,
             isRecurring: 'false',
@@ -681,14 +681,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Delete the counter offer booking
       await storage.updateBooking(req.params.id, { status: 'cancelled' });
 
-      // Delete the counter offer ride if it exists
+      // Delete the counter offer ride if it exists and reactivate as ride request
       if (booking.rideId) {
-        await storage.deleteRide(booking.rideId);
-      }
-
-      // Reactivate the original ride request if it exists
-      if (booking.rideRequestId) {
-        await storage.updateRideRequest(booking.rideRequestId, { status: 'active' });
+        const ride = await storage.getRide(booking.rideId);
+        if (ride && ride.rideId && ride.rideId.startsWith('CO-')) {
+          // This is a counter offer, delete it and reactivate as ride request
+          await storage.deleteRide(booking.rideId);
+          
+          // Create a new ride request from the original ride details
+          await storage.createRideRequest({
+            riderId: booking.riderId,
+            fromLocation: ride.fromLocation,
+            toLocation: ride.toLocation,
+            departureDate: ride.departureDate,
+            departureTime: ride.departureTime,
+            passengers: ride.availableSeats.toString(),
+            maxPrice: ride.price,
+            notes: ride.notes || 'Reactivated after counter offer decline',
+            status: 'active'
+          });
+        }
       }
 
       res.json({ message: "Counter offer declined and request reactivated" });
@@ -720,39 +732,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Booking not found" });
       }
 
-      // If accepting a counter offer (status = confirmed and rideId is null), create a ride
-      if (status === 'confirmed' && !currentBooking.rideId && currentBooking.rideRequestId) {
-        // Get the specific ride request using the stored reference
-        const relatedRequest = await storage.getRideRequest(currentBooking.rideRequestId);
-        
-        if (relatedRequest) {
-          // Create a new ride based on the ride request details
-          const newRide = await storage.createRide({
-            driverId: currentBooking.driverId,
-            fromLocation: relatedRequest.fromLocation,
-            toLocation: relatedRequest.toLocation,
-            departureDate: relatedRequest.departureDate || new Date().toISOString().split('T')[0],
-            departureTime: relatedRequest.departureTime,
-            availableSeats: relatedRequest.passengers,
-            price: currentBooking.totalCost,
-            vehicleInfo: 'Counter Offer Vehicle',
-            notes: currentBooking.message || 'Counter offer accepted',
-            isRecurring: 'false',
-            recurringData: null,
-            status: 'active'
-          });
-
-          // Update the booking to reference the new ride
-          const updatedBooking = await storage.updateBooking(id, { 
-            status, 
-            rideId: newRide.id 
-          });
-
-          // Mark the ride request as matched
-          await storage.updateRideRequest(relatedRequest.id, { status: 'matched' });
-
-          return res.json({ booking: updatedBooking });
-        }
+      // With unified rideId system, bookings already have proper ride references
+      if (status === 'confirmed') {
+        // Simply update the booking status - ride is already linked via rideId
+        const updatedBooking = await storage.updateBooking(id, { status });
+        return res.json({ booking: updatedBooking });
       }
 
       // Regular booking update
