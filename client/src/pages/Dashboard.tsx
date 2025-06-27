@@ -1325,19 +1325,11 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900 text-left">My Live Requests</h3>
                       <Badge variant="outline" className="text-blue-600">
-                        {rideRequests.filter((req: any) => req.status === 'active').length + 
-                         bookings.filter((booking: any) => {
-                           const originalRequest = rideRequests.find((req: any) => req.id === booking.rideRequestId);
-                           return booking.riderId === user?.id && 
-                                  booking.status === 'confirmed' && 
-                                  originalRequest && 
-                                  booking.totalCost === originalRequest.maxPrice;
-                         }).length} active
+                        {rideRequests.filter((req: any) => req.status === 'active').length} active
                       </Badge>
                     </div>
                     
-                    {rideRequests.filter((req: any) => req.status === 'active').length === 0 && 
-                     bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'confirmed' && booking.totalCost === rideRequests.find((req: any) => req.id === booking.rideRequestId)?.maxPrice).length === 0 ? (
+                    {rideRequests.filter((req: any) => req.status === 'active').length === 0 ? (
                       <div className="text-center py-6 text-gray-500">
                         <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No active ride requests</p>
@@ -1345,7 +1337,6 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="grid gap-4">
-                        {/* Active ride requests */}
                         {rideRequests.filter(req => req.status === 'active').map((request) => (
                           <Card key={request.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
@@ -1420,92 +1411,6 @@ const Dashboard = () => {
                             </CardContent>
                           </Card>
                         ))}
-                        
-                        {/* Direct confirmations (booked at asking price) */}
-                        {bookings.filter((booking: any) => {
-                          const originalRequest = rideRequests.find((req: any) => req.id === booking.rideRequestId);
-                          return booking.riderId === user?.id && 
-                                 booking.status === 'confirmed' && 
-                                 originalRequest && 
-                                 booking.totalCost === originalRequest.maxPrice;
-                        }).map((booking: any) => {
-                          const relatedRide = rides.find(r => r.id === booking.rideId);
-                          const originalRequest = rideRequests.find((req: any) => req.id === booking.rideRequestId);
-                          return (
-                            <Card key={booking.id} className="border-green-200 bg-green-50">
-                              <CardContent className="p-4">
-                                <div className="flex items-center justify-between mb-3">
-                                  <Badge variant="outline" className="text-green-600 border-green-300">
-                                    Request Confirmed
-                                  </Badge>
-                                  <Badge className="bg-green-600">
-                                    Confirmed
-                                  </Badge>
-                                </div>
-                                
-                                <div className="space-y-2">
-                                  <div className="flex items-center space-x-2 text-sm">
-                                    <MapPin className="h-4 w-4 text-gray-500" />
-                                    <span className="text-gray-900">{relatedRide?.fromLocation}</span>
-                                    <span className="text-gray-500">→</span>
-                                    <span className="text-gray-900">{relatedRide?.toLocation}</span>
-                                  </div>
-                                  
-                                  <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                    <div className="flex items-center space-x-1">
-                                      <Calendar className="h-4 w-4" />
-                                      <span>{relatedRide?.departureDate}</span>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                      <Clock className="h-4 w-4" />
-                                      <span>{relatedRide?.departureTime}</span>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                      <Users className="h-4 w-4" />
-                                      <span>{booking.seatsBooked} seat{booking.seatsBooked > 1 ? 's' : ''}</span>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="flex items-center justify-between pt-2">
-                                    <div className="text-sm text-gray-600">
-                                      Confirmed at: <span className="font-semibold text-green-600">£{booking.totalCost}</span>
-                                    </div>
-                                    <div className="text-xs text-gray-500">
-                                      Job ID: {booking.jobId}
-                                    </div>
-                                  </div>
-                                  
-                                  {booking.message && (
-                                    <div className="pt-2 border-t border-green-200">
-                                      <p className="text-sm text-gray-600 italic">"{booking.message}"</p>
-                                    </div>
-                                  )}
-                                  
-                                  <div className="flex justify-end space-x-2 pt-3 border-t border-green-200">
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline"
-                                      onClick={() => handleMessageRider(booking)}
-                                      className="text-blue-600 border-blue-300 hover:bg-blue-50"
-                                    >
-                                      <MessageCircle className="h-3 w-3 mr-1" />
-                                      Message Driver
-                                    </Button>
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline"
-                                      onClick={() => handleBookingAction(booking.id, 'cancelled')}
-                                      className="text-red-600 border-red-300 hover:bg-red-50"
-                                    >
-                                      <X className="h-3 w-3 mr-1" />
-                                      Cancel
-                                    </Button>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          );
-                        })}
                       </div>
                     )}
                   </div>
@@ -1514,12 +1419,7 @@ const Dashboard = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Upcoming Rides</h3>
                     <div className="space-y-4">
-                      {bookings.filter(booking => {
-                        const originalRequest = rideRequests.find((req: any) => req.id === booking.rideRequestId);
-                        return booking.riderId === user?.id && 
-                               booking.status === 'confirmed' && 
-                               (!originalRequest || booking.totalCost !== originalRequest.maxPrice);
-                      }).map((booking: any) => {
+                      {bookings.filter(booking => booking.riderId === user?.id && booking.status === 'confirmed').map((booking: any) => {
                         const relatedRide = rides.find(r => r.id === booking.rideId);
                         return (
                           <Card key={booking.id} className="p-4 border-green-300 bg-green-50">

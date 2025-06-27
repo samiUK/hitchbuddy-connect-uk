@@ -23,9 +23,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Implemented escape key support for modal closure
 - ✅ Fixed ride request confirmation workflow: Direct driver acceptance now creates confirmed bookings
 - ✅ Added PATCH endpoint for updating ride request status from 'active' to 'matched'
-- ✅ Enhanced categorization logic: Direct confirmations (at asking price) appear in "My Live Requests"
-- ✅ Separated counter offers from direct confirmations for proper workflow organization
-- ✅ Updated badge counts to include both active requests and confirmed direct bookings
+- ✅ Corrected workflow categorization: "My Live Requests" shows unaccepted requests (status: 'active')
+- ✅ "Upcoming Rides" shows all driver-accepted rides at agreed price (confirmed bookings)
+- ✅ Proper separation between pending requests and confirmed rides for clear user experience
 - ✅ Improved UI consistency: Removed duplicate h2 headers that replicated navigation tab names while maintaining proper subsection organization
 - ✅ Restored "Booking Requests" section header with left-alignment for clear content hierarchy
 - ✅ Fixed counter offer visibility: Excluded counter offers from "My Posted Rides" section as they are targeted for specific riders
