@@ -91,7 +91,7 @@ export const CounterOfferModal = ({ isOpen, onClose, request, onCounterOfferSubm
               <Input
                 id="offerPrice"
                 type="number"
-                step="0.01"
+                step="5"
                 min="0"
                 value={offerPrice}
                 onChange={(e) => setOfferPrice(e.target.value)}
@@ -100,7 +100,7 @@ export const CounterOfferModal = ({ isOpen, onClose, request, onCounterOfferSubm
                 required
               />
               <p className="text-xs text-gray-500 mt-1">
-                Enter your counter offer price for this trip
+                Use increment buttons or type exact amount • £5 increments recommended
               </p>
             </div>
 
