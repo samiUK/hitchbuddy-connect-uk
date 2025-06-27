@@ -32,21 +32,32 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
     
     const dates = [];
     const today = new Date();
-    const recurringData = ride.recurringData ? JSON.parse(ride.recurringData) : { days: [] };
+    const recurringData = ride.recurringData ? JSON.parse(ride.recurringData) : { selectedDays: [] };
     
-    for (let i = 0; i < 60; i++) {
+    // Map day names to numbers (0 = Sunday, 1 = Monday, etc.)
+    const dayNameToNumber: { [key: string]: number } = {
+      'sunday': 0,
+      'monday': 1,
+      'tuesday': 2,
+      'wednesday': 3,
+      'thursday': 4,
+      'friday': 5,
+      'saturday': 6
+    };
+    
+    // Convert selected day names to day numbers
+    const selectedDayNumbers = recurringData.selectedDays?.map((day: string) => dayNameToNumber[day.toLowerCase()]).filter((num: number | undefined) => num !== undefined) || [];
+    
+    for (let i = 1; i < 60; i++) { // Start from tomorrow (i=1)
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       
-      // For weekly recurring rides, check if the day matches
-      if (recurringData.days && recurringData.days.length > 0) {
-        const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
-        if (recurringData.days.includes(dayOfWeek)) {
+      // Only include dates that match the driver's selected days
+      if (selectedDayNumbers.length > 0) {
+        const dayOfWeek = date.getDay();
+        if (selectedDayNumbers.includes(dayOfWeek)) {
           dates.push(date);
         }
-      } else {
-        // If no specific days, assume daily
-        dates.push(date);
       }
     }
     
@@ -210,6 +221,11 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
                 </Popover>
                 <p className="text-xs text-gray-500 mt-1">
                   Available dates based on the driver's recurring schedule
+                  {availableDates.length > 0 && (
+                    <span className="block mt-1 text-blue-600">
+                      {availableDates.length} dates available in next 60 days
+                    </span>
+                  )}
                 </p>
               </div>
             )}

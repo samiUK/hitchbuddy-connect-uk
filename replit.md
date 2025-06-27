@@ -11,7 +11,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - **Deployment**: Replit-native deployment
 
 ## Recent Changes
-- ✅ Implemented availability calendar for recurring rides: Riders can now specify dates from driver's recurring schedule
+- ✅ Fixed availability calendar for recurring rides: Calendar now correctly filters dates based on driver's actual availability
+- ✅ Enhanced date filtering logic to exclude unavailable days (e.g., no weekends for Mon-Fri schedules)
 - ✅ Added selectedDate field to bookings database with date validation for recurring rides
 - ✅ Enhanced booking modal with calendar picker showing only available dates based on recurring patterns
 - ✅ Updated booking cards to display selected dates with "Recurring" badges for clarity
