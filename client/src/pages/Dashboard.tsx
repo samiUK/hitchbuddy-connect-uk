@@ -1543,8 +1543,8 @@ const Dashboard = () => {
                               <div className="flex items-center justify-between">
                                 <div className="flex-1">
                                   <div className="flex flex-col items-start space-y-2 mb-3">
-                                    <Badge className="bg-orange-600">
-                                      Pending
+                                    <Badge className={request.status === 'matched' ? "bg-green-600" : "bg-orange-600"}>
+                                      {request.status === 'matched' ? 'Confirmed' : 'Pending'}
                                     </Badge>
                                     <Badge variant="outline" className="text-blue-600 border-blue-300">
                                       Ride Request
