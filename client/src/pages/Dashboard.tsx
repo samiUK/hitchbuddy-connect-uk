@@ -1539,21 +1539,7 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="grid gap-4">
-                        {rideRequests.filter(req => {
-                          // Show only active requests that don't have pending counter offers
-                          const hasCounterOffer = bookings.some((booking: any) => 
-                            booking.riderId === user?.id && 
-                            booking.status === 'pending' && 
-                            booking.rideId && 
-                            rides.find(r => r.id === booking.rideId && 
-                              r.rideId && 
-                              r.rideId.startsWith('CO-') &&
-                              r.fromLocation === req.fromLocation &&
-                              r.toLocation === req.toLocation
-                            )
-                          );
-                          return req.status === 'active' && !hasCounterOffer;
-                        }).map((request) => (
+                        {rideRequests.filter(req => req.status === 'active').map((request) => (
                           <Card key={request.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between mb-3">
