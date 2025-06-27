@@ -1542,12 +1542,12 @@ const Dashboard = () => {
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between">
                                 <div className="flex-1">
-                                  <div className="flex items-center justify-between mb-3">
-                                    <Badge variant="outline" className="text-blue-600 border-blue-300">
-                                      Ride Request
-                                    </Badge>
+                                  <div className="flex flex-col items-start space-y-2 mb-3">
                                     <Badge className="bg-orange-600">
                                       Pending
+                                    </Badge>
+                                    <Badge variant="outline" className="text-blue-600 border-blue-300">
+                                      Ride Request
                                     </Badge>
                                   </div>
                                   
