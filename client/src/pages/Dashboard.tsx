@@ -1537,7 +1537,15 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="grid gap-4">
-                        {rideRequests.filter(req => (req.status === 'active' || req.status === 'pending') && req.status !== 'matched').map((request) => (
+                        {rideRequests.filter(req => {
+                          // Check if this request has been confirmed by looking for a confirmed booking
+                          const hasConfirmedBooking = bookings.some(booking => 
+                            booking.rideRequestId === req.id && booking.status === 'confirmed'
+                          );
+                          return (req.status === 'active' || req.status === 'pending') && 
+                                 req.status !== 'matched' && 
+                                 !hasConfirmedBooking;
+                        }).map((request) => (
                           <Card key={request.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between">
