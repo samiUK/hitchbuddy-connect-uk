@@ -1182,18 +1182,17 @@ const Dashboard = () => {
                   </div>
 
                   {/* Counter Offers Sent Section - Only for counter offers sent by this driver */}
-                  {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideRequestId && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length > 0 && (
+                  {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length > 0 && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-gray-900 text-left">Counter Offers Sent</h3>
                         <Badge variant="outline" className="text-orange-600">
-                          {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideRequestId && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length} pending
+                          {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length} pending
                         </Badge>
                       </div>
                       
                       <div className="space-y-4">
-                        {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideRequestId && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).map((booking: any) => {
-                          const relatedRequest = rideRequests.find(r => r.id === booking.rideRequestId);
+                        {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).map((booking: any) => {
                           const relatedRide = rides.find(r => r.id === booking.rideId);
                           return (
                             <Card key={booking.id} className="p-4 border-orange-300 bg-orange-50">
@@ -1205,40 +1204,30 @@ const Dashboard = () => {
                                   <div className="flex items-center space-x-2 mb-2">
                                     <MapPin className="h-4 w-4 text-gray-500" />
                                     <span className="font-medium">
-                                      {relatedRequest?.fromLocation || relatedRide?.fromLocation || 'Not specified'} → {relatedRequest?.toLocation || relatedRide?.toLocation || 'Not specified'}
+                                      {relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}
                                     </span>
 
                                   </div>
                                   <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
-                                    {(relatedRequest?.departureDate || relatedRide?.departureDate) && (
+                                    {relatedRide?.departureDate && (
                                       <div className="flex items-center space-x-1">
                                         <Calendar className="h-4 w-4" />
-                                        <span>{formatDateToDDMMYYYY(relatedRequest?.departureDate || relatedRide?.departureDate)}</span>
+                                        <span>{formatDateToDDMMYYYY(relatedRide.departureDate)}</span>
                                       </div>
                                     )}
                                     <div className="flex items-center space-x-1">
                                       <Clock className="h-4 w-4" />
-                                      <span>{relatedRequest?.departureTime || relatedRide?.departureTime || 'Not specified'}</span>
+                                      <span>{relatedRide?.departureTime || 'Not specified'}</span>
                                     </div>
                                     <div className="flex items-center space-x-1">
                                       <Users className="h-4 w-4" />
-                                      <span>{booking.seatsBooked || relatedRequest?.passengers} passenger{(booking.seatsBooked || relatedRequest?.passengers) > 1 ? 's' : ''}</span>
+                                      <span>{booking.seatsBooked || relatedRide?.availableSeats || 1} passenger{(booking.seatsBooked || relatedRide?.availableSeats || 1) > 1 ? 's' : ''}</span>
                                     </div>
                                   </div>
-                                  {relatedRequest && (
-                                    <div className="text-sm text-gray-600 mb-2">
-                                      <span className="font-medium">Rider's budget:</span> £{relatedRequest?.maxPrice || 'Not specified'}
-                                    </div>
-                                  )}
                                   {booking.message && (
                                     <div className="bg-white p-3 rounded-lg text-sm mb-2">
                                       <p className="text-gray-700 font-medium">Your offer message:</p>
                                       <p className="text-gray-700 mt-1">"{booking.message}"</p>
-                                    </div>
-                                  )}
-                                  {relatedRequest?.notes && (
-                                    <div className="text-sm text-gray-600 mb-2">
-                                      <span className="font-medium">Rider's request:</span> "{relatedRequest.notes}"
                                     </div>
                                   )}
                                 </div>
@@ -1251,7 +1240,7 @@ const Dashboard = () => {
                                     <Button
                                       size="sm"
                                       variant="outline"
-                                      onClick={() => handleCounterOffer(relatedRequest || relatedRide)}
+                                      onClick={() => handleCounterOffer(relatedRide)}
                                       className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300"
                                     >
                                       <Edit className="h-4 w-4 mr-1" />
