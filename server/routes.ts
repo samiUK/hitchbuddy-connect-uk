@@ -366,6 +366,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           riderId: rideRequest.riderId,
           driverId: session.userId,
           rideId: null, // No specific ride, this is a custom offer
+          rideRequestId: req.body.rideRequestId, // Link to the ride request
           totalCost: req.body.totalCost || req.body.seatsBooked * 10, // Use provided cost
           status: req.body.status || 'pending',
           phoneNumber: req.body.phoneNumber || null // Allow null for counter offers
@@ -433,11 +434,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       const { status } = req.body;
 
-      const updatedBooking = await storage.updateBooking(id, { status });
-      if (!updatedBooking) {
+      // Get the current booking to check if it's a counter offer being accepted
+      const currentBooking = await storage.getBooking(id);
+      if (!currentBooking) {
         return res.status(404).json({ error: "Booking not found" });
       }
 
+      // If accepting a counter offer (status = confirmed and rideId is null), create a ride
+      if (status === 'confirmed' && !currentBooking.rideId && currentBooking.rideRequestId) {
+        // Get the specific ride request using the stored reference
+        const relatedRequest = await storage.getRideRequest(currentBooking.rideRequestId);
+        
+        if (relatedRequest) {
+          // Create a new ride based on the ride request details
+          const newRide = await storage.createRide({
+            driverId: currentBooking.driverId,
+            fromLocation: relatedRequest.fromLocation,
+            toLocation: relatedRequest.toLocation,
+            departureDate: relatedRequest.departureDate || new Date().toISOString().split('T')[0],
+            departureTime: relatedRequest.departureTime,
+            availableSeats: relatedRequest.passengers,
+            price: currentBooking.totalCost,
+            vehicleInfo: 'Counter Offer Vehicle',
+            notes: currentBooking.message || 'Counter offer accepted',
+            isRecurring: 'false',
+            recurringData: null,
+            status: 'active'
+          });
+
+          // Update the booking to reference the new ride
+          const updatedBooking = await storage.updateBooking(id, { 
+            status, 
+            rideId: newRide.id 
+          });
+
+          // Mark the ride request as matched
+          await storage.updateRideRequest(relatedRequest.id, { status: 'matched' });
+
+          return res.json({ booking: updatedBooking });
+        }
+      }
+
+      // Regular booking update
+      const updatedBooking = await storage.updateBooking(id, { status });
       res.json({ booking: updatedBooking });
     } catch (error) {
       console.error('Update booking error:', error);
