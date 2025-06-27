@@ -21,6 +21,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Enhanced calendar to block dates when all seats are already booked
 - ✅ Added click-outside functionality to BookRideModal for better UX
 - ✅ Implemented escape key support for modal closure
+- ✅ Fixed ride request confirmation workflow: Direct driver acceptance now creates confirmed bookings
+- ✅ Added PATCH endpoint for updating ride request status from 'active' to 'matched'
+- ✅ Confirmed rides now appear in "Upcoming Rides" instead of staying in "My Live Requests"
 - ✅ Improved UI consistency: Removed duplicate h2 headers that replicated navigation tab names while maintaining proper subsection organization
 - ✅ Restored "Booking Requests" section header with left-alignment for clear content hierarchy
 - ✅ Fixed counter offer visibility: Excluded counter offers from "My Posted Rides" section as they are targeted for specific riders

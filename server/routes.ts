@@ -371,6 +371,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update ride request route
+  app.patch("/api/ride-requests/:id", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const requestId = req.params.id;
+      const updates = req.body;
+
+      const updatedRequest = await storage.updateRideRequest(requestId, updates);
+      if (!updatedRequest) {
+        return res.status(404).json({ error: "Ride request not found" });
+      }
+
+      res.json({ rideRequest: updatedRequest });
+    } catch (error) {
+      console.error('Update ride request error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Delete ride request route
   app.delete("/api/ride-requests/:id", async (req, res) => {
     try {

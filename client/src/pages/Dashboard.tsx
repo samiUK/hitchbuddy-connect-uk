@@ -296,22 +296,69 @@ const Dashboard = () => {
 
   const handleConfirmRideRequest = async (request: any) => {
     try {
-      const response = await fetch('/api/bookings', {
+      // First create a ride for this confirmed request
+      const rideResponse = await fetch('/api/rides', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
+          fromLocation: request.fromLocation,
+          toLocation: request.toLocation,
+          departureDate: request.departureDate,
+          departureTime: request.departureTime,
+          availableSeats: request.passengers,
+          price: request.maxPrice,
+          vehicleInfo: '',
+          notes: `Confirmed ride for ${request.passengers} passenger${request.passengers > 1 ? 's' : ''}`,
+          isRecurring: 'false',
+          status: 'confirmed'
+        }),
+      });
+
+      if (!rideResponse.ok) {
+        throw new Error('Failed to create ride');
+      }
+
+      const newRide = await rideResponse.json();
+
+      // Then create a confirmed booking
+      const bookingResponse = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          rideId: newRide.id,
           rideRequestId: request.id,
+          riderId: request.riderId,
           seatsBooked: request.passengers,
           totalCost: request.maxPrice,
           status: 'confirmed',
+          phoneNumber: request.phoneNumber || '',
           message: 'Request confirmed by driver'
         }),
       });
 
-      if (response.ok) {
+      if (!bookingResponse.ok) {
+        throw new Error('Failed to create booking');
+      }
+
+      // Update the ride request status to 'matched'
+      const updateRequestResponse = await fetch(`/api/ride-requests/${request.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          status: 'matched'
+        }),
+      });
+
+      if (updateRequestResponse.ok) {
         toast({
           title: "Ride request confirmed!",
           description: "The rider has been notified and your trip is now confirmed.",
@@ -320,7 +367,7 @@ const Dashboard = () => {
       } else {
         toast({
           title: "Error",
-          description: "Failed to confirm ride request. Please try again.",
+          description: "Failed to update ride request status. Please try again.",
           variant: "destructive",
         });
       }
