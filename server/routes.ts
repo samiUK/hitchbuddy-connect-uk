@@ -279,6 +279,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/rides/:id", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const rideId = req.params.id;
+      const existingRide = await storage.getRide(rideId);
+      
+      if (!existingRide) {
+        return res.status(404).json({ error: "Ride not found" });
+      }
+
+      // Check if the user owns this ride
+      if (existingRide.driverId !== session.userId) {
+        return res.status(403).json({ error: "Not authorized to modify this ride" });
+      }
+
+      const updateData = {
+        ...req.body,
+        isRecurring: req.body.isRecurring ? 'true' : 'false',
+        recurringData: req.body.recurringData ? JSON.stringify(req.body.recurringData) : null,
+        updatedAt: new Date()
+      };
+
+      const updatedRide = await storage.updateRide(rideId, updateData);
+      
+      if (!updatedRide) {
+        return res.status(404).json({ error: "Ride not found" });
+      }
+
+      res.json({ ride: updatedRide });
+    } catch (error) {
+      console.error('Update ride error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Ride requests routes
   app.post("/api/ride-requests", async (req, res) => {
     try {

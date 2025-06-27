@@ -42,6 +42,7 @@ import { BetaDisclaimer } from "@/components/BetaDisclaimer";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { RatingModal } from "@/components/RatingModal";
 import { CounterOfferModal } from "@/components/CounterOfferModal";
+import { ModifyRideModal } from "@/components/ModifyRideModal";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
@@ -66,6 +67,8 @@ const Dashboard = () => {
   const [showCounterOfferModal, setShowCounterOfferModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [quickActionsDismissed, setQuickActionsDismissed] = useState(false);
+  const [showModifyRideModal, setShowModifyRideModal] = useState(false);
+  const [selectedRideToModify, setSelectedRideToModify] = useState<any>(null);
   
   const userType = user?.userType || 'rider';
   const firstName = user?.firstName || '';
@@ -496,11 +499,11 @@ const Dashboard = () => {
   };
 
   const handleModifyRide = async (rideId: string) => {
-    // TODO: Implement modify ride functionality
-    toast({
-      title: "Feature Coming Soon",
-      description: "Ride modification will be available in the next update.",
-    });
+    const ride = rides.find((r: any) => r.id === rideId);
+    if (ride) {
+      setSelectedRideToModify(ride);
+      setShowModifyRideModal(true);
+    }
   };
 
   const handleCancelRide = async (rideId: string) => {
@@ -2176,6 +2179,22 @@ const Dashboard = () => {
             }}
             request={selectedRequest}
             onCounterOfferSubmit={handleCounterOfferSubmit}
+          />
+        )}
+
+        {/* Modify Ride Modal */}
+        {showModifyRideModal && selectedRideToModify && (
+          <ModifyRideModal
+            ride={selectedRideToModify}
+            onClose={() => {
+              setShowModifyRideModal(false);
+              setSelectedRideToModify(null);
+            }}
+            onRideModified={() => {
+              fetchData();
+              setShowModifyRideModal(false);
+              setSelectedRideToModify(null);
+            }}
           />
         )}
       </div>
