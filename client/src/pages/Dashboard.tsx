@@ -44,6 +44,7 @@ import { RatingModal } from "@/components/RatingModal";
 import { CounterOfferModal } from "@/components/CounterOfferModal";
 import { ModifyRideModal } from "@/components/ModifyRideModal";
 import { useToast } from "@/hooks/use-toast";
+import { formatDateToDDMMYYYY, formatDateWithRecurring } from "@/lib/dateUtils";
 
 const Dashboard = () => {
   const { user, signOut, updateProfile } = useAuth();
@@ -1027,7 +1028,7 @@ const Dashboard = () => {
                                   <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
                                     <div className="flex items-center space-x-1">
                                       <Calendar className="h-4 w-4" />
-                                      <span>{ride.departureDate}</span>
+                                      <span>{formatDateWithRecurring(ride.departureDate, ride.isRecurring)}</span>
                                     </div>
                                     <div className="flex items-center space-x-1">
                                       <Clock className="h-4 w-4" />
@@ -1112,7 +1113,7 @@ const Dashboard = () => {
                                     {relatedRequest?.departureDate && (
                                       <div className="flex items-center space-x-1">
                                         <Calendar className="h-4 w-4" />
-                                        <span>{relatedRequest.departureDate}</span>
+                                        <span>{formatDateToDDMMYYYY(relatedRequest.departureDate)}</span>
                                       </div>
                                     )}
                                     <div className="flex items-center space-x-1">
@@ -1201,7 +1202,7 @@ const Dashboard = () => {
                                   {relatedRide?.departureDate && (
                                     <div className="flex items-center space-x-1">
                                       <Calendar className="h-4 w-4" />
-                                      <span>{relatedRide.departureDate}</span>
+                                      <span>{formatDateToDDMMYYYY(relatedRide.departureDate)}</span>
                                     </div>
                                   )}
                                   <div className="flex items-center space-x-1">
@@ -1290,7 +1291,7 @@ const Dashboard = () => {
                                   {relatedRide?.departureDate && (
                                     <div className="flex items-center space-x-1">
                                       <Calendar className="h-4 w-4" />
-                                      <span>{relatedRide.departureDate}</span>
+                                      <span>{formatDateToDDMMYYYY(relatedRide.departureDate)}</span>
                                     </div>
                                   )}
                                   <div className="flex items-center space-x-1">
@@ -1386,7 +1387,7 @@ const Dashboard = () => {
                                   {relatedRide?.departureDate && (
                                     <div className="flex items-center space-x-1">
                                       <Calendar className="h-4 w-4" />
-                                      <span>{relatedRide.departureDate}</span>
+                                      <span>{formatDateToDDMMYYYY(relatedRide.departureDate)}</span>
                                     </div>
                                   )}
                                   <div className="flex items-center space-x-1">
@@ -1457,7 +1458,7 @@ const Dashboard = () => {
                                       {relatedRequest?.departureDate && (
                                         <div className="flex items-center space-x-1">
                                           <Calendar className="h-4 w-4" />
-                                          <span>{relatedRequest.departureDate}</span>
+                                          <span>{formatDateToDDMMYYYY(relatedRequest.departureDate)}</span>
                                         </div>
                                       )}
                                       <div className="flex items-center space-x-1">
@@ -1560,7 +1561,7 @@ const Dashboard = () => {
                                 <div className="flex items-center space-x-4 text-sm text-gray-600">
                                   <div className="flex items-center space-x-1">
                                     <Calendar className="h-4 w-4" />
-                                    <span>{request.departureDate}</span>
+                                    <span>{formatDateToDDMMYYYY(request.departureDate)}</span>
                                   </div>
                                   <div className="flex items-center space-x-1">
                                     <Clock className="h-4 w-4" />
@@ -1639,7 +1640,7 @@ const Dashboard = () => {
                                     <div className="flex items-center space-x-4 text-sm text-gray-600">
                                       <div className="flex items-center space-x-1">
                                         <Calendar className="h-4 w-4" />
-                                        <span>{relatedRide?.departureDate}</span>
+                                        <span>{formatDateToDDMMYYYY(relatedRide?.departureDate)}</span>
                                       </div>
                                       <div className="flex items-center space-x-1">
                                         <Clock className="h-4 w-4" />
@@ -1715,7 +1716,7 @@ const Dashboard = () => {
                                   {relatedRide?.departureDate && (
                                     <div className="flex items-center space-x-1">
                                       <Calendar className="h-4 w-4" />
-                                      <span>{relatedRide.departureDate}</span>
+                                      <span>({formatDateToDDMMYYYY(relatedRide.departureDate)})</span>
                                     </div>
                                   )}
                                   <div className="flex items-center space-x-1">
@@ -1807,7 +1808,7 @@ const Dashboard = () => {
                                   {relatedRide?.departureDate && (
                                     <div className="flex items-center space-x-1">
                                       <Calendar className="h-4 w-4" />
-                                      <span>{relatedRide.departureDate}</span>
+                                      <span>({formatDateToDDMMYYYY(relatedRide.departureDate)})</span>
                                     </div>
                                   )}
                                   <div className="flex items-center space-x-1">
@@ -2099,15 +2100,12 @@ const Dashboard = () => {
                           {booking.selectedDate ? (
                             <div className="flex items-center space-x-1">
                               <Calendar className="h-4 w-4" />
-                              <span>{booking.selectedDate}</span>
-                              {relatedRide?.isRecurring === 'true' && (
-                                <Badge variant="secondary" className="text-xs ml-1">Recurring</Badge>
-                              )}
+                              <span>{formatDateToDDMMYYYY(booking.selectedDate)} {relatedRide?.isRecurring === 'true' ? '(Recurring)' : ''}</span>
                             </div>
                           ) : relatedRide?.departureDate && (
                             <div className="flex items-center space-x-1">
                               <Calendar className="h-4 w-4" />
-                              <span>{relatedRide.departureDate}</span>
+                              <span>{formatDateWithRecurring(relatedRide.departureDate, relatedRide.isRecurring)}</span>
                             </div>
                           )}
                           <div className="flex items-center space-x-1">

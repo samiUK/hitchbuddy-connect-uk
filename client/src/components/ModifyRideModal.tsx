@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { X, MapPin, Calendar, Clock, Users, Car, PoundSterling } from "lucide-react";
 import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import { useToast } from "@/hooks/use-toast";
+import { formatDateToDDMMYYYY, formatDateWithRecurring } from "@/lib/dateUtils";
 
 interface ModifyRideModalProps {
   ride: any;

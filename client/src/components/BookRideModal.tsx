@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { MapPin, Calendar, Clock, Users, PoundSterling, Phone, MessageSquare, Car, CalendarDays } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { formatDateToDDMMYYYY, formatDateWithRecurring } from "@/lib/dateUtils";
 
 interface BookRideModalProps {
   ride: any;
@@ -219,7 +220,7 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
               {ride.departureDate && (
                 <div className="flex items-center space-x-1">
                   <Calendar className="h-4 w-4" />
-                  <span>{ride.departureDate}</span>
+                  <span>{formatDateWithRecurring(ride.departureDate, ride.isRecurring)}</span>
                 </div>
               )}
               <div className="flex items-center space-x-1">
