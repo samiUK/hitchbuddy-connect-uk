@@ -1147,18 +1147,19 @@ const Dashboard = () => {
                   </div>
 
                   {/* Counter Offers Sent Section - Only for counter offers sent by this driver */}
-                  {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).length > 0 && (
+                  {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && ((booking.rideRequestId && !booking.rideId) || (!booking.rideRequestId && !booking.rideId))).length > 0 && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-gray-900 text-left">Counter Offers Sent</h3>
                         <Badge variant="outline" className="text-orange-600">
-                          {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).length} pending
+                          {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && ((booking.rideRequestId && !booking.rideId) || (!booking.rideRequestId && !booking.rideId))).length} pending
                         </Badge>
                       </div>
                       
                       <div className="space-y-4">
-                        {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).map((booking: any) => {
+                        {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && ((booking.rideRequestId && !booking.rideId) || (!booking.rideRequestId && !booking.rideId))).map((booking: any) => {
                           const relatedRequest = rideRequests.find(r => r.id === booking.rideRequestId);
+                          const relatedRide = rides.find(r => r.id === booking.rideId);
                           return (
                             <Card key={booking.id} className="p-4 border-orange-300 bg-orange-50">
                               <div className="flex justify-between items-start">
@@ -1169,29 +1170,31 @@ const Dashboard = () => {
                                   <div className="flex items-center space-x-2 mb-2">
                                     <MapPin className="h-4 w-4 text-gray-500" />
                                     <span className="font-medium">
-                                      {relatedRequest?.fromLocation || 'Not specified'} → {relatedRequest?.toLocation || 'Not specified'}
+                                      {relatedRequest?.fromLocation || relatedRide?.fromLocation || 'Not specified'} → {relatedRequest?.toLocation || relatedRide?.toLocation || 'Not specified'}
                                     </span>
 
                                   </div>
                                   <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
-                                    {relatedRequest?.departureDate && (
+                                    {(relatedRequest?.departureDate || relatedRide?.departureDate) && (
                                       <div className="flex items-center space-x-1">
                                         <Calendar className="h-4 w-4" />
-                                        <span>{formatDateToDDMMYYYY(relatedRequest.departureDate)}</span>
+                                        <span>{formatDateToDDMMYYYY(relatedRequest?.departureDate || relatedRide?.departureDate)}</span>
                                       </div>
                                     )}
                                     <div className="flex items-center space-x-1">
                                       <Clock className="h-4 w-4" />
-                                      <span>{relatedRequest?.departureTime || 'Not specified'}</span>
+                                      <span>{relatedRequest?.departureTime || relatedRide?.departureTime || 'Not specified'}</span>
                                     </div>
                                     <div className="flex items-center space-x-1">
                                       <Users className="h-4 w-4" />
                                       <span>{booking.seatsBooked || relatedRequest?.passengers} passenger{(booking.seatsBooked || relatedRequest?.passengers) > 1 ? 's' : ''}</span>
                                     </div>
                                   </div>
-                                  <div className="text-sm text-gray-600 mb-2">
-                                    <span className="font-medium">Rider's budget:</span> £{relatedRequest?.maxPrice || 'Not specified'}
-                                  </div>
+                                  {relatedRequest && (
+                                    <div className="text-sm text-gray-600 mb-2">
+                                      <span className="font-medium">Rider's budget:</span> £{relatedRequest?.maxPrice || 'Not specified'}
+                                    </div>
+                                  )}
                                   {booking.message && (
                                     <div className="bg-white p-3 rounded-lg text-sm mb-2">
                                       <p className="text-gray-700 font-medium">Your offer message:</p>
@@ -1213,7 +1216,7 @@ const Dashboard = () => {
                                     <Button
                                       size="sm"
                                       variant="outline"
-                                      onClick={() => handleCounterOffer(relatedRequest)}
+                                      onClick={() => handleCounterOffer(relatedRequest || relatedRide)}
                                       className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300"
                                     >
                                       <Edit className="h-4 w-4 mr-1" />

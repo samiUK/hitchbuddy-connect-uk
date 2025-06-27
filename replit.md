@@ -13,6 +13,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 ## Recent Changes
 - ✅ Consolidated UI sections: Removed redundant "Confirmed Bookings" section and merged all confirmed bookings into unified "Upcoming Rides" section
 - ✅ Enhanced booking status display with clear "Confirmed" badges for better visual hierarchy
+- ✅ Added counter offer tracking: Drivers can now see, modify, and cancel their pending counter offers in "My Rides & Bookings" section
+- ✅ Enhanced counter offer display: Shows complete ride details for both ride requests and booking request counter offers
 - ✅ Fixed booking request routing: New booking requests from riders now appear in drivers' "Find Requests" section instead of "My Rides & Bookings"
 - ✅ Added counter offer functionality to booking requests with complete ride details display
 - ✅ Enhanced counter offer API handling for both ride requests and booking requests
