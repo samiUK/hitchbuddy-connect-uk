@@ -530,8 +530,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         await storage.updateRide(confirmedRide.id, { rideId: newRideId });
 
-        // Remove the original ride request from global pool since driver has engaged
-        await storage.deleteRideRequest(req.body.rideRequestId);
+        // Only remove from global pool if it's a direct confirmation, not a counter offer
+        if (!isCounterOffer) {
+          await storage.deleteRideRequest(req.body.rideRequestId);
+        }
 
         bookingData = {
           ...req.body,
