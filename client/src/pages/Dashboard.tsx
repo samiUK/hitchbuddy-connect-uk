@@ -741,7 +741,7 @@ const Dashboard = () => {
                       }
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {userType === 'driver' ? 'Rides you\'ve posted' : 'Requests awaiting approval'}
+                      {userType === 'driver' ? 'Rides you\'ve posted' : 'Request awaiting for Driver approval'}
                     </p>
                   </CardContent>
                 </Card>
