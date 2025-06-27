@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,31 +14,31 @@ const Index = () => {
   const [showAuth, setShowAuth] = useState(false);
   const [userType, setUserType] = useState<'rider' | 'driver' | null>(null);
   const { user, signOut } = useAuth();
-  const [location, setLocation] = useLocation();
+  const navigate = useNavigate();
 
   // Redirect authenticated users to dashboard
   useEffect(() => {
     if (user) {
-      setLocation('/dashboard');
+      navigate('/dashboard');
     }
-  }, [user, setLocation]);
+  }, [user, navigate]);
 
   const handleUserTypeSelect = (type: 'rider' | 'driver') => {
     if (user) {
       // User is already logged in, redirect to dashboard
-      setLocation('/dashboard');
+      navigate('/dashboard');
     } else {
       setUserType(type);
-      setLocation('/auth');
+      navigate('/auth');
     }
   };
 
   const handleGetStarted = () => {
     if (user) {
       // User is already logged in, redirect to dashboard
-      setLocation('/dashboard');
+      navigate('/dashboard');
     } else {
-      setLocation('/auth');
+      navigate('/auth');
     }
   };
 
@@ -96,12 +96,18 @@ const Index = () => {
                 </>
               ) : (
                 <>
-                  <Button variant="ghost" onClick={() => setLocation('/auth')}>
+                  <Button variant="ghost" onClick={() => {
+                    console.log('Sign In clicked, navigating to /auth');
+                    navigate('/auth');
+                  }}>
                     Sign In
                   </Button>
                   <Button 
                     className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
-                    onClick={() => setLocation('/auth')}
+                    onClick={() => {
+                      console.log('Get Started clicked, navigating to /auth');
+                      navigate('/auth');
+                    }}
                   >
                     Get Started
                   </Button>
