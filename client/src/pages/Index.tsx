@@ -97,7 +97,7 @@ const Index = () => {
               ) : (
                 <>
                   <Button variant="ghost" onClick={() => {
-                    console.log('Sign In clicked, navigating to /auth');
+
                     navigate('/auth');
                   }}>
                     Sign In
@@ -105,7 +105,7 @@ const Index = () => {
                   <Button 
                     className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
                     onClick={() => {
-                      console.log('Get Started clicked, navigating to /auth');
+
                       navigate('/auth');
                     }}
                   >

@@ -47,7 +47,7 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
       const reader = new FileReader();
       reader.onload = (event) => {
         const imageUrl = event.target?.result as string;
-        console.log('Image uploaded, data URL length:', imageUrl.length);
+
         setProfileImage(imageUrl);
       };
       reader.readAsDataURL(file);
@@ -76,9 +76,7 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
         updateData.avatarUrl = profileImage;
       }
       
-      console.log('Form: Submitting profile update:', updateData);
-      console.log('Form: Current user avatarUrl:', user?.avatarUrl);
-      console.log('Form: New profileImage:', profileImage);
+
       
       const result = await updateProfile(updateData);
       
@@ -129,8 +127,8 @@ export const ProfileEditForm = ({ onClose }: ProfileEditFormProps) => {
                 <AvatarImage 
                   src={profileImage || undefined} 
                   alt="Profile"
-                  onError={() => console.log('Profile image failed to load:', profileImage)}
-                  onLoad={() => console.log('Profile image loaded successfully:', profileImage)}
+                  onError={() => {}}
+                  onLoad={() => {}}
                 />
                 <AvatarFallback className="text-lg">
                   {formData.firstName.charAt(0)}{formData.lastName.charAt(0)}

@@ -136,7 +136,7 @@ const Dashboard = () => {
         });
         if (myRequestsResponse.ok) {
           const data = await myRequestsResponse.json();
-          console.log('Rider requests data:', data);
+
           setRideRequests(data.rideRequests || []);
         } else {
           console.error('Failed to fetch rider requests:', myRequestsResponse.status);
@@ -382,8 +382,8 @@ const Dashboard = () => {
                     <AvatarImage 
                       src={user?.avatarUrl || undefined} 
                       alt={`${firstName} ${lastName}`}
-                      onError={() => console.log('Header avatar failed to load:', user?.avatarUrl)}
-                      onLoad={() => console.log('Header avatar loaded successfully:', user?.avatarUrl)}
+                      onError={() => {}}
+                      onLoad={() => {}}
                     />
                     <AvatarFallback className="bg-gradient-to-r from-blue-500 to-green-500 text-white text-xs">
                       {firstName.charAt(0)}{lastName.charAt(0)}

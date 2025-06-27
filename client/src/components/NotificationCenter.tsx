@@ -51,7 +51,7 @@ export const NotificationCenter = () => {
     // Handle navigation based on notification type
     if (notification.type === 'message' && notification.relatedId) {
       // Could trigger opening chat popup here
-      console.log('Navigate to chat:', notification.relatedId);
+
     }
   };
 
