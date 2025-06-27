@@ -1849,134 +1849,135 @@ const Dashboard = () => {
             {userType === 'driver' ? (
               // Drivers see ride requests from riders
               <div className="space-y-4">
+                {/* Unified Request Cards - Both Ride Requests and Booking Requests */}
+                
+                {/* Ride Requests from Riders */}
                 {rideRequests.filter((request: any) => request.status === 'active').map((request: any) => (
-                  <Card key={request.id} className="hover:shadow-md transition-shadow">
+                  <Card key={`request-${request.id}`} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <div className="flex items-center space-x-4 mb-2">
-                            <div className="flex items-center space-x-2">
-                              <MapPin className="h-4 w-4 text-green-600" />
-                              <span className="font-medium">{request.fromLocation}</span>
-                            </div>
-                            <span className="text-gray-400">→</span>
-                            <div className="flex items-center space-x-2">
-                              <MapPin className="h-4 w-4 text-red-600" />
-                              <span className="font-medium">{request.toLocation}</span>
-                            </div>
+                          <Badge variant="outline" className="text-blue-600 border-blue-300 mb-2">
+                            Ride Request
+                          </Badge>
+                          <div className="flex items-center space-x-2 mb-2">
+                            <MapPin className="h-4 w-4 text-gray-500" />
+                            <span className="font-medium">{request.fromLocation} → {request.toLocation}</span>
                           </div>
-                          <div className="flex items-center space-x-6 text-sm text-gray-600">
+                          <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                            <div className="flex items-center space-x-1">
+                              <Calendar className="h-4 w-4" />
+                              <span>{formatDateToDDMMYYYY(request.departureDate)}</span>
+                            </div>
                             <div className="flex items-center space-x-1">
                               <Clock className="h-4 w-4" />
-                              <span>{request.departureDate || 'Flexible'} at {request.departureTime}</span>
+                              <span>{request.departureTime}</span>
                             </div>
                             <div className="flex items-center space-x-1">
-                              <User className="h-4 w-4" />
-                              <span>{request.passengers} passenger{request.passengers !== '1' ? 's' : ''}</span>
+                              <Users className="h-4 w-4" />
+                              <span>{request.passengers} passenger{request.passengers > 1 ? 's' : ''}</span>
                             </div>
-                            {request.maxPrice && (
-                              <div className="flex items-center space-x-1">
-                                <Car className="h-4 w-4" />
-                                <span>Up to £{request.maxPrice}</span>
-                              </div>
-                            )}
                           </div>
                           {request.notes && (
-                            <p className="text-sm text-gray-600 mt-1">{request.notes}</p>
+                            <p className="text-sm text-gray-600 italic">"{request.notes}"</p>
                           )}
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Button 
-                            size="sm"
-                            onClick={() => handleConfirmRideRequest(request)}
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            Confirm Ride
-                          </Button>
-                          <Button 
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleCounterOffer(request)}
-                          >
-                            Counter Offer
-                          </Button>
+                        <div className="text-right">
+                          <div className="text-[22px] font-bold text-green-600 mb-2">
+                            £{request.maxPrice}
+                          </div>
+                          <div className="text-xs text-gray-500 mb-2">Rider's Budget</div>
+                          <div className="flex flex-col space-y-2">
+                            <Button 
+                              size="sm"
+                              onClick={() => handleConfirmRideRequest(request)}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              Confirm Ride
+                            </Button>
+                            <Button 
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleCounterOffer(request)}
+                            >
+                              Counter Offer
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
                 
-                {/* New Booking Requests from riders for posted rides */}
+                {/* Booking Requests for Posted Rides */}
                 {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && !booking.rideRequestId).map((booking: any) => {
                   const relatedRide = rides.find(r => r.id === booking.rideId);
                   return (
-                    <Card key={booking.id} className="p-4 border-green-300 bg-green-50">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200 mb-2">
-                            {relatedRide?.rideId || booking.jobId}
-                          </Badge>
-                          <div className="flex items-center space-x-2 mb-2">
-                            <MapPin className="h-4 w-4 text-gray-500" />
-                            <span className="font-medium">
-                              {relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
-                            {relatedRide?.departureDate && (
+                    <Card key={`booking-${booking.id}`} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200 mb-2">
+                              {relatedRide?.rideId || booking.jobId}
+                            </Badge>
+                            <Badge variant="outline" className="text-green-600 border-green-300 mb-2 ml-2">
+                              Booking Request
+                            </Badge>
+                            <div className="flex items-center space-x-2 mb-2">
+                              <MapPin className="h-4 w-4 text-gray-500" />
+                              <span className="font-medium">
+                                {relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                              {relatedRide?.departureDate && (
+                                <div className="flex items-center space-x-1">
+                                  <Calendar className="h-4 w-4" />
+                                  <span>{formatDateToDDMMYYYY(relatedRide.departureDate)}</span>
+                                </div>
+                              )}
                               <div className="flex items-center space-x-1">
-                                <Calendar className="h-4 w-4" />
-                                <span>{formatDateToDDMMYYYY(relatedRide.departureDate)}</span>
+                                <Clock className="h-4 w-4" />
+                                <span>{relatedRide?.departureTime}</span>
                               </div>
+                              <div className="flex items-center space-x-1">
+                                <Users className="h-4 w-4" />
+                                <span>{booking.seatsBooked} passenger{booking.seatsBooked > 1 ? 's' : ''}</span>
+                              </div>
+                            </div>
+                            {booking.message && (
+                              <p className="text-sm text-gray-600 italic">"{booking.message}"</p>
                             )}
-                            <div className="flex items-center space-x-1">
-                              <Clock className="h-4 w-4" />
-                              <span>{relatedRide?.departureTime}</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <User className="h-4 w-4" />
-                              <span>{booking.seatsBooked} seats requested</span>
-                            </div>
                           </div>
-                          <div className="text-sm text-gray-600">
-                            <p><strong>Phone:</strong> {booking.phoneNumber}</p>
-                            {booking.message && <p><strong>Message:</strong> {booking.message}</p>}
+                          <div className="text-right">
+                            <div className="text-[22px] font-bold text-green-600 mb-2">
+                              £{booking.totalCost}
+                            </div>
+                            <div className="text-xs text-gray-500 mb-2">Your Posted Price</div>
+                            <div className="flex flex-col space-y-2">
+                              <Button 
+                                size="sm" 
+                                onClick={() => handleBookingAction(booking.id, 'confirmed')}
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                Confirm Booking
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleCounterOfferBooking(booking)}
+                              >
+                                Counter Offer
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-[22px] font-bold text-green-600 mb-2">
-                            £{booking.totalCost}
-                          </div>
-                          <div className="flex space-x-2">
-                            <Button 
-                              size="sm" 
-                              onClick={() => handleBookingAction(booking.id, 'confirmed')}
-                              className="bg-green-600 hover:bg-green-700"
-                            >
-                              Confirm
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => handleCounterOfferBooking(booking)}
-                              className="border-orange-300 text-orange-600 hover:bg-orange-50"
-                            >
-                              Counter Offer
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => handleBookingAction(booking.id, 'cancelled')}
-                            >
-                              Decline
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
+                      </CardContent>
                     </Card>
                   );
                 })}
                 
+                {/* Empty State */}
                 {rideRequests.filter((request: any) => request.status === 'active').length === 0 && 
                  bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && !booking.rideRequestId).length === 0 && (
                   <div className="text-center py-12">
