@@ -11,6 +11,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - **Deployment**: Replit-native deployment
 
 ## Recent Changes
+- ✅ Fixed counter offer visibility: Excluded counter offers from "My Posted Rides" section as they are targeted for specific riders
+- ✅ Added proper filtering to separate public ride posts from private counter offers using notes field detection
 - ✅ Fixed runtime error: Implemented missing handleModifyRide, handleCancelRide, handleModifyRequest, and handleCancelRequest functions
 - ✅ Added DELETE API endpoints for rides and ride requests with proper authentication and authorization
 - ✅ Updated Upcoming Rides and Past Rides headers to left-aligned for better visual segmentation

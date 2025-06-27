@@ -898,11 +898,11 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900">My Posted Rides</h3>
                       <Badge variant="outline" className="text-blue-600">
-                        {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active').length} active
+                        {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).length} active
                       </Badge>
                     </div>
                     
-                    {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active').length === 0 ? (
+                    {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).length === 0 ? (
                       <div className="text-center py-6 text-gray-500">
                         <Car className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No active ride posts</p>
@@ -910,7 +910,7 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="grid gap-4">
-                        {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active').map((ride) => (
+                        {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).map((ride) => (
                           <Card key={ride.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between mb-3">
