@@ -11,8 +11,11 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - **Deployment**: Replit-native deployment
 
 ## Recent Changes
+- ✅ Consolidated UI sections: Removed redundant "Confirmed Bookings" section and merged all confirmed bookings into unified "Upcoming Rides" section
+- ✅ Enhanced booking status display with clear "Confirmed" badges for better visual hierarchy
 - ✅ Fixed booking request routing: New booking requests from riders now appear in drivers' "Find Requests" section instead of "My Rides & Bookings"
 - ✅ Added counter offer functionality to booking requests with complete ride details display
+- ✅ Enhanced counter offer API handling for both ride requests and booking requests
 - ✅ Maintained proper separation between ride requests and booking requests for clear user workflow
 - ✅ Updated empty state logic to account for both ride requests and booking requests in Find Requests section
 - ✅ Fixed availability calendar for recurring rides: Calendar now correctly filters dates based on driver's actual availability
