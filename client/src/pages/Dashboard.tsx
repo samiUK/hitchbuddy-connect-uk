@@ -1431,7 +1431,13 @@ const Dashboard = () => {
                       <div className="grid gap-4">
                         {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).map((offer: any) => {
                           const counterOfferRide = rides.find(r => r.id === offer.rideId);
-                          const relatedRequest = rideRequests.find(req => req.id === offer.rideRequestId);
+                          // For counter offers, find the original request by matching ride details
+                          const relatedRequest = rideRequests.find(req => 
+                            req.fromLocation === counterOfferRide?.fromLocation &&
+                            req.toLocation === counterOfferRide?.toLocation &&
+                            req.riderId === user?.id &&
+                            req.status === 'active'
+                          );
                           return (
                             <Card key={offer.id} className="border-orange-200 bg-orange-50">
                               <CardContent className="p-4">
@@ -1533,7 +1539,21 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="grid gap-4">
-                        {rideRequests.filter(req => req.status === 'active').map((request) => (
+                        {rideRequests.filter(req => {
+                          // Show only active requests that don't have pending counter offers
+                          const hasCounterOffer = bookings.some((booking: any) => 
+                            booking.riderId === user?.id && 
+                            booking.status === 'pending' && 
+                            booking.rideId && 
+                            rides.find(r => r.id === booking.rideId && 
+                              r.rideId && 
+                              r.rideId.startsWith('CO-') &&
+                              r.fromLocation === req.fromLocation &&
+                              r.toLocation === req.toLocation
+                            )
+                          );
+                          return req.status === 'active' && !hasCounterOffer;
+                        }).map((request) => (
                           <Card key={request.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between mb-3">
