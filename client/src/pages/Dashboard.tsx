@@ -65,6 +65,7 @@ const Dashboard = () => {
   const [formDataTimestamp, setFormDataTimestamp] = useState<number | null>(null);
   const [showCounterOfferModal, setShowCounterOfferModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [quickActionsDismissed, setQuickActionsDismissed] = useState(false);
   
   const userType = user?.userType || 'rider';
   const firstName = user?.firstName || '';
@@ -192,6 +193,7 @@ const Dashboard = () => {
             ? "The rider has been notified and can now contact you."
             : "The booking has been declined.",
         });
+        setQuickActionsDismissed(true); // Dismiss quick actions after action is taken
         fetchData(); // Refresh data
       } else {
         toast({
@@ -363,6 +365,7 @@ const Dashboard = () => {
           title: "Ride request confirmed!",
           description: "The rider has been notified and your trip is now confirmed.",
         });
+        setQuickActionsDismissed(true); // Dismiss quick actions after action is taken
         fetchData();
       } else {
         toast({
@@ -403,6 +406,7 @@ const Dashboard = () => {
           title: "Counter offer sent!",
           description: "Your counter offer has been sent to the rider for review.",
         });
+        setQuickActionsDismissed(true); // Dismiss quick actions after action is taken
         fetchData();
       } else {
         toast({
@@ -648,10 +652,18 @@ const Dashboard = () => {
         
 
         {/* Quick Actions & Notifications */}
-        {notifications.length > 0 && (
+        {notifications.length > 0 && !quickActionsDismissed && (
           <Card className="mb-6 border-orange-200 bg-orange-50">
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-lg text-orange-800">Quick Actions</CardTitle>
+              <Button 
+                size="sm" 
+                variant="ghost"
+                onClick={() => setQuickActionsDismissed(true)}
+                className="text-orange-600 hover:text-orange-800"
+              >
+                <X className="h-4 w-4" />
+              </Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -665,7 +677,10 @@ const Dashboard = () => {
                     <Button 
                       size="sm" 
                       variant="outline"
-                      onClick={() => setActiveTab('rides')}
+                      onClick={() => {
+                        setActiveTab('rides');
+                        setQuickActionsDismissed(true);
+                      }}
                     >
                       View Request
                     </Button>
