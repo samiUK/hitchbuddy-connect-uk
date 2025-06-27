@@ -16,6 +16,11 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Added selectedDate field to bookings database with date validation for recurring rides
 - ✅ Enhanced booking modal with calendar picker showing only available dates based on recurring patterns
 - ✅ Updated booking cards to display selected dates with "Recurring" badges for clarity
+- ✅ Implemented seat availability tracking for recurring ride calendar
+- ✅ Added API endpoint to retrieve bookings by ride ID for capacity checking
+- ✅ Enhanced calendar to block dates when all seats are already booked
+- ✅ Added click-outside functionality to BookRideModal for better UX
+- ✅ Implemented escape key support for modal closure
 - ✅ Improved UI consistency: Removed duplicate h2 headers that replicated navigation tab names while maintaining proper subsection organization
 - ✅ Restored "Booking Requests" section header with left-alignment for clear content hierarchy
 - ✅ Fixed counter offer visibility: Excluded counter offers from "My Posted Rides" section as they are targeted for specific riders

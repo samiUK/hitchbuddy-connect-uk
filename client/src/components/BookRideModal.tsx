@@ -101,6 +101,18 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
     loadAvailableDates();
   }, [ride.id, ride.isRecurring, ride.recurringData, ride.availableSeats]);
 
+  // Handle escape key and click outside to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -168,8 +180,17 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
     }
   };
 
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={handleOverlayClick}
+    >
       <Card className="w-full max-w-2xl mx-auto max-h-[90vh] overflow-y-auto">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
