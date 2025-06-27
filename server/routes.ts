@@ -478,6 +478,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // For testing purposes, allow riders to book their own rides
         // In production, you would add: if (ride.driverId === session.userId) return error
         
+        // If this is a recurring ride without a rideId, generate one now
+        if (ride.isRecurring === 'true' && !ride.rideId) {
+          const now = new Date();
+          const dateStr = now.getFullYear().toString() + 
+                         (now.getMonth() + 1).toString().padStart(2, '0') + 
+                         now.getDate().toString().padStart(2, '0');
+          const randomNum = Math.floor(Math.random() * 90000) + 10000;
+          const newRideId = `RB-${dateStr}-${randomNum}`;
+          
+          // Update the ride with the new rideId
+          await storage.updateRide(ride.id, { rideId: newRideId });
+        }
+        
         bookingData = {
           ...req.body,
           riderId: session.userId,

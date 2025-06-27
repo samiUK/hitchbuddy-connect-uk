@@ -216,6 +216,11 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Drivers can now see rider job postings in "Find Requests" section
 - ✅ Riders can see their own requests in "My Live Requests" area
 - ✅ Removed all console log statements for clean browser interface
+- ✅ Fixed recurring ride ID generation: Recurring rides now only get ride IDs when actually booked by riders
+- ✅ Updated schema to make rideId nullable to support recurring rides without immediate ID assignment
+- ✅ Enhanced booking workflow to generate ride IDs for recurring rides on first booking
+- ✅ Prevents database bloat by avoiding creation of hundreds of individual ride entries for recurring posts
+- ✅ Displays "RECURRING-POST" badge instead of ride ID for unbooked recurring rides
 
 ## Technical Stack
 - Node.js 20
