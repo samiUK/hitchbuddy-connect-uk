@@ -1013,11 +1013,7 @@ const Dashboard = () => {
                                     <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
                                       {ride.rideId || (ride.isRecurring === 'true' ? 'RECURRING-POST' : 'RB-PENDING')}
                                     </Badge>
-                                    {ride.isRecurring === 'true' && (
-                                      <Badge variant="secondary" className="ml-2 text-xs">
-                                        Recurring
-                                      </Badge>
-                                    )}
+
                                   </div>
                                   
                                   <div className="flex items-center space-x-2 text-sm mb-2">

@@ -239,6 +239,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Fixed recurring indicator bug: Non-recurring rides no longer show "(Recurring)" beside dates
 - ✅ Enhanced ModifyRideModal with recurring/non-recurring toggle functionality for drivers
 - ✅ Implemented proper date formatting consistency using formatDateWithRecurring function throughout platform
+- ✅ Removed standalone "Recurring" badges from ride cards while preserving other helpful status badges
+- ✅ Recurring indicator now appears only in date field format (e.g., "27/06/2025 (Recurring)") for cleaner UI
 
 ## Technical Stack
 - Node.js 20
