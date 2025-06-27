@@ -337,6 +337,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete ride route
+  app.delete("/api/rides/:id", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const rideId = req.params.id;
+      const ride = await storage.getRide(rideId);
+
+      if (!ride) {
+        return res.status(404).json({ error: "Ride not found" });
+      }
+
+      // Check if the user owns this ride
+      if (ride.driverId !== session.userId) {
+        return res.status(403).json({ error: "Unauthorized to delete this ride" });
+      }
+
+      await storage.deleteRide(rideId);
+      res.json({ message: "Ride deleted successfully" });
+    } catch (error) {
+      console.error('Delete ride error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Delete ride request route
+  app.delete("/api/ride-requests/:id", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const requestId = req.params.id;
+      const request = await storage.getRideRequest(requestId);
+
+      if (!request) {
+        return res.status(404).json({ error: "Ride request not found" });
+      }
+
+      // Check if the user owns this request
+      if (request.riderId !== session.userId) {
+        return res.status(403).json({ error: "Unauthorized to delete this request" });
+      }
+
+      await storage.deleteRideRequest(requestId);
+      res.json({ message: "Ride request deleted successfully" });
+    } catch (error) {
+      console.error('Delete ride request error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Booking routes
   app.post("/api/bookings", async (req, res) => {
     try {

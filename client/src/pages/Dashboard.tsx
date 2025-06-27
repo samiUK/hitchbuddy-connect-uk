@@ -442,6 +442,74 @@ const Dashboard = () => {
     }
   };
 
+  const handleModifyRide = async (rideId: string) => {
+    // TODO: Implement modify ride functionality
+    toast({
+      title: "Feature Coming Soon",
+      description: "Ride modification will be available in the next update.",
+    });
+  };
+
+  const handleCancelRide = async (rideId: string) => {
+    try {
+      const response = await fetch(`/api/rides/${rideId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Ride Cancelled",
+          description: "Your ride has been successfully cancelled.",
+        });
+        fetchData(); // Refresh the data
+      } else {
+        throw new Error('Failed to cancel ride');
+      }
+    } catch (error) {
+      console.error('Error cancelling ride:', error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel ride. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleModifyRequest = async (requestId: string) => {
+    // TODO: Implement modify request functionality
+    toast({
+      title: "Feature Coming Soon",
+      description: "Request modification will be available in the next update.",
+    });
+  };
+
+  const handleCancelRequest = async (requestId: string) => {
+    try {
+      const response = await fetch(`/api/ride-requests/${requestId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Request Cancelled",
+          description: "Your ride request has been successfully cancelled.",
+        });
+        fetchData(); // Refresh the data
+      } else {
+        throw new Error('Failed to cancel request');
+      }
+    } catch (error) {
+      console.error('Error cancelling request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel request. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
 
 
   return (
