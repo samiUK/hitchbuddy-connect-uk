@@ -654,6 +654,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Decline counter offer - special handling to reactivate original request
+  app.patch("/api/bookings/:id/decline-counter-offer", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const booking = await storage.getBooking(req.params.id);
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+
+      // Verify this is the rider declining their own counter offer
+      if (booking.riderId !== session.userId) {
+        return res.status(403).json({ error: "Not authorized" });
+      }
+
+      // Delete the counter offer booking
+      await storage.updateBooking(req.params.id, { status: 'cancelled' });
+
+      // Delete the counter offer ride if it exists
+      if (booking.rideId) {
+        await storage.deleteRide(booking.rideId);
+      }
+
+      // Reactivate the original ride request if it exists
+      if (booking.rideRequestId) {
+        await storage.updateRideRequest(booking.rideRequestId, { status: 'active' });
+      }
+
+      res.json({ message: "Counter offer declined and request reactivated" });
+    } catch (error) {
+      console.error('Error declining counter offer:', error);
+      res.status(500).json({ error: "Failed to decline counter offer" });
+    }
+  });
+
   app.patch("/api/bookings/:id", async (req, res) => {
     try {
       const sessionId = req.cookies.session;

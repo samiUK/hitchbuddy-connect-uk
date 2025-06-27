@@ -181,6 +181,33 @@ const Dashboard = () => {
 
   const handleBookingAction = async (bookingId: string, action: 'confirmed' | 'cancelled' | 'completed') => {
     try {
+      // Check if this is a counter offer decline
+      const booking = bookings.find(b => b.id === bookingId);
+      const isCounterOfferDecline = action === 'cancelled' && booking?.rideId && 
+        rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'));
+
+      if (isCounterOfferDecline) {
+        // For declined counter offers, call special endpoint to reactivate original request
+        const response = await fetch(`/api/bookings/${bookingId}/decline-counter-offer`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          toast({
+            title: "Counter offer declined",
+            description: "Your request has been returned to the Find Requests section for other drivers to see.",
+          });
+          setQuickActionsDismissed(true);
+          fetchData();
+          return;
+        }
+      }
+
+      // Regular booking action
       const response = await fetch(`/api/bookings/${bookingId}`, {
         method: 'PATCH',
         headers: {
