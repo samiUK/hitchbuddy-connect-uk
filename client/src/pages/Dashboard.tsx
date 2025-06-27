@@ -1062,60 +1062,147 @@ const Dashboard = () => {
                     )}
                   </div>
 
-                  {/* Booking Requests Section - Only for actual ride bookings, not ride requests */}
+                  {/* Counter Offers Sent Section - Only for counter offers sent by this driver */}
+                  {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).length > 0 && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900 text-left">Counter Offers Sent</h3>
+                        <Badge variant="outline" className="text-orange-600">
+                          {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).length} pending
+                        </Badge>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).map((booking: any) => {
+                          const relatedRequest = rideRequests.find(r => r.id === booking.rideRequestId);
+                          return (
+                            <Card key={booking.id} className="p-4 border-orange-300 bg-orange-50">
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                  <div className="mb-2">
+                                    <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
+                                      {booking.jobId || 'CO-' + booking.id?.slice(-6)}
+                                    </Badge>
+                                  </div>
+                                  <div className="flex items-center space-x-2 mb-2">
+                                    <MapPin className="h-4 w-4 text-gray-500" />
+                                    <span className="font-medium">
+                                      {relatedRequest?.fromLocation || 'Not specified'} → {relatedRequest?.toLocation || 'Not specified'}
+                                    </span>
+                                    <Badge variant="outline" className="text-orange-600 border-orange-300">
+                                      Counter Offer Sent
+                                    </Badge>
+                                  </div>
+                                  <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                                    {relatedRequest?.departureDate && (
+                                      <div className="flex items-center space-x-1">
+                                        <Calendar className="h-4 w-4" />
+                                        <span>{relatedRequest.departureDate}</span>
+                                      </div>
+                                    )}
+                                    <div className="flex items-center space-x-1">
+                                      <Clock className="h-4 w-4" />
+                                      <span>{relatedRequest?.departureTime || 'Not specified'}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <Users className="h-4 w-4" />
+                                      <span>{booking.seatsBooked || relatedRequest?.passengers} passenger{(booking.seatsBooked || relatedRequest?.passengers) > 1 ? 's' : ''}</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-sm text-gray-600 mb-2">
+                                    <span className="font-medium">Rider's budget:</span> £{relatedRequest?.maxPrice || 'Not specified'}
+                                  </div>
+                                  {booking.message && (
+                                    <div className="bg-white p-3 rounded-lg text-sm mb-2">
+                                      <p className="text-gray-700 font-medium">Your offer message:</p>
+                                      <p className="text-gray-700 mt-1">"{booking.message}"</p>
+                                    </div>
+                                  )}
+                                  {relatedRequest?.notes && (
+                                    <div className="text-sm text-gray-600 mb-2">
+                                      <span className="font-medium">Rider's request:</span> "{relatedRequest.notes}"
+                                    </div>
+                                  )}
+                                </div>
+                                
+                                <div className="text-right">
+                                  <div className="text-lg font-bold text-orange-600 mb-2">
+                                    £{booking.totalCost}
+                                  </div>
+                                  <div className="flex flex-col space-y-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => handleCounterOffer(relatedRequest)}
+                                      className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300"
+                                    >
+                                      <Edit className="h-4 w-4 mr-1" />
+                                      Revise Offer
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => handleBookingAction(booking.id, 'cancelled')}
+                                      className="border-red-300 text-red-600 hover:bg-red-50"
+                                    >
+                                      <X className="h-4 w-4 mr-1" />
+                                      Cancel Offer
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Booking Requests Section - Only for actual ride bookings from pre-posted rides */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Booking Requests</h3>
                     <div className="space-y-4">
-                      {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && (booking.rideId || booking.rideRequestId)).map((booking: any) => {
-                    const relatedRide = rides.find(r => r.id === booking.rideId);
-                    const relatedRequest = rideRequests.find(r => r.id === booking.rideRequestId);
-                    return (
-                      <Card key={booking.id} className={`p-4 ${booking.status === 'pending' ? 'border-orange-300 bg-orange-50' : ''}`}>
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <div className="mb-2">
-                              <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
-                                {relatedRide?.rideId || booking.jobId || 'CO-' + booking.id?.slice(-6)}
-                              </Badge>
-                            </div>
-                            <div className="flex items-center space-x-2 mb-2">
-                              <MapPin className="h-4 w-4 text-gray-500" />
-                              <span className="font-medium">
-                                {relatedRide ? 
-                                  `${relatedRide.fromLocation || 'Not specified'} → ${relatedRide.toLocation || 'Not specified'}` :
-                                  `${relatedRequest?.fromLocation || 'Not specified'} → ${relatedRequest?.toLocation || 'Not specified'}`
-                                }
-                              </span>
-                              <Badge variant={booking.status === 'pending' ? 'destructive' : 'default'}>
-                                {booking.status}
-                              </Badge>
-                              {booking.jobId && (
-                                <Badge variant="outline" className="text-xs">
-                                  {booking.jobId}
-                                </Badge>
-                              )}
-                            </div>
-                            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
-                              {(relatedRide?.departureDate || relatedRequest?.departureDate) && (
-                                <div className="flex items-center space-x-1">
-                                  <Calendar className="h-4 w-4" />
-                                  <span>{relatedRide?.departureDate || relatedRequest?.departureDate}</span>
+                      {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && !booking.rideRequestId).map((booking: any) => {
+                        const relatedRide = rides.find(r => r.id === booking.rideId);
+                        return (
+                          <Card key={booking.id} className="p-4 border-green-300 bg-green-50">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <div className="mb-2">
+                                  <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
+                                    {relatedRide?.rideId || booking.jobId}
+                                  </Badge>
                                 </div>
-                              )}
-                              <div className="flex items-center space-x-1">
-                                <Clock className="h-4 w-4" />
-                                <span>{relatedRide?.departureTime || relatedRequest?.departureTime}</span>
+                                <div className="flex items-center space-x-2 mb-2">
+                                  <MapPin className="h-4 w-4 text-gray-500" />
+                                  <span className="font-medium">
+                                    {relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}
+                                  </span>
+                                  <Badge variant="outline" className="text-green-600 border-green-300">
+                                    Booking Request
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                                  {relatedRide?.departureDate && (
+                                    <div className="flex items-center space-x-1">
+                                      <Calendar className="h-4 w-4" />
+                                      <span>{relatedRide.departureDate}</span>
+                                    </div>
+                                  )}
+                                  <div className="flex items-center space-x-1">
+                                    <Clock className="h-4 w-4" />
+                                    <span>{relatedRide?.departureTime}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <User className="h-4 w-4" />
+                                    <span>{booking.seatsBooked} seats requested</span>
+                                  </div>
+                                </div>
+                                <div className="text-sm text-gray-600">
+                                  <p><strong>Phone:</strong> {booking.phoneNumber}</p>
+                                  {booking.message && <p><strong>Message:</strong> {booking.message}</p>}
+                                </div>
                               </div>
-                              <div className="flex items-center space-x-1">
-                                <User className="h-4 w-4" />
-                                <span>{booking.seatsBooked} seats requested</span>
-                              </div>
-                            </div>
-                            <div className="text-sm text-gray-600">
-                              <p><strong>Phone:</strong> {booking.phoneNumber}</p>
-                              {booking.message && <p><strong>Message:</strong> {booking.message}</p>}
-                            </div>
-                          </div>
                           <div className="text-right">
                             <div className="text-lg font-bold text-green-600 mb-2">
                               £{booking.totalCost}
@@ -1152,7 +1239,7 @@ const Dashboard = () => {
                         </Card>
                       );
                     })}
-                    {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId).length === 0 && (
+                    {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && !booking.rideRequestId).length === 0 && (
                       <div className="text-center py-8 text-gray-500">
                         <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No pending booking requests.</p>
