@@ -1182,17 +1182,17 @@ const Dashboard = () => {
                   </div>
 
                   {/* Counter Offers Sent Section - Only for counter offers sent by this driver */}
-                  {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && ((booking.rideRequestId && !booking.rideId) || (!booking.rideRequestId && !booking.rideId))).length > 0 && (
+                  {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideRequestId && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length > 0 && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-gray-900 text-left">Counter Offers Sent</h3>
                         <Badge variant="outline" className="text-orange-600">
-                          {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && ((booking.rideRequestId && !booking.rideId) || (!booking.rideRequestId && !booking.rideId))).length} pending
+                          {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideRequestId && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length} pending
                         </Badge>
                       </div>
                       
                       <div className="space-y-4">
-                        {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && ((booking.rideRequestId && !booking.rideId) || (!booking.rideRequestId && !booking.rideId))).map((booking: any) => {
+                        {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideRequestId && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).map((booking: any) => {
                           const relatedRequest = rideRequests.find(r => r.id === booking.rideRequestId);
                           const relatedRide = rides.find(r => r.id === booking.rideId);
                           return (
