@@ -150,8 +150,17 @@ export class PostgreSQLStorage implements IStorage {
   async createRide(insertRide: InsertRide): Promise<Ride> {
     let rideData;
     
-    // Only generate rideId for non-recurring rides or when specifically requested
-    if (insertRide.isRecurring !== 'true' || insertRide.rideId) {
+    // For recurring rides, NEVER generate rideId during creation - only when actually booked
+    if (insertRide.isRecurring === 'true') {
+      // For recurring rides, don't generate rideId yet - it will be generated when booked
+      rideData = {
+        ...insertRide,
+        status: 'active' as const
+      };
+      // Remove rideId from data entirely for recurring rides
+      delete (rideData as any).rideId;
+    } else {
+      // Only generate rideId for non-recurring rides
       // Generate unique Ride ID in format: RB-YYYYMMDD-XXXXX
       const now = new Date();
       const dateStr = now.getFullYear().toString() + 
@@ -165,14 +174,6 @@ export class PostgreSQLStorage implements IStorage {
         rideId,
         status: 'active' as const
       };
-    } else {
-      // For recurring rides, don't generate rideId yet - it will be generated when booked
-      rideData = {
-        ...insertRide,
-        status: 'active' as const
-      };
-      // Remove rideId from data entirely for recurring rides
-      delete (rideData as any).rideId;
     }
     
     const [ride] = await db
@@ -238,11 +239,31 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async createBooking(insertBooking: InsertBooking): Promise<Booking> {
-    const bookingData = {
+    let bookingData = {
       ...insertBooking,
       jobId: `HB-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
       status: 'pending' as const
     };
+
+    // If this is a booking for a recurring ride without a rideId, generate one now
+    if (bookingData.rideId) {
+      const ride = await this.getRide(bookingData.rideId);
+      if (ride && ride.isRecurring === 'true' && !ride.rideId) {
+        // Generate unique Ride ID for this specific recurring ride booking
+        const now = new Date();
+        const dateStr = now.getFullYear().toString() + 
+                       (now.getMonth() + 1).toString().padStart(2, '0') + 
+                       now.getDate().toString().padStart(2, '0');
+        const randomNum = Math.floor(Math.random() * 90000) + 10000;
+        const rideId = `RB-${dateStr}-${randomNum}`;
+        
+        // Update the ride with the generated rideId
+        await db.update(rides)
+          .set({ rideId })
+          .where(eq(rides.id, ride.id));
+      }
+    }
+
     const [booking] = await db
       .insert(bookings)
       .values([bookingData])
