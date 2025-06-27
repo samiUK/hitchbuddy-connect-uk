@@ -1066,20 +1066,26 @@ const Dashboard = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Booking Requests</h3>
                     <div className="space-y-4">
-                      {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId).map((booking: any) => {
+                      {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && (booking.rideId || booking.rideRequestId)).map((booking: any) => {
                     const relatedRide = rides.find(r => r.id === booking.rideId);
+                    const relatedRequest = rideRequests.find(r => r.id === booking.rideRequestId);
                     return (
                       <Card key={booking.id} className={`p-4 ${booking.status === 'pending' ? 'border-orange-300 bg-orange-50' : ''}`}>
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
                             <div className="mb-2">
                               <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
-                                {relatedRide?.rideId || 'RB-PENDING'}
+                                {relatedRide?.rideId || booking.jobId || 'CO-' + booking.id?.slice(-6)}
                               </Badge>
                             </div>
                             <div className="flex items-center space-x-2 mb-2">
                               <MapPin className="h-4 w-4 text-gray-500" />
-                              <span className="font-medium">{relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}</span>
+                              <span className="font-medium">
+                                {relatedRide ? 
+                                  `${relatedRide.fromLocation || 'Not specified'} → ${relatedRide.toLocation || 'Not specified'}` :
+                                  `${relatedRequest?.fromLocation || 'Not specified'} → ${relatedRequest?.toLocation || 'Not specified'}`
+                                }
+                              </span>
                               <Badge variant={booking.status === 'pending' ? 'destructive' : 'default'}>
                                 {booking.status}
                               </Badge>
@@ -1090,15 +1096,15 @@ const Dashboard = () => {
                               )}
                             </div>
                             <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
-                              {relatedRide?.departureDate && (
+                              {(relatedRide?.departureDate || relatedRequest?.departureDate) && (
                                 <div className="flex items-center space-x-1">
                                   <Calendar className="h-4 w-4" />
-                                  <span>{relatedRide.departureDate}</span>
+                                  <span>{relatedRide?.departureDate || relatedRequest?.departureDate}</span>
                                 </div>
                               )}
                               <div className="flex items-center space-x-1">
                                 <Clock className="h-4 w-4" />
-                                <span>{relatedRide?.departureTime}</span>
+                                <span>{relatedRide?.departureTime || relatedRequest?.departureTime}</span>
                               </div>
                               <div className="flex items-center space-x-1">
                                 <User className="h-4 w-4" />
