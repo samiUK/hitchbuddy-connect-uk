@@ -1395,17 +1395,18 @@ const Dashboard = () => {
                 // Riders see their bookings with same structure
                 <div className="space-y-6">
                   {/* Counter Offers Section - show all counter offers received by this rider */}
-                  {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.message && booking.message.includes('Counter offer')).length > 0 && (
+                  {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length > 0 && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-gray-900">Counter Offers</h3>
                         <Badge variant="outline" className="text-orange-600">
-                          {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.message && booking.message.includes('Counter offer')).length} pending
+                          {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length} pending
                         </Badge>
                       </div>
                       
                       <div className="grid gap-4">
-                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.message && booking.message.includes('Counter offer')).map((offer: any) => {
+                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).map((offer: any) => {
+                          const counterOfferRide = rides.find(r => r.id === offer.rideId);
                           const relatedRequest = rideRequests.find(req => req.id === offer.rideRequestId);
                           return (
                             <Card key={offer.id} className="border-orange-200 bg-orange-50">
@@ -1413,40 +1414,40 @@ const Dashboard = () => {
                                 <div className="flex justify-between items-start">
                                   <div className="flex-1">
                                     <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200 mb-2">
-                                      {offer.jobId || 'CO-' + offer.id?.slice(-6)}
+                                      {counterOfferRide?.rideId || offer.jobId || 'CO-' + offer.id?.slice(-6)}
                                     </Badge>
                                     <div className="flex items-center space-x-2 mb-2">
                                       <MapPin className="h-4 w-4 text-gray-500" />
                                       <span className="font-medium">
-                                        {relatedRequest?.fromLocation || 'Not specified'} → {relatedRequest?.toLocation || 'Not specified'}
+                                        {counterOfferRide?.fromLocation || 'Not specified'} → {counterOfferRide?.toLocation || 'Not specified'}
                                       </span>
                                       <Badge variant="outline" className="text-orange-600 border-orange-300">
                                         Counter Offer
                                       </Badge>
                                     </div>
                                     <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
-                                      {relatedRequest?.departureDate && (
+                                      {counterOfferRide?.departureDate && (
                                         <div className="flex items-center space-x-1">
                                           <Calendar className="h-4 w-4" />
-                                          <span>{formatDateToDDMMYYYY(relatedRequest.departureDate)}</span>
+                                          <span>{formatDateToDDMMYYYY(counterOfferRide.departureDate)}</span>
                                         </div>
                                       )}
                                       <div className="flex items-center space-x-1">
                                         <Clock className="h-4 w-4" />
-                                        <span>{relatedRequest?.departureTime || 'Not specified'}</span>
+                                        <span>{counterOfferRide?.departureTime || 'Not specified'}</span>
                                       </div>
                                       <div className="flex items-center space-x-1">
                                         <Users className="h-4 w-4" />
-                                        <span>{offer.seatsBooked || relatedRequest?.passengers} passenger{(offer.seatsBooked || relatedRequest?.passengers) > 1 ? 's' : ''}</span>
+                                        <span>{offer.seatsBooked} passenger{offer.seatsBooked > 1 ? 's' : ''}</span>
                                       </div>
                                     </div>
                                     <div className="text-sm text-gray-600 mb-2">
                                       <span className="font-medium">Your original budget:</span> £{relatedRequest?.maxPrice || 'Not specified'}
                                     </div>
-                                    {offer.message && (
+                                    {counterOfferRide?.notes && (
                                       <div className="bg-white p-3 rounded-lg text-sm mb-2">
                                         <p className="text-gray-700 font-medium">Driver's message:</p>
-                                        <p className="text-gray-700 mt-1">"{offer.message}"</p>
+                                        <p className="text-gray-700 mt-1">"{counterOfferRide.notes}"</p>
                                       </div>
                                     )}
                                     {relatedRequest?.notes && (

@@ -496,33 +496,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let bookingData;
 
       // Check if this is a counter offer for a ride request
-      if (req.body.rideRequestId) {
+      if (req.body.rideRequestId && req.body.message && req.body.message.includes('Counter offer')) {
         const rideRequest = await storage.getRideRequest(req.body.rideRequestId);
         if (!rideRequest) {
           return res.status(404).json({ error: "Ride request not found" });
         }
 
-        // Driver creating a counter offer for a ride request
+        // Create a virtual ride for this counter offer that maintains the same context
+        const newRide = await storage.createRide({
+          driverId: session.userId,
+          fromLocation: rideRequest.fromLocation,
+          toLocation: rideRequest.toLocation,
+          departureDate: rideRequest.departureDate || new Date().toISOString().split('T')[0],
+          departureTime: rideRequest.departureTime,
+          availableSeats: parseInt(rideRequest.passengers.toString()),
+          price: req.body.totalCost.toString(),
+          vehicleInfo: 'Counter Offer',
+          notes: req.body.message,
+          isRecurring: 'false',
+          recurringData: null,
+          status: 'active'
+        });
+
+        // Generate a ride ID for the counter offer
+        const now = new Date();
+        const dateStr = now.getFullYear().toString() + 
+                       (now.getMonth() + 1).toString().padStart(2, '0') + 
+                       now.getDate().toString().padStart(2, '0');
+        const randomNum = Math.floor(Math.random() * 90000) + 10000;
+        const newRideId = `CO-${dateStr}-${randomNum}`;
+        
+        await storage.updateRide(newRide.id, { rideId: newRideId });
+
         bookingData = {
           ...req.body,
           riderId: rideRequest.riderId,
           driverId: session.userId,
-          rideId: null, // No specific ride, this is a custom offer
-          rideRequestId: req.body.rideRequestId, // Link to the ride request
-          totalCost: req.body.totalCost || req.body.seatsBooked * 10, // Use provided cost
-          status: req.body.status || 'pending',
-          phoneNumber: req.body.phoneNumber || null // Allow null for counter offers
-        };
-      } else if (req.body.riderId && !req.body.rideId) {
-        // Driver creating a counter offer for a booking request (no specific ride)
-        bookingData = {
-          ...req.body,
-          driverId: session.userId,
-          rideId: null, // No specific ride, this is a custom counter offer
+          rideId: newRide.id,
+          rideRequestId: req.body.rideRequestId,
           totalCost: req.body.totalCost,
-          status: req.body.status || 'pending',
-          phoneNumber: req.body.phoneNumber || null // Allow null for counter offers
+          status: 'pending',
+          phoneNumber: req.body.phoneNumber || null
         };
+      } else if (req.body.riderId && !req.body.rideId && req.body.message && req.body.message.includes('Counter offer')) {
+        // Driver creating a counter offer for a booking request - create a ride with original booking context
+        const originalBooking = req.body.originalBookingId ? await storage.getBooking(req.body.originalBookingId) : null;
+        const originalRide = originalBooking ? await storage.getRide(originalBooking.rideId) : null;
+
+        if (originalRide) {
+          // Create counter offer ride based on original ride
+          const newRide = await storage.createRide({
+            driverId: session.userId,
+            fromLocation: originalRide.fromLocation,
+            toLocation: originalRide.toLocation,
+            departureDate: originalRide.departureDate,
+            departureTime: originalRide.departureTime,
+            availableSeats: originalBooking?.seatsBooked || 1,
+            price: req.body.totalCost.toString(),
+            vehicleInfo: 'Counter Offer',
+            notes: req.body.message,
+            isRecurring: 'false',
+            recurringData: null,
+            status: 'active'
+          });
+
+          // Generate a ride ID for the counter offer
+          const now = new Date();
+          const dateStr = now.getFullYear().toString() + 
+                         (now.getMonth() + 1).toString().padStart(2, '0') + 
+                         now.getDate().toString().padStart(2, '0');
+          const randomNum = Math.floor(Math.random() * 90000) + 10000;
+          const newRideId = `CO-${dateStr}-${randomNum}`;
+          
+          await storage.updateRide(newRide.id, { rideId: newRideId });
+
+          bookingData = {
+            ...req.body,
+            driverId: session.userId,
+            rideId: newRide.id,
+            totalCost: req.body.totalCost,
+            status: 'pending',
+            phoneNumber: req.body.phoneNumber || null
+          };
+        } else {
+          return res.status(400).json({ error: "Cannot create counter offer without original booking context" });
+        }
       } else {
         // Normal booking for an existing ride
         const ride = await storage.getRide(req.body.rideId);
