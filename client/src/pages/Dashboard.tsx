@@ -181,13 +181,17 @@ const Dashboard = () => {
 
   const handleBookingAction = async (bookingId: string, action: 'confirmed' | 'cancelled' | 'completed') => {
     try {
-      // Check if this is a counter offer decline
+      // Check if this is a counter offer decline or driver cancellation
       const booking = bookings.find(b => b.id === bookingId);
       const isCounterOfferDecline = action === 'cancelled' && booking?.rideId && 
         rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'));
+      
+      // Check if this is a driver cancelling a booking request (should return to global pool)
+      const isDriverCancellation = action === 'cancelled' && booking?.rideRequestId && 
+        user?.userType === 'driver';
 
-      if (isCounterOfferDecline) {
-        // For declined counter offers, call special endpoint to reactivate original request
+      if (isCounterOfferDecline || isDriverCancellation) {
+        // For declined counter offers or driver cancellations, call special endpoint to reactivate original request
         const response = await fetch(`/api/bookings/${bookingId}/decline-counter-offer`, {
           method: 'PATCH',
           headers: {
@@ -197,9 +201,13 @@ const Dashboard = () => {
         });
 
         if (response.ok) {
+          const message = isCounterOfferDecline 
+            ? "Your request has been returned to the Find Requests section for other drivers to see."
+            : "The request has been returned to the Find Requests section for all drivers to see.";
+          
           toast({
-            title: "Counter offer declined",
-            description: "Your request has been returned to the Find Requests section for other drivers to see.",
+            title: isCounterOfferDecline ? "Counter offer declined" : "Request cancelled",
+            description: message,
           });
           setQuickActionsDismissed(true);
           fetchData();

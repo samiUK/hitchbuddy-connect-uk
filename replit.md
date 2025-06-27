@@ -20,6 +20,10 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Enhanced counter offer API handling for both ride requests and booking requests
 - ✅ Maintained proper separation between ride requests and booking requests for clear user workflow
 - ✅ Updated empty state logic to account for both ride requests and booking requests in Find Requests section
+- ✅ Implemented comprehensive request preservation system: Declined counter offers and cancelled driver requests return to global "Find Requests" pool
+- ✅ Added special decline-counter-offer API endpoint that reactivates original requests instead of deleting them
+- ✅ Requests never completely vanish unless original creator cancels - driver mistakes or rider declines return requests to global visibility
+- ✅ Enhanced authorization to allow both riders (counter offer declines) and drivers (accidental cancellations) to trigger request reactivation
 - ✅ Fixed availability calendar for recurring rides: Calendar now correctly filters dates based on driver's actual availability
 - ✅ Enhanced date filtering logic to exclude unavailable days (e.g., no weekends for Mon-Fri schedules)
 - ✅ Added selectedDate field to bookings database with date validation for recurring rides

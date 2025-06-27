@@ -673,8 +673,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Booking not found" });
       }
 
-      // Verify this is the rider declining their own counter offer
-      if (booking.riderId !== session.userId) {
+      // Verify this is either the rider declining their own counter offer OR driver cancelling a booking request
+      if (booking.riderId !== session.userId && booking.driverId !== session.userId) {
         return res.status(403).json({ error: "Not authorized" });
       }
 
