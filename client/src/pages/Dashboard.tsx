@@ -1278,7 +1278,7 @@ const Dashboard = () => {
                   {/* My Live Requests Section (only for riders) */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900">My Live Requests</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 text-left">My Live Requests</h3>
                       <Badge variant="outline" className="text-blue-600">
                         {rideRequests.filter((req: any) => req.status === 'active').length} active
                       </Badge>
