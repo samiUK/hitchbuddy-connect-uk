@@ -236,6 +236,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Moved recurring indicators from separate badges to inline date fields (e.g., "27/06/2025 (Recurring)")
 - ✅ Updated Dashboard, BookRideModal, and ModifyRideModal to use consistent date formatting
 - ✅ Enhanced user experience with unified date display format throughout all ride cards and booking interfaces
+- ✅ Fixed recurring indicator bug: Non-recurring rides no longer show "(Recurring)" beside dates
+- ✅ Enhanced ModifyRideModal with recurring/non-recurring toggle functionality for drivers
+- ✅ Implemented proper date formatting consistency using formatDateWithRecurring function throughout platform
 
 ## Technical Stack
 - Node.js 20

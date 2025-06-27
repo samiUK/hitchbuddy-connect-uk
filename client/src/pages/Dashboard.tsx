@@ -2100,7 +2100,7 @@ const Dashboard = () => {
                           {booking.selectedDate ? (
                             <div className="flex items-center space-x-1">
                               <Calendar className="h-4 w-4" />
-                              <span>{formatDateToDDMMYYYY(booking.selectedDate)} {relatedRide?.isRecurring === 'true' ? '(Recurring)' : ''}</span>
+                              <span>{formatDateWithRecurring(booking.selectedDate, relatedRide?.isRecurring)}</span>
                             </div>
                           ) : relatedRide?.departureDate && (
                             <div className="flex items-center space-x-1">
