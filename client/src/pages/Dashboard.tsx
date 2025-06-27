@@ -1329,7 +1329,8 @@ const Dashboard = () => {
                       </Badge>
                     </div>
                     
-                    {rideRequests.filter((req: any) => req.status === 'active').length === 0 ? (
+                    {rideRequests.filter((req: any) => req.status === 'active').length === 0 && 
+                     bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'confirmed' && booking.totalCost === rideRequests.find((req: any) => req.id === booking.rideRequestId)?.maxPrice).length === 0 ? (
                       <div className="text-center py-6 text-gray-500">
                         <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No active ride requests</p>
@@ -1337,6 +1338,7 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="grid gap-4">
+                        {/* Active ride requests */}
                         {rideRequests.filter(req => req.status === 'active').map((request) => (
                           <Card key={request.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
