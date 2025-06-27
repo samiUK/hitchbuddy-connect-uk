@@ -994,73 +994,78 @@ const Dashboard = () => {
                         {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).map((ride) => (
                           <Card key={ride.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
-                              <div className="flex items-center justify-between mb-3">
-                                <Badge variant="outline" className="text-blue-600 border-blue-300">
-                                  Posted Ride
-                                </Badge>
-                                <Badge className="bg-blue-600">
-                                  Active
-                                </Badge>
-                              </div>
-                              
-                              <div className="space-y-2">
-                                <div className="mb-2">
-                                  <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
-                                    {ride.rideId || (ride.isRecurring === 'true' ? 'RECURRING-POST' : 'RB-PENDING')}
-                                  </Badge>
-                                  {ride.isRecurring === 'true' && (
-                                    <Badge variant="secondary" className="ml-2 text-xs">
-                                      Recurring
+                              <div className="flex justify-between">
+                                <div className="flex-1">
+                                  <div className="flex space-x-2 mb-2">
+                                    <Badge variant="outline" className="text-blue-600 border-blue-300">
+                                      Posted Ride
                                     </Badge>
+                                    <Badge className="bg-blue-600">
+                                      Active
+                                    </Badge>
+                                  </div>
+                                  
+                                  <div className="mb-2">
+                                    <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
+                                      {ride.rideId || (ride.isRecurring === 'true' ? 'RECURRING-POST' : 'RB-PENDING')}
+                                    </Badge>
+                                    {ride.isRecurring === 'true' && (
+                                      <Badge variant="secondary" className="ml-2 text-xs">
+                                        Recurring
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  
+                                  <div className="flex items-center space-x-2 text-sm mb-2">
+                                    <MapPin className="h-4 w-4 text-gray-500" />
+                                    <span className="font-medium">{ride.fromLocation || 'Not specified'} → {ride.toLocation || 'Not specified'}</span>
+                                  </div>
+                                  
+                                  <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                                    <div className="flex items-center space-x-1">
+                                      <Calendar className="h-4 w-4" />
+                                      <span>{ride.departureDate}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <Clock className="h-4 w-4" />
+                                      <span>{ride.departureTime}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <Users className="h-4 w-4" />
+                                      <span>{ride.availableSeats} seats</span>
+                                    </div>
+                                  </div>
+                                  
+                                  {ride.notes && (
+                                    <div className="text-sm text-gray-600">
+                                      <p><strong>Notes:</strong> {ride.notes}</p>
+                                    </div>
                                   )}
                                 </div>
-                                <div className="flex items-center space-x-2 text-sm">
-                                  <MapPin className="h-4 w-4 text-gray-500" />
-                                  <span className="font-medium">{ride.fromLocation || 'Not specified'} → {ride.toLocation || 'Not specified'}</span>
+                                
+                                <div className="text-right ml-4 flex flex-col justify-between">
+                                  <div className="font-semibold text-blue-600 text-lg mb-2">£{ride.price}</div>
+                                  <div className="flex flex-col space-y-2">
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => handleModifyRide(ride.id)}
+                                      className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                                    >
+                                      <Edit className="h-4 w-4 mr-1" />
+                                      Modify
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => handleCancelRide(ride.id)}
+                                      className="text-red-600 border-red-300 hover:bg-red-50"
+                                    >
+                                      <X className="h-4 w-4 mr-1" />
+                                      Cancel
+                                    </Button>
+                                  </div>
                                 </div>
-                                <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                  <div className="flex items-center space-x-1">
-                                    <Calendar className="h-4 w-4" />
-                                    <span>{ride.departureDate}</span>
-                                  </div>
-                                  <div className="flex items-center space-x-1">
-                                    <Clock className="h-4 w-4" />
-                                    <span>{ride.departureTime}</span>
-                                  </div>
-                                  <div className="flex items-center space-x-1">
-                                    <Users className="h-4 w-4" />
-                                    <span>{ride.availableSeats} seats</span>
-                                  </div>
-                                  <div className="flex items-center space-x-1">
-                                    <span className="font-semibold text-blue-600">£{ride.price}</span>
-                                  </div>
-                                </div>
-                                {ride.notes && (
-                                  <div className="text-sm text-gray-600">
-                                    <p><strong>Notes:</strong> {ride.notes}</p>
-                                  </div>
-                                )}
-                              </div>
-                              
-                              <div className="flex justify-end space-x-2 mt-4">
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => handleModifyRide(ride.id)}
-                                  className="text-blue-600 border-blue-300 hover:bg-blue-50"
-                                >
-                                  <Edit className="h-4 w-4 mr-1" />
-                                  Modify
-                                </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => handleCancelRide(ride.id)}
-                                  className="text-red-600 border-red-300 hover:bg-red-50"
-                                >
-                                  <X className="h-4 w-4 mr-1" />
-                                  Cancel
-                                </Button>
                               </div>
                             </CardContent>
                           </Card>
@@ -1610,64 +1615,68 @@ const Dashboard = () => {
                           return (
                             <Card key={booking.id} className="border-green-200 bg-green-50">
                               <CardContent className="p-4">
-                                <div className="flex items-center justify-between mb-3">
-                                  <Badge variant="outline" className="text-green-600 border-green-300">
-                                    Booking Request
-                                  </Badge>
-                                  <Badge className="bg-orange-600">
-                                    Awaiting Approval
-                                  </Badge>
+                                <div className="flex justify-between">
+                                  <div className="flex-1">
+                                    <div className="flex space-x-2 mb-2">
+                                      <Badge variant="outline" className="text-green-600 border-green-300">
+                                        Booking Request
+                                      </Badge>
+                                      <Badge className="bg-orange-600">
+                                        Awaiting Approval
+                                      </Badge>
+                                    </div>
+                                    
+                                    <div className="flex items-center space-x-2 text-sm mb-2">
+                                      <MapPin className="h-4 w-4 text-gray-500" />
+                                      <span className="text-gray-900">{relatedRide?.fromLocation}</span>
+                                      <span className="text-gray-500">→</span>
+                                      <span className="text-gray-900">{relatedRide?.toLocation}</span>
+                                    </div>
+                                    
+                                    <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                      <div className="flex items-center space-x-1">
+                                        <Calendar className="h-4 w-4" />
+                                        <span>{relatedRide?.departureDate}</span>
+                                      </div>
+                                      <div className="flex items-center space-x-1">
+                                        <Clock className="h-4 w-4" />
+                                        <span>{relatedRide?.departureTime}</span>
+                                      </div>
+                                      <div className="flex items-center space-x-1">
+                                        <Users className="h-4 w-4" />
+                                        <span>{booking.seatsBooked} seat{booking.seatsBooked > 1 ? 's' : ''}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="text-right ml-4 flex flex-col justify-between">
+                                    <div>
+                                      <div className="font-semibold text-green-600 text-lg mb-1">£{booking.totalCost}</div>
+                                      {booking.jobId && (
+                                        <div className="text-xs text-gray-500">
+                                          Job ID: {booking.jobId}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
                                 </div>
                                 
-                                <div className="space-y-2">
-                                  <div className="flex items-center space-x-2 text-sm">
-                                    <MapPin className="h-4 w-4 text-gray-500" />
-                                    <span className="text-gray-900">{relatedRide?.fromLocation}</span>
-                                    <span className="text-gray-500">→</span>
-                                    <span className="text-gray-900">{relatedRide?.toLocation}</span>
+                                {booking.message && (
+                                  <div className="pt-2 border-t border-green-200">
+                                    <p className="text-sm text-gray-600 italic">"{booking.message}"</p>
                                   </div>
-                                  
-                                  <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                    <div className="flex items-center space-x-1">
-                                      <Calendar className="h-4 w-4" />
-                                      <span>{relatedRide?.departureDate}</span>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                      <Clock className="h-4 w-4" />
-                                      <span>{relatedRide?.departureTime}</span>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                      <Users className="h-4 w-4" />
-                                      <span>{booking.seatsBooked} seat{booking.seatsBooked > 1 ? 's' : ''}</span>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="flex items-center justify-between pt-2">
-                                    <div className="text-sm text-gray-600">
-                                      Total cost: <span className="font-semibold text-green-600">£{booking.totalCost}</span>
-                                    </div>
-                                    <div className="text-xs text-gray-500">
-                                      Job ID: {booking.jobId}
-                                    </div>
-                                  </div>
-                                  
-                                  {booking.message && (
-                                    <div className="pt-2 border-t border-green-200">
-                                      <p className="text-sm text-gray-600 italic">"{booking.message}"</p>
-                                    </div>
-                                  )}
-                                  
-                                  <div className="flex justify-end space-x-2 pt-3 border-t border-green-200">
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline"
-                                      onClick={() => handleBookingAction(booking.id, 'cancelled')}
-                                      className="text-red-600 border-red-300 hover:bg-red-50"
-                                    >
-                                      <X className="h-3 w-3 mr-1" />
-                                      Cancel Request
-                                    </Button>
-                                  </div>
+                                )}
+                                
+                                <div className="flex justify-end space-x-2 pt-3 border-t border-green-200">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => handleBookingAction(booking.id, 'cancelled')}
+                                    className="text-red-600 border-red-300 hover:bg-red-50"
+                                  >
+                                    <X className="h-3 w-3 mr-1" />
+                                    Cancel Request
+                                  </Button>
                                 </div>
                               </CardContent>
                             </Card>
