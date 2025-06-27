@@ -1330,52 +1330,88 @@ const Dashboard = () => {
                       </div>
                       
                       <div className="grid gap-4">
-                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).map((offer: any) => (
-                          <Card key={offer.id} className="border-orange-200 bg-orange-50">
-                            <CardContent className="p-4">
-                              <div className="flex items-center justify-between mb-3">
-                                <Badge variant="outline" className="text-orange-600 border-orange-300">
-                                  Counter Offer
-                                </Badge>
-                                <Badge className="bg-orange-600">
-                                  £{offer.totalCost}
-                                </Badge>
-                              </div>
-                              
-                              <div className="space-y-2 mb-4">
-                                <div className="flex items-center space-x-2 text-sm">
-                                  <User className="h-4 w-4 text-gray-500" />
-                                  <span className="font-medium">Driver offered this trip</span>
-                                </div>
-                                {offer.message && (
-                                  <div className="bg-white p-3 rounded-lg text-sm">
-                                    <p className="text-gray-700">"{offer.message}"</p>
+                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).map((offer: any) => {
+                          const relatedRequest = rideRequests.find(req => req.id === offer.rideRequestId);
+                          return (
+                            <Card key={offer.id} className="border-orange-200 bg-orange-50">
+                              <CardContent className="p-4">
+                                <div className="flex justify-between items-start">
+                                  <div className="flex-1">
+                                    <div className="mb-2">
+                                      <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
+                                        {offer.jobId || 'CO-' + offer.id?.slice(-6)}
+                                      </Badge>
+                                    </div>
+                                    <div className="flex items-center space-x-2 mb-2">
+                                      <MapPin className="h-4 w-4 text-gray-500" />
+                                      <span className="font-medium">
+                                        {relatedRequest?.fromLocation || 'Not specified'} → {relatedRequest?.toLocation || 'Not specified'}
+                                      </span>
+                                      <Badge variant="outline" className="text-orange-600 border-orange-300">
+                                        Counter Offer
+                                      </Badge>
+                                    </div>
+                                    <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                                      {relatedRequest?.departureDate && (
+                                        <div className="flex items-center space-x-1">
+                                          <Calendar className="h-4 w-4" />
+                                          <span>{relatedRequest.departureDate}</span>
+                                        </div>
+                                      )}
+                                      <div className="flex items-center space-x-1">
+                                        <Clock className="h-4 w-4" />
+                                        <span>{relatedRequest?.departureTime || 'Not specified'}</span>
+                                      </div>
+                                      <div className="flex items-center space-x-1">
+                                        <Users className="h-4 w-4" />
+                                        <span>{offer.seatsBooked || relatedRequest?.passengers} passenger{(offer.seatsBooked || relatedRequest?.passengers) > 1 ? 's' : ''}</span>
+                                      </div>
+                                    </div>
+                                    <div className="text-sm text-gray-600 mb-2">
+                                      <span className="font-medium">Your original budget:</span> £{relatedRequest?.maxPrice || 'Not specified'}
+                                    </div>
+                                    {offer.message && (
+                                      <div className="bg-white p-3 rounded-lg text-sm mb-2">
+                                        <p className="text-gray-700 font-medium">Driver's message:</p>
+                                        <p className="text-gray-700 mt-1">"{offer.message}"</p>
+                                      </div>
+                                    )}
+                                    {relatedRequest?.notes && (
+                                      <div className="text-sm text-gray-600 mb-2">
+                                        <span className="font-medium">Your original request:</span> "{relatedRequest.notes}"
+                                      </div>
+                                    )}
                                   </div>
-                                )}
-                              </div>
-                              
-                              <div className="flex space-x-2">
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleBookingAction(offer.id, 'confirmed')}
-                                  className="bg-green-600 hover:bg-green-700 text-white"
-                                >
-                                  <Check className="h-4 w-4 mr-1" />
-                                  Accept Offer
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleBookingAction(offer.id, 'cancelled')}
-                                  className="border-red-300 text-red-600 hover:bg-red-50"
-                                >
-                                  <X className="h-4 w-4 mr-1" />
-                                  Decline
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
+                                  
+                                  <div className="text-right">
+                                    <div className="text-lg font-bold text-orange-600 mb-2">
+                                      £{offer.totalCost}
+                                    </div>
+                                    <div className="flex flex-col space-y-2">
+                                      <Button
+                                        size="sm"
+                                        onClick={() => handleBookingAction(offer.id, 'confirmed')}
+                                        className="bg-green-600 hover:bg-green-700 text-white"
+                                      >
+                                        <Check className="h-4 w-4 mr-1" />
+                                        Accept Offer
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => handleBookingAction(offer.id, 'cancelled')}
+                                        className="border-red-300 text-red-600 hover:bg-red-50"
+                                      >
+                                        <X className="h-4 w-4 mr-1" />
+                                        Decline
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
