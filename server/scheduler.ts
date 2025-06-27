@@ -45,6 +45,11 @@ export class RideScheduler {
         .where(eq(rides.status, 'active'));
 
       for (const ride of activeRides) {
+        // Skip recurring rides - they should remain active for future bookings
+        if (ride.isRecurring === 'true') {
+          continue;
+        }
+
         if (this.isExpired(ride.departureDate, ride.departureTime, cutoffTime)) {
           // Check if ride has any confirmed bookings
           const confirmedBookings = await db
@@ -56,7 +61,7 @@ export class RideScheduler {
             ));
 
           if (confirmedBookings.length === 0) {
-            // Cancel the ride - no confirmed bookings
+            // Cancel the ride - no confirmed bookings (only for non-recurring rides)
             await db
               .update(rides)
               .set({ 

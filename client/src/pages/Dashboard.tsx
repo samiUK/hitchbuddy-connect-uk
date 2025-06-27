@@ -175,7 +175,7 @@ const Dashboard = () => {
     }
   };
 
-  const handleBookingAction = async (bookingId: string, action: 'confirmed' | 'cancelled') => {
+  const handleBookingAction = async (bookingId: string, action: 'confirmed' | 'cancelled' | 'completed') => {
     try {
       const response = await fetch(`/api/bookings/${bookingId}`, {
         method: 'PATCH',
@@ -188,9 +188,11 @@ const Dashboard = () => {
 
       if (response.ok) {
         toast({
-          title: action === 'confirmed' ? "Booking confirmed!" : "Booking declined",
+          title: action === 'confirmed' ? "Booking confirmed!" : action === 'completed' ? "Trip completed!" : "Booking declined",
           description: action === 'confirmed' 
             ? "The rider has been notified and can now contact you."
+            : action === 'completed'
+            ? "The trip has been marked as completed and moved to Past Rides."
             : "The booking has been declined.",
         });
         setQuickActionsDismissed(true); // Dismiss quick actions after action is taken
