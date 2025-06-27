@@ -888,8 +888,6 @@ const Dashboard = () => {
 
         {activeTab === 'rides' && !showProfileEdit && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">My Rides & Bookings</h2>
-            
             <div className="grid gap-6">
               {userType === 'driver' ? (
                 <div className="space-y-6">
@@ -980,6 +978,7 @@ const Dashboard = () => {
 
                   {/* Booking Requests Section */}
                   <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Booking Requests</h3>
                     <div className="space-y-4">
                       {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending').map((booking: any) => {
                     const relatedRide = rides.find(r => r.id === booking.rideId);
@@ -1518,10 +1517,6 @@ const Dashboard = () => {
 
         {activeTab === 'requests' && !showProfileEdit && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {userType === 'driver' ? 'Find Ride Requests' : 'Available Rides'}
-            </h2>
-
             {userType === 'driver' ? (
               // Drivers see ride requests from riders
               <div className="space-y-4">
@@ -1728,8 +1723,6 @@ const Dashboard = () => {
 
         {activeTab === 'messages' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Messages</h2>
-            
             <div className="text-center py-12">
               <MessageCircle className="h-16 w-16 mx-auto mb-4 text-gray-300" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No messages yet</h3>
@@ -1741,7 +1734,6 @@ const Dashboard = () => {
         )}
         {activeTab === 'messages' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">My Upcoming Rides</h2>
             <div className="grid gap-4">
               {bookings.filter(booking => booking.status === 'confirmed').map((booking: any) => {
                 const relatedRide = rides.find(r => r.id === booking.rideId);
