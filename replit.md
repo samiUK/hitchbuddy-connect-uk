@@ -157,6 +157,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Counter offers create actual ride entries when accepted with unique ride IDs
 - ✅ Ride requests transition from "active" to "matched" status when counter offers are accepted
 - ✅ Updated counter offer price input to use £5 increments for better usability
+- ✅ Counter offers section now only displays when there are pending offers
+- ✅ Section automatically hides once all counter offers are accepted/declined
 - ✅ Enhanced location autocomplete with predefined major landmarks and transportation hubs
 - ✅ Added comprehensive location database including airports, train stations, shopping centres, universities
 - ✅ Implemented smart location search with category icons and visual indicators

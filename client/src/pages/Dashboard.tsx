@@ -1146,20 +1146,16 @@ const Dashboard = () => {
               ) : (
                 // Riders see their bookings with same structure
                 <div className="space-y-6">
-                  {/* Pending Counter Offers Section */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900">Counter Offers</h3>
-                      <Badge variant="outline" className="text-orange-600">
-                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending').length} pending
-                      </Badge>
-                    </div>
-                    
-                    {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending').length === 0 ? (
-                      <div className="text-center py-4 text-gray-500">
-                        <p className="text-sm">No pending counter offers</p>
+                  {/* Counter Offers Section - only show if there are pending offers */}
+                  {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending').length > 0 && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900">Counter Offers</h3>
+                        <Badge variant="outline" className="text-orange-600">
+                          {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending').length} pending
+                        </Badge>
                       </div>
-                    ) : (
+                      
                       <div className="grid gap-4">
                         {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending').map((offer: any) => (
                           <Card key={offer.id} className="border-orange-200 bg-orange-50">
@@ -1208,8 +1204,8 @@ const Dashboard = () => {
                           </Card>
                         ))}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {/* My Live Requests Section (only for riders) */}
                   <div className="space-y-4">
