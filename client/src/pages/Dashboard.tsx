@@ -1413,6 +1413,92 @@ const Dashboard = () => {
                             </CardContent>
                           </Card>
                         ))}
+                        
+                        {/* Direct confirmations (booked at asking price) */}
+                        {bookings.filter((booking: any) => {
+                          const originalRequest = rideRequests.find((req: any) => req.id === booking.rideRequestId);
+                          return booking.riderId === user?.id && 
+                                 booking.status === 'confirmed' && 
+                                 originalRequest && 
+                                 booking.totalCost === originalRequest.maxPrice;
+                        }).map((booking: any) => {
+                          const relatedRide = rides.find(r => r.id === booking.rideId);
+                          const originalRequest = rideRequests.find((req: any) => req.id === booking.rideRequestId);
+                          return (
+                            <Card key={booking.id} className="border-green-200 bg-green-50">
+                              <CardContent className="p-4">
+                                <div className="flex items-center justify-between mb-3">
+                                  <Badge variant="outline" className="text-green-600 border-green-300">
+                                    Request Confirmed
+                                  </Badge>
+                                  <Badge className="bg-green-600">
+                                    Confirmed
+                                  </Badge>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <div className="flex items-center space-x-2 text-sm">
+                                    <MapPin className="h-4 w-4 text-gray-500" />
+                                    <span className="text-gray-900">{relatedRide?.fromLocation}</span>
+                                    <span className="text-gray-500">→</span>
+                                    <span className="text-gray-900">{relatedRide?.toLocation}</span>
+                                  </div>
+                                  
+                                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                    <div className="flex items-center space-x-1">
+                                      <Calendar className="h-4 w-4" />
+                                      <span>{relatedRide?.departureDate}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <Clock className="h-4 w-4" />
+                                      <span>{relatedRide?.departureTime}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <Users className="h-4 w-4" />
+                                      <span>{booking.seatsBooked} seat{booking.seatsBooked > 1 ? 's' : ''}</span>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flex items-center justify-between pt-2">
+                                    <div className="text-sm text-gray-600">
+                                      Confirmed at: <span className="font-semibold text-green-600">£{booking.totalCost}</span>
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                      Job ID: {booking.jobId}
+                                    </div>
+                                  </div>
+                                  
+                                  {booking.message && (
+                                    <div className="pt-2 border-t border-green-200">
+                                      <p className="text-sm text-gray-600 italic">"{booking.message}"</p>
+                                    </div>
+                                  )}
+                                  
+                                  <div className="flex justify-end space-x-2 pt-3 border-t border-green-200">
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => handleMessageRider(booking)}
+                                      className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                                    >
+                                      <MessageCircle className="h-3 w-3 mr-1" />
+                                      Message Driver
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => handleBookingAction(booking.id, 'cancelled')}
+                                      className="text-red-600 border-red-300 hover:bg-red-50"
+                                    >
+                                      <X className="h-3 w-3 mr-1" />
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
