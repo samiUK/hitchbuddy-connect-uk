@@ -1002,9 +1002,14 @@ const Dashboard = () => {
                               </div>
                               
                               <div className="space-y-2">
+                                <div className="mb-2">
+                                  <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
+                                    {ride.rideId || 'RB-PENDING'}
+                                  </Badge>
+                                </div>
                                 <div className="flex items-center space-x-2 text-sm">
                                   <MapPin className="h-4 w-4 text-gray-500" />
-                                  <span className="font-medium">{ride.fromLocation} → {ride.toLocation}</span>
+                                  <span className="font-medium">{ride.fromLocation || 'Not specified'} → {ride.toLocation || 'Not specified'}</span>
                                 </div>
                                 <div className="flex items-center space-x-4 text-sm text-gray-600">
                                   <div className="flex items-center space-x-1">
@@ -1067,9 +1072,14 @@ const Dashboard = () => {
                       <Card key={booking.id} className={`p-4 ${booking.status === 'pending' ? 'border-orange-300 bg-orange-50' : ''}`}>
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
+                            <div className="mb-2">
+                              <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
+                                {relatedRide?.rideId || 'RB-PENDING'}
+                              </Badge>
+                            </div>
                             <div className="flex items-center space-x-2 mb-2">
                               <MapPin className="h-4 w-4 text-gray-500" />
-                              <span className="font-medium">{relatedRide?.fromLocation} → {relatedRide?.toLocation}</span>
+                              <span className="font-medium">{relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}</span>
                               <Badge variant={booking.status === 'pending' ? 'destructive' : 'default'}>
                                 {booking.status}
                               </Badge>
@@ -1156,9 +1166,14 @@ const Dashboard = () => {
                           <Card key={booking.id} className="p-4 border-green-300 bg-green-50">
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
+                                <div className="mb-2">
+                                  <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
+                                    {relatedRide?.rideId || 'RB-PENDING'}
+                                  </Badge>
+                                </div>
                                 <div className="flex items-center space-x-2 mb-2">
                                   <MapPin className="h-4 w-4 text-gray-500" />
-                                  <span className="font-medium">{relatedRide?.fromLocation} → {relatedRide?.toLocation}</span>
+                                  <span className="font-medium">{relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}</span>
                                   <Badge variant="default" className="bg-green-600">
                                     Confirmed
                                   </Badge>
@@ -1247,9 +1262,14 @@ const Dashboard = () => {
                           <Card key={booking.id} className={`p-4 ${booking.status === 'cancelled' ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50'}`}>
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
+                                <div className="mb-2">
+                                  <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
+                                    {relatedRide?.rideId || 'RB-PENDING'}
+                                  </Badge>
+                                </div>
                                 <div className="flex items-center space-x-2 mb-2">
                                   <MapPin className="h-4 w-4 text-gray-500" />
-                                  <span className="font-medium">{relatedRide?.fromLocation} → {relatedRide?.toLocation}</span>
+                                  <span className="font-medium">{relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}</span>
                                   <Badge variant={booking.status === 'completed' ? 'secondary' : 'destructive'}>
                                     {booking.status === 'completed' ? 'Completed' : 'Cancelled'}
                                   </Badge>
@@ -1531,9 +1551,14 @@ const Dashboard = () => {
                           <Card key={booking.id} className="p-4 border-green-300 bg-green-50">
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
+                                <div className="mb-2">
+                                  <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
+                                    {relatedRide?.rideId || 'RB-PENDING'}
+                                  </Badge>
+                                </div>
                                 <div className="flex items-center space-x-2 mb-2">
                                   <MapPin className="h-4 w-4 text-gray-500" />
-                                  <span className="font-medium">{relatedRide?.fromLocation} → {relatedRide?.toLocation}</span>
+                                  <span className="font-medium">{relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}</span>
                                   <Badge variant="default" className="bg-green-600">
                                     Confirmed
                                   </Badge>
@@ -1618,9 +1643,14 @@ const Dashboard = () => {
                           <Card key={booking.id} className={`p-4 ${booking.status === 'cancelled' ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50'}`}>
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
+                                <div className="mb-2">
+                                  <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
+                                    {relatedRide?.rideId || 'RB-PENDING'}
+                                  </Badge>
+                                </div>
                                 <div className="flex items-center space-x-2 mb-2">
                                   <MapPin className="h-4 w-4 text-gray-500" />
-                                  <span className="font-medium">{relatedRide?.fromLocation} → {relatedRide?.toLocation}</span>
+                                  <span className="font-medium">{relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}</span>
                                   <Badge variant={booking.status === 'completed' ? 'secondary' : 'destructive'}>
                                     {booking.status === 'completed' ? 'Completed' : 'Cancelled'}
                                   </Badge>
@@ -1895,10 +1925,15 @@ const Dashboard = () => {
                   <Card key={booking.id} className={`p-4 border-green-300 bg-green-50 ${booking.hasUnreadMessages ? 'ring-2 ring-blue-500 shadow-lg' : ''}`}>
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
+                        <div className="mb-2">
+                          <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200">
+                            {relatedRide?.rideId || 'RB-PENDING'}
+                          </Badge>
+                        </div>
                         <div className="flex items-center space-x-2 mb-2">
                           <MapPin className="h-4 w-4 text-gray-500" />
                           <span className="font-medium flex items-center">
-                            {relatedRide?.fromLocation} → {relatedRide?.toLocation}
+                            {relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}
                             {booking.hasUnreadMessages && (
                               <span className="ml-2 text-xs bg-red-500 text-white px-2 py-1 rounded-full">New Message</span>
                             )}

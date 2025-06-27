@@ -30,6 +30,7 @@ export const sessions = pgTable("sessions", {
 
 export const rides = pgTable("rides", {
   id: uuid("id").primaryKey().defaultRandom(),
+  rideId: text("ride_id").notNull().default('RB-TEMP-00000'),
   driverId: uuid("driver_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   fromLocation: text("from_location").notNull(),
   toLocation: text("to_location").notNull(),

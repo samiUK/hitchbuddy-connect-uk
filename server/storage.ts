@@ -148,8 +148,17 @@ export class PostgreSQLStorage implements IStorage {
 
   // Rides methods
   async createRide(insertRide: InsertRide): Promise<Ride> {
+    // Generate unique Ride ID in format: RB-YYYYMMDD-XXXXX
+    const now = new Date();
+    const dateStr = now.getFullYear().toString() + 
+                   (now.getMonth() + 1).toString().padStart(2, '0') + 
+                   now.getDate().toString().padStart(2, '0');
+    const randomNum = Math.floor(Math.random() * 90000) + 10000;
+    const rideId = `RB-${dateStr}-${randomNum}`;
+    
     const rideData = {
       ...insertRide,
+      rideId,
       status: 'active' as const
     };
     const [ride] = await db
