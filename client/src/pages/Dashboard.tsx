@@ -1325,7 +1325,14 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900 text-left">My Live Requests</h3>
                       <Badge variant="outline" className="text-blue-600">
-                        {rideRequests.filter((req: any) => req.status === 'active').length} active
+                        {rideRequests.filter((req: any) => req.status === 'active').length + 
+                         bookings.filter((booking: any) => {
+                           const originalRequest = rideRequests.find((req: any) => req.id === booking.rideRequestId);
+                           return booking.riderId === user?.id && 
+                                  booking.status === 'confirmed' && 
+                                  originalRequest && 
+                                  booking.totalCost === originalRequest.maxPrice;
+                         }).length} active
                       </Badge>
                     </div>
                     
@@ -1507,7 +1514,12 @@ const Dashboard = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Upcoming Rides</h3>
                     <div className="space-y-4">
-                      {bookings.filter(booking => booking.riderId === user?.id && booking.status === 'confirmed').map((booking: any) => {
+                      {bookings.filter(booking => {
+                        const originalRequest = rideRequests.find((req: any) => req.id === booking.rideRequestId);
+                        return booking.riderId === user?.id && 
+                               booking.status === 'confirmed' && 
+                               (!originalRequest || booking.totalCost !== originalRequest.maxPrice);
+                      }).map((booking: any) => {
                         const relatedRide = rides.find(r => r.id === booking.rideId);
                         return (
                           <Card key={booking.id} className="p-4 border-green-300 bg-green-50">
