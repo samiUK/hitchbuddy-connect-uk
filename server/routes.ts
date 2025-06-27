@@ -367,7 +367,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           driverId: session.userId,
           rideId: null, // No specific ride, this is a custom offer
           totalCost: req.body.totalCost || req.body.seatsBooked * 10, // Use provided cost
-          status: req.body.status || 'pending'
+          status: req.body.status || 'pending',
+          phoneNumber: req.body.phoneNumber || null // Allow null for counter offers
         };
       } else {
         // Normal booking for an existing ride
