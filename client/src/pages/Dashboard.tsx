@@ -1259,18 +1259,18 @@ const Dashboard = () => {
               ) : (
                 // Riders see their bookings with same structure
                 <div className="space-y-6">
-                  {/* Counter Offers Section - only show if there are pending offers */}
-                  {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending').length > 0 && (
+                  {/* Counter Offers Section - only show actual counter offers (with rideRequestId but no rideId) */}
+                  {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).length > 0 && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-gray-900">Counter Offers</h3>
                         <Badge variant="outline" className="text-orange-600">
-                          {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending').length} pending
+                          {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).length} pending
                         </Badge>
                       </div>
                       
                       <div className="grid gap-4">
-                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending').map((offer: any) => (
+                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideRequestId && !booking.rideId).map((offer: any) => (
                           <Card key={offer.id} className="border-orange-200 bg-orange-50">
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between mb-3">
@@ -1325,11 +1325,13 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900 text-left">My Live Requests</h3>
                       <Badge variant="outline" className="text-blue-600">
-                        {rideRequests.filter((req: any) => req.status === 'active').length} active
+                        {rideRequests.filter((req: any) => req.status === 'active').length + 
+                         bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId).length} active
                       </Badge>
                     </div>
                     
-                    {rideRequests.filter((req: any) => req.status === 'active').length === 0 ? (
+                    {rideRequests.filter((req: any) => req.status === 'active').length === 0 && 
+                     bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId).length === 0 ? (
                       <div className="text-center py-6 text-gray-500">
                         <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No active ride requests</p>
@@ -1411,6 +1413,76 @@ const Dashboard = () => {
                             </CardContent>
                           </Card>
                         ))}
+                        
+                        {/* Pending bookings from available rides */}
+                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId).map((booking: any) => {
+                          const relatedRide = rides.find(r => r.id === booking.rideId);
+                          return (
+                            <Card key={booking.id} className="border-green-200 bg-green-50">
+                              <CardContent className="p-4">
+                                <div className="flex items-center justify-between mb-3">
+                                  <Badge variant="outline" className="text-green-600 border-green-300">
+                                    Booking Request
+                                  </Badge>
+                                  <Badge className="bg-orange-600">
+                                    Awaiting Approval
+                                  </Badge>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <div className="flex items-center space-x-2 text-sm">
+                                    <MapPin className="h-4 w-4 text-gray-500" />
+                                    <span className="text-gray-900">{relatedRide?.fromLocation}</span>
+                                    <span className="text-gray-500">→</span>
+                                    <span className="text-gray-900">{relatedRide?.toLocation}</span>
+                                  </div>
+                                  
+                                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                    <div className="flex items-center space-x-1">
+                                      <Calendar className="h-4 w-4" />
+                                      <span>{relatedRide?.departureDate}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <Clock className="h-4 w-4" />
+                                      <span>{relatedRide?.departureTime}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                      <Users className="h-4 w-4" />
+                                      <span>{booking.seatsBooked} seat{booking.seatsBooked > 1 ? 's' : ''}</span>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flex items-center justify-between pt-2">
+                                    <div className="text-sm text-gray-600">
+                                      Total cost: <span className="font-semibold text-green-600">£{booking.totalCost}</span>
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                      Job ID: {booking.jobId}
+                                    </div>
+                                  </div>
+                                  
+                                  {booking.message && (
+                                    <div className="pt-2 border-t border-green-200">
+                                      <p className="text-sm text-gray-600 italic">"{booking.message}"</p>
+                                    </div>
+                                  )}
+                                  
+                                  <div className="flex justify-end space-x-2 pt-3 border-t border-green-200">
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => handleBookingAction(booking.id, 'cancelled')}
+                                      className="text-red-600 border-red-300 hover:bg-red-50"
+                                    >
+                                      <X className="h-3 w-3 mr-1" />
+                                      Cancel Request
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
