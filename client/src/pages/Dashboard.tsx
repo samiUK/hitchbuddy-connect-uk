@@ -1525,13 +1525,11 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900 text-left">My Live Requests</h3>
                       <Badge variant="outline" className="text-blue-600">
-                        {rideRequests.filter((req: any) => req.status === 'active').length + 
-                         bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId).length} active
+                        {rideRequests.filter((req: any) => req.status === 'active').length} active
                       </Badge>
                     </div>
                     
-                    {rideRequests.filter((req: any) => req.status === 'active').length === 0 && 
-                     bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId).length === 0 ? (
+                    {rideRequests.filter((req: any) => req.status === 'active').length === 0 ? (
                       <div className="text-center py-6 text-gray-500">
                         <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No active ride requests</p>
@@ -1542,151 +1540,79 @@ const Dashboard = () => {
                         {rideRequests.filter(req => req.status === 'active').map((request) => (
                           <Card key={request.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
-                              <div className="flex items-center justify-between mb-3">
-                                <Badge variant="outline" className="text-blue-600 border-blue-300">
-                                  Ride Request
-                                </Badge>
-                                <Badge className="bg-orange-600">
-                                  Pending
-                                </Badge>
-                              </div>
-                              
-                              <div className="space-y-2">
-                                <div className="flex items-center space-x-2 text-sm">
-                                  <MapPin className="h-4 w-4 text-gray-500" />
-                                  <span className="text-gray-900">{request.fromLocation}</span>
-                                  <span className="text-gray-500">→</span>
-                                  <span className="text-gray-900">{request.toLocation}</span>
-                                </div>
-                                
-                                <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                  <div className="flex items-center space-x-1">
-                                    <Calendar className="h-4 w-4" />
-                                    <span>{formatDateToDDMMYYYY(request.departureDate)}</span>
+                              <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <Badge variant="outline" className="text-blue-600 border-blue-300">
+                                      Ride Request
+                                    </Badge>
+                                    <Badge className="bg-orange-600">
+                                      Pending
+                                    </Badge>
                                   </div>
-                                  <div className="flex items-center space-x-1">
-                                    <Clock className="h-4 w-4" />
-                                    <span>{request.departureTime}</span>
-                                  </div>
-                                  <div className="flex items-center space-x-1">
-                                    <Users className="h-4 w-4" />
-                                    <span>{request.passengers} passenger{request.passengers > 1 ? 's' : ''}</span>
-                                  </div>
-                                </div>
-                                
-                                <div className="flex items-center justify-between pt-2">
-                                  <div className="text-sm text-gray-600">
-                                    Max budget: <span className="font-semibold text-gray-900">£{request.maxPrice}</span>
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    Submitted {new Date(request.createdAt).toLocaleDateString()}
-                                  </div>
-                                </div>
-                                
-                                {request.notes && (
-                                  <div className="pt-2 border-t border-blue-200">
-                                    <p className="text-sm text-gray-600 italic">"{request.notes}"</p>
-                                  </div>
-                                )}
-                                
-                                <div className="flex justify-end space-x-2 pt-3 border-t border-blue-200">
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={() => handleModifyRequest(request.id)}
-                                    className="text-blue-600 border-blue-300 hover:bg-blue-50"
-                                  >
-                                    <Edit className="h-3 w-3 mr-1" />
-                                    Modify
-                                  </Button>
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={() => handleCancelRequest(request.id)}
-                                    className="text-red-600 border-red-300 hover:bg-red-50"
-                                  >
-                                    <X className="h-3 w-3 mr-1" />
-                                    Cancel
-                                  </Button>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                        
-                        {/* Pending bookings from available rides */}
-                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId).map((booking: any) => {
-                          const relatedRide = rides.find(r => r.id === booking.rideId);
-                          return (
-                            <Card key={booking.id} className="border-green-200 bg-green-50">
-                              <CardContent className="p-4">
-                                <div className="flex justify-between">
-                                  <div className="flex-1">
-                                    <div className="flex space-x-2 mb-2">
-                                      <Badge variant="outline" className="text-green-600 border-green-300">
-                                        Booking Request
-                                      </Badge>
-                                      <Badge className="bg-orange-600">
-                                        Awaiting Approval
-                                      </Badge>
-                                    </div>
-                                    
-                                    <div className="flex items-center space-x-2 text-sm mb-2">
+                                  
+                                  <div className="space-y-2">
+                                    <div className="flex items-center space-x-2 text-sm">
                                       <MapPin className="h-4 w-4 text-gray-500" />
-                                      <span className="text-gray-900">{relatedRide?.fromLocation}</span>
+                                      <span className="text-gray-900">{request.fromLocation}</span>
                                       <span className="text-gray-500">→</span>
-                                      <span className="text-gray-900">{relatedRide?.toLocation}</span>
+                                      <span className="text-gray-900">{request.toLocation}</span>
                                     </div>
                                     
                                     <div className="flex items-center space-x-4 text-sm text-gray-600">
                                       <div className="flex items-center space-x-1">
                                         <Calendar className="h-4 w-4" />
-                                        <span>{formatDateToDDMMYYYY(relatedRide?.departureDate)}</span>
+                                        <span>{formatDateToDDMMYYYY(request.departureDate)}</span>
                                       </div>
                                       <div className="flex items-center space-x-1">
                                         <Clock className="h-4 w-4" />
-                                        <span>{relatedRide?.departureTime}</span>
+                                        <span>{request.departureTime}</span>
                                       </div>
                                       <div className="flex items-center space-x-1">
                                         <Users className="h-4 w-4" />
-                                        <span>{booking.seatsBooked} seat{booking.seatsBooked > 1 ? 's' : ''}</span>
+                                        <span>{request.passengers} passenger{request.passengers > 1 ? 's' : ''}</span>
                                       </div>
                                     </div>
-                                  </div>
-                                  
-                                  <div className="text-right ml-4 flex flex-col justify-between">
-                                    <div>
-                                      <div className="font-semibold text-green-600 text-[22px] mb-1">£{booking.totalCost}</div>
-                                      {booking.jobId && (
-                                        <div className="text-xs text-gray-500">
-                                          Job ID: {booking.jobId}
-                                        </div>
-                                      )}
-                                    </div>
+                                    
+                                    {request.notes && (
+                                      <div className="pt-2 border-t border-blue-200">
+                                        <p className="text-sm text-gray-600 italic">"{request.notes}"</p>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                                 
-                                {booking.message && (
-                                  <div className="pt-2 border-t border-green-200">
-                                    <p className="text-sm text-gray-600 italic">"{booking.message}"</p>
+                                <div className="text-right ml-4">
+                                  <div className="text-[22px] font-bold text-green-600 mb-2">
+                                    £{request.maxPrice}
                                   </div>
-                                )}
-                                
-                                <div className="flex justify-end space-x-2 pt-3 border-t border-green-200">
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={() => handleBookingAction(booking.id, 'cancelled')}
-                                    className="text-red-600 border-red-300 hover:bg-red-50"
-                                  >
-                                    <X className="h-3 w-3 mr-1" />
-                                    Cancel Request
-                                  </Button>
+                                  <div className="text-xs text-gray-500 mb-3">Max Budget</div>
+                                  <div className="flex flex-col space-y-2">
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => handleModifyRequest(request.id)}
+                                      className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                                    >
+                                      <Edit className="h-3 w-3 mr-1" />
+                                      Modify
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => handleCancelRequest(request.id)}
+                                      className="text-red-600 border-red-300 hover:bg-red-50"
+                                    >
+                                      <X className="h-3 w-3 mr-1" />
+                                      Cancel
+                                    </Button>
+                                  </div>
                                 </div>
-                              </CardContent>
-                            </Card>
-                          );
-                        })}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+
                       </div>
                     )}
                   </div>
