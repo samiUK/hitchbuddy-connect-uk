@@ -34,9 +34,10 @@ export const ModifyRideModal = ({ ride, onClose, onRideModified }: ModifyRideMod
   const [isRecurring, setIsRecurring] = useState(ride?.isRecurring === 'true');
   const [recurringData, setRecurringData] = useState(() => {
     try {
-      return ride?.recurringData ? JSON.parse(ride.recurringData) : {
-        frequency: 'weekly',
-        daysOfWeek: []
+      const parsed = ride?.recurringData ? JSON.parse(ride.recurringData) : null;
+      return {
+        frequency: parsed?.frequency || 'weekly',
+        daysOfWeek: Array.isArray(parsed?.daysOfWeek) ? parsed.daysOfWeek : []
       };
     } catch {
       return { frequency: 'weekly', daysOfWeek: [] };
@@ -94,7 +95,7 @@ export const ModifyRideModal = ({ ride, onClose, onRideModified }: ModifyRideMod
   };
 
   const handleDayToggle = (day: string) => {
-    setRecurringData((prev: any) => ({
+    setRecurringData((prev: { frequency: string; daysOfWeek: string[] }) => ({
       ...prev,
       daysOfWeek: prev.daysOfWeek.includes(day)
         ? prev.daysOfWeek.filter((d: string) => d !== day)
@@ -213,7 +214,7 @@ export const ModifyRideModal = ({ ride, onClose, onRideModified }: ModifyRideMod
                             <div key={day.value} className="flex items-center space-x-2">
                               <Checkbox
                                 id={day.value}
-                                checked={recurringData.daysOfWeek.includes(day.value)}
+                                checked={recurringData.daysOfWeek?.includes(day.value) || false}
                                 onCheckedChange={() => handleDayToggle(day.value)}
                               />
                               <Label htmlFor={day.value}>{day.label}</Label>
