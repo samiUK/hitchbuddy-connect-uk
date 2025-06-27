@@ -411,37 +411,92 @@ const Dashboard = () => {
 
   const handleCounterOfferSubmit = async (requestId: string, offerPrice: number, message: string) => {
     try {
-      const response = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          rideRequestId: requestId,
-          seatsBooked: selectedRequest?.passengers || 1,
-          totalCost: offerPrice,
-          status: 'pending',
-          message: message || `Counter offer: £${offerPrice}`
-        }),
-      });
+      // Check if this is a booking request counter offer
+      if (selectedRequest?.isBookingRequest) {
+        // For booking requests, we create a new counter offer booking
+        const response = await fetch('/api/bookings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            riderId: selectedRequest.riderId,
+            seatsBooked: selectedRequest.passengers || 1,
+            totalCost: offerPrice,
+            status: 'pending',
+            message: message || `Counter offer: £${offerPrice}`,
+            phoneNumber: null // Counter offers don't need phone number initially
+          }),
+        });
 
-      if (response.ok) {
-        toast({
-          title: "Counter offer sent!",
-          description: "Your counter offer has been sent to the rider for review.",
-        });
-        setQuickActionsDismissed(true); // Dismiss quick actions after action is taken
-        fetchData();
+        if (response.ok) {
+          // Update the original booking status to declined
+          await fetch(`/api/bookings/${selectedRequest.originalBookingId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+              status: 'cancelled'
+            }),
+          });
+
+          toast({
+            title: "Counter offer sent!",
+            description: "Your counter offer has been sent to the rider for review.",
+          });
+          setQuickActionsDismissed(true);
+          fetchData();
+        } else {
+          const errorData = await response.json();
+          toast({
+            title: "Error",
+            description: errorData.error || "Failed to send counter offer. Please try again.",
+            variant: "destructive",
+          });
+        }
       } else {
-        toast({
-          title: "Error",
-          description: "Failed to send counter offer. Please try again.",
-          variant: "destructive",
+        // Original logic for ride request counter offers
+        const response = await fetch('/api/bookings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            rideRequestId: requestId,
+            seatsBooked: selectedRequest?.passengers || 1,
+            totalCost: offerPrice,
+            status: 'pending',
+            message: message || `Counter offer: £${offerPrice}`
+          }),
         });
+
+        if (response.ok) {
+          toast({
+            title: "Counter offer sent!",
+            description: "Your counter offer has been sent to the rider for review.",
+          });
+          setQuickActionsDismissed(true);
+          fetchData();
+        } else {
+          const errorData = await response.json();
+          toast({
+            title: "Error",
+            description: errorData.error || "Failed to send counter offer. Please try again.",
+            variant: "destructive",
+          });
+        }
       }
     } catch (error) {
       console.error('Error sending counter offer:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send counter offer. Please try again.",
+        variant: "destructive",
+      });
       throw error;
     }
   };

@@ -513,6 +513,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           status: req.body.status || 'pending',
           phoneNumber: req.body.phoneNumber || null // Allow null for counter offers
         };
+      } else if (req.body.riderId && !req.body.rideId) {
+        // Driver creating a counter offer for a booking request (no specific ride)
+        bookingData = {
+          ...req.body,
+          driverId: session.userId,
+          rideId: null, // No specific ride, this is a custom counter offer
+          totalCost: req.body.totalCost,
+          status: req.body.status || 'pending',
+          phoneNumber: req.body.phoneNumber || null // Allow null for counter offers
+        };
       } else {
         // Normal booking for an existing ride
         const ride = await storage.getRide(req.body.rideId);
