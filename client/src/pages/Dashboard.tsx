@@ -41,6 +41,7 @@ import { ChatPopup } from "@/components/ChatPopup";
 import { BetaDisclaimer } from "@/components/BetaDisclaimer";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { RatingModal } from "@/components/RatingModal";
+import { CounterOfferModal } from "@/components/CounterOfferModal";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
@@ -62,6 +63,8 @@ const Dashboard = () => {
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [savedFormData, setSavedFormData] = useState<any>(null);
   const [formDataTimestamp, setFormDataTimestamp] = useState<number | null>(null);
+  const [showCounterOfferModal, setShowCounterOfferModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
   
   const userType = user?.userType || 'rider';
   const firstName = user?.firstName || '';
@@ -284,6 +287,87 @@ const Dashboard = () => {
       departureTime: ride?.departureTime || 'Unknown'
     });
     setShowChatPopup(true);
+  };
+
+  const handleCounterOffer = (request: any) => {
+    setSelectedRequest(request);
+    setShowCounterOfferModal(true);
+  };
+
+  const handleConfirmRideRequest = async (request: any) => {
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          rideRequestId: request.id,
+          seatsBooked: request.passengers,
+          totalCost: request.maxPrice,
+          status: 'confirmed',
+          message: 'Request confirmed by driver'
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Ride request confirmed!",
+          description: "The rider has been notified and your trip is now confirmed.",
+        });
+        fetchData();
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to confirm ride request. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error confirming ride request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to confirm ride request. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCounterOfferSubmit = async (requestId: string, offerPrice: number, message: string) => {
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          rideRequestId: requestId,
+          seatsBooked: selectedRequest?.passengers || 1,
+          totalCost: offerPrice,
+          status: 'pending',
+          message: message || `Counter offer: £${offerPrice}`
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Counter offer sent!",
+          description: "Your counter offer has been sent to the rider for review.",
+        });
+        fetchData();
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to send counter offer. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error sending counter offer:', error);
+      throw error;
+    }
   };
 
   const handleSendMessage = async (message: string) => {
@@ -1062,18 +1146,81 @@ const Dashboard = () => {
               ) : (
                 // Riders see their bookings with same structure
                 <div className="space-y-6">
+                  {/* Pending Counter Offers Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-gray-900">Counter Offers</h3>
+                      <Badge variant="outline" className="text-orange-600">
+                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending').length} pending
+                      </Badge>
+                    </div>
+                    
+                    {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending').length === 0 ? (
+                      <div className="text-center py-4 text-gray-500">
+                        <p className="text-sm">No pending counter offers</p>
+                      </div>
+                    ) : (
+                      <div className="grid gap-4">
+                        {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending').map((offer: any) => (
+                          <Card key={offer.id} className="border-orange-200 bg-orange-50">
+                            <CardContent className="p-4">
+                              <div className="flex items-center justify-between mb-3">
+                                <Badge variant="outline" className="text-orange-600 border-orange-300">
+                                  Counter Offer
+                                </Badge>
+                                <Badge className="bg-orange-600">
+                                  £{offer.totalCost}
+                                </Badge>
+                              </div>
+                              
+                              <div className="space-y-2 mb-4">
+                                <div className="flex items-center space-x-2 text-sm">
+                                  <User className="h-4 w-4 text-gray-500" />
+                                  <span className="font-medium">Driver offered this trip</span>
+                                </div>
+                                {offer.message && (
+                                  <div className="bg-white p-3 rounded-lg text-sm">
+                                    <p className="text-gray-700">"{offer.message}"</p>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="flex space-x-2">
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleBookingAction(offer.id, 'confirmed')}
+                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                >
+                                  <Check className="h-4 w-4 mr-1" />
+                                  Accept Offer
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleBookingAction(offer.id, 'cancelled')}
+                                  className="border-red-300 text-red-600 hover:bg-red-50"
+                                >
+                                  <X className="h-4 w-4 mr-1" />
+                                  Decline
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   {/* My Live Requests Section (only for riders) */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900">My Live Requests</h3>
                       <Badge variant="outline" className="text-blue-600">
-                        {rideRequests.filter(req => req.status === 'pending').length} active
+                        {rideRequests.filter((req: any) => req.status === 'active').length} active
                       </Badge>
                     </div>
                     
-
-                    
-                    {rideRequests.filter(req => req.status === 'pending').length === 0 ? (
+                    {rideRequests.filter((req: any) => req.status === 'active').length === 0 ? (
                       <div className="text-center py-6 text-gray-500">
                         <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No active ride requests</p>
@@ -1620,6 +1767,19 @@ const Dashboard = () => {
             booking={selectedBooking}
             currentUser={user}
             onSendMessage={handleSendMessage}
+          />
+        )}
+
+        {/* Counter Offer Modal */}
+        {showCounterOfferModal && selectedRequest && (
+          <CounterOfferModal
+            isOpen={showCounterOfferModal}
+            onClose={() => {
+              setShowCounterOfferModal(false);
+              setSelectedRequest(null);
+            }}
+            request={selectedRequest}
+            onCounterOfferSubmit={handleCounterOfferSubmit}
           />
         )}
       </div>

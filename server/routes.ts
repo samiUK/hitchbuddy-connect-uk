@@ -351,21 +351,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "Invalid session" });
       }
 
-      // Get ride details to find the driver
-      const ride = await storage.getRide(req.body.rideId);
-      if (!ride) {
-        return res.status(404).json({ error: "Ride not found" });
-      }
+      let bookingData;
 
-      // For testing purposes, allow riders to book their own rides
-      // In production, you would add: if (ride.driverId === session.userId) return error
-      
-      const bookingData = {
-        ...req.body,
-        riderId: session.userId,
-        driverId: ride.driverId,
-        totalCost: (parseFloat(ride.price) * req.body.seatsBooked).toFixed(2)
-      };
+      // Check if this is a counter offer for a ride request
+      if (req.body.rideRequestId) {
+        const rideRequest = await storage.getRideRequest(req.body.rideRequestId);
+        if (!rideRequest) {
+          return res.status(404).json({ error: "Ride request not found" });
+        }
+
+        // Driver creating a counter offer for a ride request
+        bookingData = {
+          ...req.body,
+          riderId: rideRequest.riderId,
+          driverId: session.userId,
+          rideId: null, // No specific ride, this is a custom offer
+          totalCost: req.body.totalCost || req.body.seatsBooked * 10, // Use provided cost
+          status: req.body.status || 'pending'
+        };
+      } else {
+        // Normal booking for an existing ride
+        const ride = await storage.getRide(req.body.rideId);
+        if (!ride) {
+          return res.status(404).json({ error: "Ride not found" });
+        }
+
+        // For testing purposes, allow riders to book their own rides
+        // In production, you would add: if (ride.driverId === session.userId) return error
+        
+        bookingData = {
+          ...req.body,
+          riderId: session.userId,
+          driverId: ride.driverId,
+          totalCost: req.body.totalCost || (parseFloat(ride.price) * req.body.seatsBooked).toFixed(2)
+        };
+      }
 
       const booking = await storage.createBooking(bookingData);
       res.json({ booking });

@@ -27,6 +27,7 @@ export interface IStorage {
   createRideRequest(request: InsertRideRequest): Promise<RideRequest>;
   getRideRequests(): Promise<RideRequest[]>;
   getRideRequestsByRider(riderId: string): Promise<RideRequest[]>;
+  getRideRequest(id: string): Promise<RideRequest | undefined>;
   updateRideRequest(id: string, updates: Partial<RideRequest>): Promise<RideRequest | undefined>;
   deleteRideRequest(id: string): Promise<void>;
   // Bookings
@@ -193,6 +194,11 @@ export class PostgreSQLStorage implements IStorage {
 
   async getRideRequestsByRider(riderId: string): Promise<RideRequest[]> {
     return await db.select().from(rideRequests).where(eq(rideRequests.riderId, riderId));
+  }
+
+  async getRideRequest(id: string): Promise<RideRequest | undefined> {
+    const result = await db.select().from(rideRequests).where(eq(rideRequests.id, id)).limit(1);
+    return result[0];
   }
 
   async updateRideRequest(id: string, updates: Partial<RideRequest>): Promise<RideRequest | undefined> {
