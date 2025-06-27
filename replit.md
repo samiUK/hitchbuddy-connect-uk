@@ -44,6 +44,10 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Fixed runtime error: Implemented missing handleModifyRide, handleCancelRide, handleModifyRequest, and handleCancelRequest functions
 - ✅ Added DELETE API endpoints for rides and ride requests with proper authentication and authorization
 - ✅ Updated Upcoming Rides and Past Rides headers to left-aligned for better visual segmentation
+- ✅ Implemented automatic cancellation system: Background scheduler cancels rides/requests 15 minutes before departure
+- ✅ Enhanced Past Rides sections to display cancelled bookings with red styling and "Cancelled" badges
+- ✅ Added visual distinction between completed (gray) and cancelled (red) bookings for clear status understanding
+- ✅ Updated empty state messages to include "Completed and cancelled rides will appear here"
 - ✅ COMPLETE RESTORATION: Full HitchBuddy application with all functionality restored
 - ✅ Dashboard with complete ride management, booking system, and chat functionality
 - ✅ Profile management with photo uploads working (coolsami_uk@yahoo.com profile intact)

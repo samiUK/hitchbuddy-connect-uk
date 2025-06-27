@@ -3,6 +3,7 @@ import { createServer } from "http";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./routes.js";
 import { setupVite } from "./vite.js";
+import { rideScheduler } from "./scheduler.js";
 
 const app = express();
 app.use(express.json());
@@ -13,6 +14,9 @@ const server = createServer(app);
 
 async function startServer() {
   await registerRoutes(app);
+  
+  // Start the ride cancellation scheduler
+  rideScheduler.start();
   
   if (process.env.NODE_ENV === "production") {
     // Serve static files in production
@@ -28,5 +32,18 @@ async function startServer() {
     console.log(`[express] serving on port ${PORT}`);
   });
 }
+
+// Graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\n[express] Shutting down gracefully...');
+  rideScheduler.stop();
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('\n[express] Shutting down gracefully...');
+  rideScheduler.stop();
+  process.exit(0);
+});
 
 startServer();

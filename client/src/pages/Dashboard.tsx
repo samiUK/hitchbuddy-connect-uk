@@ -1241,17 +1241,17 @@ const Dashboard = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Past Rides</h3>
                     <div className="space-y-4">
-                      {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'completed').map((booking: any) => {
+                      {bookings.filter(booking => booking.driverId === user?.id && (booking.status === 'completed' || booking.status === 'cancelled')).map((booking: any) => {
                         const relatedRide = rides.find(r => r.id === booking.rideId);
                         return (
-                          <Card key={booking.id} className="p-4 border-gray-200 bg-gray-50">
+                          <Card key={booking.id} className={`p-4 ${booking.status === 'cancelled' ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50'}`}>
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
                                 <div className="flex items-center space-x-2 mb-2">
                                   <MapPin className="h-4 w-4 text-gray-500" />
                                   <span className="font-medium">{relatedRide?.fromLocation} → {relatedRide?.toLocation}</span>
-                                  <Badge variant="secondary">
-                                    Completed
+                                  <Badge variant={booking.status === 'completed' ? 'secondary' : 'destructive'}>
+                                    {booking.status === 'completed' ? 'Completed' : 'Cancelled'}
                                   </Badge>
                                 </div>
                                 <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
@@ -1280,11 +1280,11 @@ const Dashboard = () => {
                           </Card>
                         );
                       })}
-                      {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'completed').length === 0 && (
+                      {bookings.filter(booking => booking.driverId === user?.id && (booking.status === 'completed' || booking.status === 'cancelled')).length === 0 && (
                         <div className="text-center py-8 text-gray-500">
                           <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p>No past rides yet.</p>
-                          <p className="text-sm">Completed rides will appear here.</p>
+                          <p className="text-sm">Completed and cancelled rides will appear here.</p>
                         </div>
                       )}
                     </div>
@@ -1612,17 +1612,17 @@ const Dashboard = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Past Rides</h3>
                     <div className="space-y-4">
-                      {bookings.filter(booking => booking.riderId === user?.id && booking.status === 'completed').map((booking: any) => {
+                      {bookings.filter(booking => booking.riderId === user?.id && (booking.status === 'completed' || booking.status === 'cancelled')).map((booking: any) => {
                         const relatedRide = rides.find(r => r.id === booking.rideId);
                         return (
-                          <Card key={booking.id} className="p-4 border-gray-200 bg-gray-50">
+                          <Card key={booking.id} className={`p-4 ${booking.status === 'cancelled' ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50'}`}>
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
                                 <div className="flex items-center space-x-2 mb-2">
                                   <MapPin className="h-4 w-4 text-gray-500" />
                                   <span className="font-medium">{relatedRide?.fromLocation} → {relatedRide?.toLocation}</span>
-                                  <Badge variant="secondary">
-                                    Completed
+                                  <Badge variant={booking.status === 'completed' ? 'secondary' : 'destructive'}>
+                                    {booking.status === 'completed' ? 'Completed' : 'Cancelled'}
                                   </Badge>
                                 </div>
                                 <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
@@ -1651,11 +1651,11 @@ const Dashboard = () => {
                           </Card>
                         );
                       })}
-                      {bookings.filter(booking => booking.riderId === user?.id && booking.status === 'completed').length === 0 && (
+                      {bookings.filter(booking => booking.riderId === user?.id && (booking.status === 'completed' || booking.status === 'cancelled')).length === 0 && (
                         <div className="text-center py-8 text-gray-500">
                           <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p>No past rides yet.</p>
-                          <p className="text-sm">Completed rides will appear here.</p>
+                          <p className="text-sm">Completed and cancelled rides will appear here.</p>
                         </div>
                       )}
                     </div>
