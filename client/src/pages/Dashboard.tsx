@@ -1105,9 +1105,7 @@ const Dashboard = () => {
                                     <span className="font-medium">
                                       {relatedRequest?.fromLocation || 'Not specified'} → {relatedRequest?.toLocation || 'Not specified'}
                                     </span>
-                                    <Badge variant="outline" className="text-orange-600 border-orange-300">
-                                      Counter Offer Sent
-                                    </Badge>
+
                                   </div>
                                   <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
                                     {relatedRequest?.departureDate && (
@@ -1194,9 +1192,7 @@ const Dashboard = () => {
                                   <span className="font-medium">
                                     {relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}
                                   </span>
-                                  <Badge variant="outline" className="text-green-600 border-green-300">
-                                    Booking Request
-                                  </Badge>
+
                                 </div>
                                 <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
                                   {relatedRide?.departureDate && (
