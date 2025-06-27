@@ -552,6 +552,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get bookings by ride ID (for checking seat availability)
+  app.get("/api/bookings/ride/:rideId", async (req, res) => {
+    try {
+      const sessionId = req.cookies.session;
+      if (!sessionId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const session = await storage.getSession(sessionId);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const rideId = req.params.rideId;
+      const bookings = await storage.getBookingsByRide(rideId);
+      res.json(bookings);
+    } catch (error) {
+      console.error('Get bookings by ride error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Messages routes
   app.post('/api/messages', async (req, res) => {
     try {

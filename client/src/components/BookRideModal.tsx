@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -23,48 +23,83 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
     seatsRequested: "1"
   });
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [availableDates, setAvailableDates] = useState<Date[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingDates, setIsLoadingDates] = useState(false);
   const { toast } = useToast();
 
-  // Generate available dates for recurring rides (next 60 days, matching the recurring pattern)
-  const getAvailableDates = () => {
-    if (ride.isRecurring !== 'true') return [];
-    
-    const dates = [];
-    const today = new Date();
-    const recurringData = ride.recurringData ? JSON.parse(ride.recurringData) : { selectedDays: [] };
-    
-    // Map day names to numbers (0 = Sunday, 1 = Monday, etc.)
-    const dayNameToNumber: { [key: string]: number } = {
-      'sunday': 0,
-      'monday': 1,
-      'tuesday': 2,
-      'wednesday': 3,
-      'thursday': 4,
-      'friday': 5,
-      'saturday': 6
+  // Load available dates for recurring rides
+  useEffect(() => {
+    const loadAvailableDates = async () => {
+      if (ride.isRecurring !== 'true') {
+        setAvailableDates([]);
+        return;
+      }
+      
+      setIsLoadingDates(true);
+      try {
+        const dates = [];
+        const today = new Date();
+        const recurringData = ride.recurringData ? JSON.parse(ride.recurringData) : { selectedDays: [] };
+        
+        // Map day names to numbers (0 = Sunday, 1 = Monday, etc.)
+        const dayNameToNumber: { [key: string]: number } = {
+          'sunday': 0,
+          'monday': 1,
+          'tuesday': 2,
+          'wednesday': 3,
+          'thursday': 4,
+          'friday': 5,
+          'saturday': 6
+        };
+        
+        // Convert selected day names to day numbers
+        const selectedDayNumbers = recurringData.selectedDays?.map((day: string) => dayNameToNumber[day.toLowerCase()]).filter((num: number | undefined) => num !== undefined) || [];
+        
+        // Get existing bookings for this ride to check seat availability
+        const bookingsResponse = await fetch(`/api/bookings/ride/${ride.id}`, {
+          credentials: 'include'
+        });
+        const existingBookings = bookingsResponse.ok ? await bookingsResponse.json() : [];
+        
+        for (let i = 1; i < 60; i++) { // Start from tomorrow (i=1)
+          const date = new Date(today);
+          date.setDate(today.getDate() + i);
+          
+          // Only include dates that match the driver's selected days
+          if (selectedDayNumbers.length > 0) {
+            const dayOfWeek = date.getDay();
+            if (selectedDayNumbers.includes(dayOfWeek)) {
+              const dateString = date.toISOString().split('T')[0]; // YYYY-MM-DD format
+              
+              // Calculate total seats booked for this specific date
+              const bookedSeatsForDate = existingBookings
+                .filter((booking: any) => 
+                  booking.selectedDate === dateString && 
+                  booking.status === 'confirmed'
+                )
+                .reduce((total: number, booking: any) => total + parseInt(booking.seatsBooked), 0);
+              
+              // Only include date if there are available seats
+              const availableSeats = parseInt(ride.availableSeats) || 0;
+              if (bookedSeatsForDate < availableSeats) {
+                dates.push(date);
+              }
+            }
+          }
+        }
+        
+        setAvailableDates(dates);
+      } catch (error) {
+        console.error('Error loading available dates:', error);
+        setAvailableDates([]);
+      } finally {
+        setIsLoadingDates(false);
+      }
     };
     
-    // Convert selected day names to day numbers
-    const selectedDayNumbers = recurringData.selectedDays?.map((day: string) => dayNameToNumber[day.toLowerCase()]).filter((num: number | undefined) => num !== undefined) || [];
-    
-    for (let i = 1; i < 60; i++) { // Start from tomorrow (i=1)
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      
-      // Only include dates that match the driver's selected days
-      if (selectedDayNumbers.length > 0) {
-        const dayOfWeek = date.getDay();
-        if (selectedDayNumbers.includes(dayOfWeek)) {
-          dates.push(date);
-        }
-      }
-    }
-    
-    return dates;
-  };
-
-  const availableDates = getAvailableDates();
+    loadAvailableDates();
+  }, [ride.id, ride.isRecurring, ride.recurringData, ride.availableSeats]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -211,9 +246,9 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
                       onSelect={setSelectedDate}
                       disabled={(date) =>
                         date < new Date() || 
-                        !availableDates.some(availableDate => 
+                        (ride.isRecurring === 'true' && !availableDates.some(availableDate => 
                           availableDate.toDateString() === date.toDateString()
-                        )
+                        ))
                       }
                       initialFocus
                     />
