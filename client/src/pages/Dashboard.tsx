@@ -302,6 +302,25 @@ const Dashboard = () => {
     setShowCounterOfferModal(true);
   };
 
+  const handleCounterOfferBooking = (booking: any) => {
+    // Convert booking to request format for counter offer modal
+    const requestForModal = {
+      id: booking.id,
+      riderId: booking.riderId,
+      fromLocation: rides.find(r => r.id === booking.rideId)?.fromLocation || '',
+      toLocation: rides.find(r => r.id === booking.rideId)?.toLocation || '',
+      departureDate: rides.find(r => r.id === booking.rideId)?.departureDate || '',
+      departureTime: rides.find(r => r.id === booking.rideId)?.departureTime || '',
+      passengers: booking.seatsBooked,
+      maxPrice: booking.totalCost,
+      notes: booking.message || '',
+      isBookingRequest: true,
+      originalBookingId: booking.id
+    };
+    setSelectedRequest(requestForModal);
+    setShowCounterOfferModal(true);
+  };
+
   const handleConfirmRideRequest = async (request: any) => {
     try {
       // First create a ride for this confirmed request
@@ -1928,6 +1947,14 @@ const Dashboard = () => {
                               className="bg-green-600 hover:bg-green-700"
                             >
                               Confirm
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleCounterOfferBooking(booking)}
+                              className="border-orange-300 text-orange-600 hover:bg-orange-50"
+                            >
+                              Counter Offer
                             </Button>
                             <Button 
                               size="sm" 
