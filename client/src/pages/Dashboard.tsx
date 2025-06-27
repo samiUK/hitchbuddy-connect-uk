@@ -154,15 +154,15 @@ const Dashboard = () => {
         const bookingsData = await bookingsResponse.json();
         setBookings(bookingsData.bookings || []);
         
-        // Create notifications for drivers about new ride requests
+        // Create notifications for drivers about pending booking requests only (not ride requests)
         if (userType === 'driver') {
           const pendingBookings = bookingsData.bookings.filter(b => 
-            b.status === 'pending' && b.driverId === user?.id
+            b.status === 'pending' && b.driverId === user?.id && b.rideId // Only for actual ride bookings, not ride requests
           );
           setNotifications(pendingBookings.map(booking => ({
             id: booking.id,
             type: 'booking_request',
-            message: `New ride request from rider`,
+            message: `New booking request from rider`,
             booking: booking
           })));
         }
@@ -1042,11 +1042,11 @@ const Dashboard = () => {
                     )}
                   </div>
 
-                  {/* Booking Requests Section */}
+                  {/* Booking Requests Section - Only for actual ride bookings, not ride requests */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Booking Requests</h3>
                     <div className="space-y-4">
-                      {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending').map((booking: any) => {
+                      {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId).map((booking: any) => {
                     const relatedRide = rides.find(r => r.id === booking.rideId);
                     return (
                       <Card key={booking.id} className={`p-4 ${booking.status === 'pending' ? 'border-orange-300 bg-orange-50' : ''}`}>
@@ -1121,11 +1121,11 @@ const Dashboard = () => {
                         </Card>
                       );
                     })}
-                    {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending').length === 0 && (
+                    {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId).length === 0 && (
                       <div className="text-center py-8 text-gray-500">
                         <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No pending booking requests.</p>
-                        <p className="text-sm">New requests will appear here.</p>
+                        <p className="text-sm">Ride bookings from your posted rides will appear here.</p>
                       </div>
                     )}
                     </div>
