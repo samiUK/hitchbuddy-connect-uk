@@ -4,8 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin, Calendar, Clock, Users, PoundSterling, Phone, MessageSquare, Car } from "lucide-react";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { MapPin, Calendar, Clock, Users, PoundSterling, Phone, MessageSquare, Car, CalendarDays } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
 
 interface BookRideModalProps {
   ride: any;
@@ -19,8 +22,38 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
     message: "",
     seatsRequested: "1"
   });
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  // Generate available dates for recurring rides (next 60 days, matching the recurring pattern)
+  const getAvailableDates = () => {
+    if (ride.isRecurring !== 'true') return [];
+    
+    const dates = [];
+    const today = new Date();
+    const recurringData = ride.recurringData ? JSON.parse(ride.recurringData) : { days: [] };
+    
+    for (let i = 0; i < 60; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      
+      // For weekly recurring rides, check if the day matches
+      if (recurringData.days && recurringData.days.length > 0) {
+        const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        if (recurringData.days.includes(dayOfWeek)) {
+          dates.push(date);
+        }
+      } else {
+        // If no specific days, assume daily
+        dates.push(date);
+      }
+    }
+    
+    return dates;
+  };
+
+  const availableDates = getAvailableDates();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -32,6 +65,17 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate date selection for recurring rides
+    if (ride.isRecurring === 'true' && !selectedDate) {
+      toast({
+        title: "Date Required",
+        description: "Please select a date for this recurring ride.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
 
     try {
@@ -39,7 +83,8 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
         rideId: ride.id,
         phoneNumber: formData.phoneNumber,
         message: formData.message,
-        seatsBooked: parseInt(formData.seatsRequested)
+        seatsBooked: parseInt(formData.seatsRequested),
+        selectedDate: selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined
       };
 
       const response = await fetch('/api/bookings', {
@@ -129,6 +174,46 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Date Selection for Recurring Rides */}
+            {ride.isRecurring === 'true' && (
+              <div>
+                <Label className="flex items-center space-x-2 mb-3">
+                  <CalendarDays className="h-4 w-4" />
+                  <span>Select Date *</span>
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={`w-full justify-start text-left font-normal ${
+                        !selectedDate && "text-muted-foreground"
+                      }`}
+                    >
+                      <CalendarDays className="mr-2 h-4 w-4" />
+                      {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      disabled={(date) =>
+                        date < new Date() || 
+                        !availableDates.some(availableDate => 
+                          availableDate.toDateString() === date.toDateString()
+                        )
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <p className="text-xs text-gray-500 mt-1">
+                  Available dates based on the driver's recurring schedule
+                </p>
+              </div>
+            )}
+
             {/* Phone Number */}
             <div>
               <Label htmlFor="phoneNumber" className="flex items-center space-x-2">

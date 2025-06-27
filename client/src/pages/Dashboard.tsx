@@ -1760,7 +1760,15 @@ const Dashboard = () => {
                           )}
                         </div>
                         <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
-                          {relatedRide?.departureDate && (
+                          {booking.selectedDate ? (
+                            <div className="flex items-center space-x-1">
+                              <Calendar className="h-4 w-4" />
+                              <span>{booking.selectedDate}</span>
+                              {relatedRide?.isRecurring === 'true' && (
+                                <Badge variant="secondary" className="text-xs ml-1">Recurring</Badge>
+                              )}
+                            </div>
+                          ) : relatedRide?.departureDate && (
                             <div className="flex items-center space-x-1">
                               <Calendar className="h-4 w-4" />
                               <span>{relatedRide.departureDate}</span>

@@ -71,6 +71,7 @@ export const bookings = pgTable("bookings", {
   phoneNumber: text("phone_number"),
   message: text("message"),
   totalCost: text("total_cost").notNull(),
+  selectedDate: text("selected_date"), // Specific date for recurring rides
   status: text("status").notNull().default('pending').$type<'pending' | 'confirmed' | 'cancelled' | 'completed'>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
