@@ -229,6 +229,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Drivers can now modify all aspects of posted rides: locations, times, pricing, seats, vehicle info, and notes
 - ✅ Enhanced ride management with proper authentication and authorization checks
 - ✅ Recurring ride modification support with frequency and schedule updates
+- ✅ Enhanced price visibility: Updated all price displays to 22px font size across the platform
+- ✅ Consistent pricing typography in Dashboard, BookRideModal, and all ride cards for better user experience
 
 ## Technical Stack
 - Node.js 20

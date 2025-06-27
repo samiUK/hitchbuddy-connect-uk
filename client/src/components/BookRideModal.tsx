@@ -350,7 +350,7 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
             <div className="bg-blue-50 rounded-lg p-4">
               <div className="flex justify-between items-center">
                 <span className="font-medium">Total Cost:</span>
-                <span className="text-xl font-bold text-blue-600">
+                <span className="text-[22px] font-bold text-blue-600">
                   £{(parseFloat(ride.price) * parseInt(formData.seatsRequested)).toFixed(2)}
                 </span>
               </div>

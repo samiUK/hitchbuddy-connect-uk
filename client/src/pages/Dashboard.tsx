@@ -1047,7 +1047,7 @@ const Dashboard = () => {
                                 </div>
                                 
                                 <div className="text-right ml-4 flex flex-col justify-between">
-                                  <div className="font-semibold text-blue-600 text-lg mb-2">£{ride.price}</div>
+                                  <div className="font-semibold text-blue-600 text-[22px] mb-2">£{ride.price}</div>
                                   <div className="flex flex-col space-y-2">
                                     <Button 
                                       size="sm" 
@@ -1141,7 +1141,7 @@ const Dashboard = () => {
                                 </div>
                                 
                                 <div className="text-right">
-                                  <div className="text-lg font-bold text-orange-600 mb-2">
+                                  <div className="text-[22px] font-bold text-orange-600 mb-2">
                                     £{booking.totalCost}
                                   </div>
                                   <div className="flex flex-col space-y-2">
@@ -1219,7 +1219,7 @@ const Dashboard = () => {
                                 </div>
                               </div>
                           <div className="text-right">
-                            <div className="text-lg font-bold text-green-600 mb-2">
+                            <div className="text-[22px] font-bold text-green-600 mb-2">
                               £{booking.totalCost}
                             </div>
                             {booking.status === 'pending' ? (
@@ -1308,7 +1308,7 @@ const Dashboard = () => {
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-lg font-bold text-green-600 mb-2">
+                                <div className="text-[22px] font-bold text-green-600 mb-2">
                                   £{booking.totalCost}
                                 </div>
                                 <div className="flex flex-col space-y-2">
@@ -1400,7 +1400,7 @@ const Dashboard = () => {
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-lg font-bold text-gray-600 mb-2">
+                                <div className="text-[22px] font-bold text-gray-600 mb-2">
                                   £{booking.totalCost}
                                 </div>
                               </div>
@@ -1486,7 +1486,7 @@ const Dashboard = () => {
                                   </div>
                                   
                                   <div className="text-right">
-                                    <div className="text-lg font-bold text-orange-600 mb-2">
+                                    <div className="text-[22px] font-bold text-orange-600 mb-2">
                                       £{offer.totalCost}
                                     </div>
                                     <div className="flex flex-col space-y-2">
@@ -1654,7 +1654,7 @@ const Dashboard = () => {
                                   
                                   <div className="text-right ml-4 flex flex-col justify-between">
                                     <div>
-                                      <div className="font-semibold text-green-600 text-lg mb-1">£{booking.totalCost}</div>
+                                      <div className="font-semibold text-green-600 text-[22px] mb-1">£{booking.totalCost}</div>
                                       {booking.jobId && (
                                         <div className="text-xs text-gray-500">
                                           Job ID: {booking.jobId}
@@ -1729,7 +1729,7 @@ const Dashboard = () => {
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-lg font-bold text-green-600 mb-2">
+                                <div className="text-[22px] font-bold text-green-600 mb-2">
                                   £{booking.totalCost}
                                 </div>
                                 <div className="flex flex-col space-y-2">
@@ -1821,7 +1821,7 @@ const Dashboard = () => {
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-lg font-bold text-gray-600 mb-2">
+                                <div className="text-[22px] font-bold text-gray-600 mb-2">
                                   £{booking.totalCost}
                                 </div>
                               </div>
@@ -1985,7 +1985,7 @@ const Dashboard = () => {
                         )}
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-green-600 mb-2">
+                        <div className="text-[22px] font-bold text-green-600 mb-2">
                           £{ride.price}
                         </div>
                         <Button 
@@ -2125,7 +2125,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-green-600 mb-2">
+                        <div className="text-[22px] font-bold text-green-600 mb-2">
                           £{booking.totalCost}
                         </div>
                         <Button 
