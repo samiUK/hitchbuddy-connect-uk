@@ -748,9 +748,27 @@ const Dashboard = () => {
                     <Star className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{notifications.length}</div>
+                    <div className="text-2xl font-bold">
+                      {(() => {
+                        let count = 0;
+                        
+                        if (userType === 'driver') {
+                          // Driver notifications: pending booking requests + unread messages + unread notifications
+                          count += bookings.filter((b: any) => b.driverId === user?.id && b.status === 'pending').length;
+                          count += bookings.filter((b: any) => b.driverId === user?.id && b.hasUnreadMessages).length;
+                          count += notifications.filter((n: any) => !n.isRead).length;
+                        } else {
+                          // Rider notifications: counter offers + unread messages + unread notifications
+                          count += bookings.filter((b: any) => b.riderId === user?.id && b.rideRequestId && b.status === 'pending').length;
+                          count += bookings.filter((b: any) => b.riderId === user?.id && b.hasUnreadMessages).length;
+                          count += notifications.filter((n: any) => !n.isRead).length;
+                        }
+                        
+                        return count;
+                      })()}
+                    </div>
                     <p className="text-xs text-muted-foreground">
-                      {userType === 'driver' ? 'New ride requests' : 'Updates'}
+                      {userType === 'driver' ? 'Actions needed & messages' : 'Updates & messages'}
                     </p>
                   </CardContent>
                 </Card>
