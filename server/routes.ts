@@ -495,15 +495,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       let bookingData;
 
-      // Check if this is a counter offer for a ride request
-      if (req.body.rideRequestId && req.body.message && req.body.message.includes('Counter offer')) {
+      // Check if this is a counter offer or direct confirmation for a ride request
+      if (req.body.rideRequestId) {
         const rideRequest = await storage.getRideRequest(req.body.rideRequestId);
         if (!rideRequest) {
           return res.status(404).json({ error: "Ride request not found" });
         }
 
-        // Create a virtual ride for this counter offer that maintains the same context
-        const newRide = await storage.createRide({
+        // Convert the ride request into a confirmed ride for this driver
+        // This moves it from "Find Requests" to "My Rides & Bookings"
+        const confirmedRide = await storage.createRide({
           driverId: session.userId,
           fromLocation: rideRequest.fromLocation,
           toLocation: rideRequest.toLocation,
@@ -511,31 +512,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
           departureTime: rideRequest.departureTime,
           availableSeats: parseInt(rideRequest.passengers),
           price: req.body.totalCost,
-          vehicleInfo: 'Counter Offer',
-          notes: req.body.message,
+          vehicleInfo: req.body.message && req.body.message.includes('Counter offer') ? 'Counter Offer' : 'Confirmed Ride',
+          notes: req.body.message || 'Driver confirmed ride request',
           isRecurring: 'false',
           recurringData: null,
           status: 'active'
         });
 
-        // Generate a ride ID for the counter offer
+        // Generate appropriate ride ID
         const now = new Date();
         const dateStr = now.getFullYear().toString() + 
                        (now.getMonth() + 1).toString().padStart(2, '0') + 
                        now.getDate().toString().padStart(2, '0');
         const randomNum = Math.floor(Math.random() * 90000) + 10000;
-        const newRideId = `CO-${dateStr}-${randomNum}`;
+        const isCounterOffer = req.body.message && req.body.message.includes('Counter offer');
+        const newRideId = isCounterOffer ? `CO-${dateStr}-${randomNum}` : `HB-${dateStr}-${randomNum}`;
         
-        await storage.updateRide(newRide.id, { rideId: newRideId });
+        await storage.updateRide(confirmedRide.id, { rideId: newRideId });
+
+        // Remove the original ride request from global pool since driver has engaged
+        await storage.deleteRideRequest(req.body.rideRequestId);
 
         bookingData = {
           ...req.body,
           riderId: rideRequest.riderId,
           driverId: session.userId,
-          rideId: newRide.id,
-          rideRequestId: req.body.rideRequestId,
+          rideId: confirmedRide.id,
           totalCost: req.body.totalCost,
-          status: 'pending',
+          status: isCounterOffer ? 'pending' : 'confirmed',
           phoneNumber: req.body.phoneNumber || null
         };
       } else if (req.body.riderId && !req.body.rideId && req.body.message && req.body.message.includes('Counter offer')) {
