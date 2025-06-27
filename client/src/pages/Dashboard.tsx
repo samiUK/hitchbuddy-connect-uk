@@ -783,7 +783,7 @@ const Dashboard = () => {
                       })()}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {userType === 'driver' ? 'Requests awaiting acceptance' : 'Updates & messages'}
+                      {userType === 'driver' ? 'Actions needed & messages' : 'Updates & messages'}
                     </p>
                   </CardContent>
                 </Card>

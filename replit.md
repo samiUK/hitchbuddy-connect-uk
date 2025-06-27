@@ -37,7 +37,6 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Implemented quick actions auto-dismiss: Quick actions card disappears when clicked or after actions are taken
 - ✅ Added manual dismiss button (X) to quick actions card for immediate removal
 - ✅ Enhanced user experience: Actions automatically hide quick actions to prevent repetitive notifications
-- ✅ Updated notification text to "Requests awaiting acceptance" for driver dashboard clarity
 - ✅ Improved UI consistency: Removed duplicate h2 headers that replicated navigation tab names while maintaining proper subsection organization
 - ✅ Restored "Booking Requests" section header with left-alignment for clear content hierarchy
 - ✅ Fixed counter offer visibility: Excluded counter offers from "My Posted Rides" section as they are targeted for specific riders
