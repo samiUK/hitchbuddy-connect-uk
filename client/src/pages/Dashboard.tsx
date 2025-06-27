@@ -980,7 +980,6 @@ const Dashboard = () => {
 
                   {/* Booking Requests Section */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Booking Requests</h3>
                     <div className="space-y-4">
                       {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending').map((booking: any) => {
                     const relatedRide = rides.find(r => r.id === booking.rideId);
