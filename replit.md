@@ -11,9 +11,11 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - **Deployment**: Replit-native deployment
 
 ## Recent Changes
+- ✅ Fixed request workflow: Confirmed requests now move to "Upcoming Rides" section automatically
+- ✅ Repositioned status badges: "Pending/Confirmed" badges now appear next to location/destination for cleaner layout
 - ✅ Updated status badge system: "Matched" changed to "Confirmed" with green badge for better user clarity
 - ✅ Improved "My Live Requests" section: removed booking request duplication, moved max budget to right side, removed submitted date
-- ✅ Enhanced badge layout: "Pending" badge positioned above "Ride Request" badge for better visual hierarchy
+- ✅ Enhanced badge layout: Status badges positioned next to location data for seamless user experience
 - ✅ MAJOR ARCHITECTURAL SIMPLIFICATION: Unified rideId system - merged rideRequestId and rideId into single unified rideId field
 - ✅ Removed complex filtering logic by using unified ride reference system throughout bookings table
 - ✅ Database schema migration completed successfully with data cleanup for streamlined architecture

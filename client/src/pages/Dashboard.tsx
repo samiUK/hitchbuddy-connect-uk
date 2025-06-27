@@ -1537,15 +1537,12 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="grid gap-4">
-                        {rideRequests.filter(req => req.status === 'active').map((request) => (
+                        {rideRequests.filter(req => (req.status === 'active' || req.status === 'pending') && req.status !== 'matched').map((request) => (
                           <Card key={request.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between">
                                 <div className="flex-1">
-                                  <div className="flex flex-col items-start space-y-2 mb-3">
-                                    <Badge className={request.status === 'matched' ? "bg-green-600" : "bg-orange-600"}>
-                                      {request.status === 'matched' ? 'Confirmed' : 'Pending'}
-                                    </Badge>
+                                  <div className="mb-3">
                                     <Badge variant="outline" className="text-blue-600 border-blue-300">
                                       Ride Request
                                     </Badge>
@@ -1557,6 +1554,9 @@ const Dashboard = () => {
                                       <span className="text-gray-900">{request.fromLocation}</span>
                                       <span className="text-gray-500">→</span>
                                       <span className="text-gray-900">{request.toLocation}</span>
+                                      <Badge className={request.status === 'matched' ? "bg-green-600" : "bg-orange-600"} size="sm">
+                                        {request.status === 'matched' ? 'Confirmed' : 'Pending'}
+                                      </Badge>
                                     </div>
                                     
                                     <div className="flex items-center space-x-4 text-sm text-gray-600">
