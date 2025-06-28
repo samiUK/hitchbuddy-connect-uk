@@ -862,7 +862,7 @@ const Dashboard = () => {
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {userType === 'driver' 
-                        ? rides.filter(r => r.driverId === user?.id && r.status === 'active').length 
+                        ? rides.filter(r => r.driverId === user?.id && r.status === 'active' && !r.notes?.includes('Counter offer')).length 
                         : (() => {
                             // For riders: count ride requests that are still pending (not matched/confirmed)
                             const pendingRequests = rideRequests.filter(req => 
@@ -891,7 +891,7 @@ const Dashboard = () => {
                       }
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {userType === 'driver' ? 'Active rides posted' : 'Pending requests awaiting confirmation'}
+                      {userType === 'driver' ? 'Posted rides currently live' : 'Pending requests awaiting confirmation'}
                     </p>
                   </CardContent>
                 </Card>
