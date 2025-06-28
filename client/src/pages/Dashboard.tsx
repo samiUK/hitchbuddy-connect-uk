@@ -2138,27 +2138,41 @@ const Dashboard = () => {
             ) : (
               <div className="space-y-4">
                 {conversations.map((conversation: any) => {
-                  // Get partner details from booking
-                  const ride = rides.find((r: any) => r.id === conversation.booking.rideId);
-                  const partnerName = conversation.partnerType === 'driver' 
-                    ? `Driver` 
-                    : `Rider`;
+                  // Get enhanced booking with user details
+                  const enhancedBooking = bookings.find((b: any) => b.id === conversation.booking.id) || conversation.booking;
+                  const ride = rides.find((r: any) => r.id === enhancedBooking.rideId);
+                  
+                  // Get partner details from enhanced booking
+                  const isCurrentUserDriver = user?.id === enhancedBooking.driverId;
+                  const partnerName = isCurrentUserDriver 
+                    ? enhancedBooking.riderName || 'Rider'
+                    : enhancedBooking.driverName || 'Driver';
+                  const partnerAvatar = isCurrentUserDriver
+                    ? enhancedBooking.riderAvatar
+                    : enhancedBooking.driverAvatar;
+                  const partnerType = isCurrentUserDriver ? 'rider' : 'driver';
                   
                   return (
                     <Card key={conversation.partnerId} className="hover:shadow-md transition-shadow cursor-pointer"
                           onClick={() => {
-                            // Find the enhanced booking from our state that has user details
-                            const enhancedBooking = bookings.find((b: any) => b.id === conversation.booking.id) || conversation.booking;
                             handleMessageRider(enhancedBooking);
                             fetchConversations(); // Refresh to update unread counts
                           }}>
                       <CardContent className="p-4">
                         <div className="flex items-start space-x-4">
-                          {/* Avatar */}
+                          {/* Partner Avatar */}
                           <div className="flex-shrink-0">
-                            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                              <User className="w-6 h-6 text-blue-600" />
-                            </div>
+                            {partnerAvatar ? (
+                              <img 
+                                src={partnerAvatar} 
+                                alt={partnerName}
+                                className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <User className="w-6 h-6 text-blue-600" />
+                              </div>
+                            )}
                           </div>
                           
                           {/* Conversation Details */}
@@ -2168,8 +2182,8 @@ const Dashboard = () => {
                                 <h3 className="text-sm font-medium text-gray-900">
                                   {partnerName}
                                 </h3>
-                                <Badge variant="outline" className="text-xs">
-                                  {conversation.partnerType}
+                                <Badge variant="outline" className="text-xs capitalize">
+                                  {partnerType}
                                 </Badge>
                                 {conversation.unreadCount > 0 && (
                                   <Badge variant="destructive" className="text-xs">
@@ -2182,22 +2196,46 @@ const Dashboard = () => {
                               </span>
                             </div>
                             
-                            {/* Trip Details */}
-                            <div className="flex items-center space-x-2 mb-2 text-xs text-gray-600">
-                              <MapPin className="w-3 h-3" />
-                              <span className="truncate">
-                                {ride?.fromLocation || 'Trip'} → {ride?.toLocation || 'Destination'}
-                              </span>
-                              {ride?.rideId && (
-                                <Badge variant="outline" className="text-xs font-mono">
-                                  {ride.rideId}
-                                </Badge>
-                              )}
+                            {/* Enhanced Trip Details */}
+                            <div className="space-y-1 mb-2">
+                              {/* Route and Ride ID */}
+                              <div className="flex items-center space-x-2 text-xs text-gray-600">
+                                <MapPin className="w-3 h-3 flex-shrink-0" />
+                                <span className="truncate font-medium">
+                                  {ride?.fromLocation || 'Trip'} → {ride?.toLocation || 'Destination'}
+                                </span>
+                                {ride?.rideId && (
+                                  <Badge variant="outline" className="text-xs font-mono">
+                                    {ride.rideId}
+                                  </Badge>
+                                )}
+                              </div>
+                              
+                              {/* Date, Time, and Price */}
+                              <div className="flex items-center space-x-3 text-xs text-gray-500">
+                                {ride?.departureDate && (
+                                  <div className="flex items-center space-x-1">
+                                    <Calendar className="w-3 h-3" />
+                                    <span>{new Date(ride.departureDate).toLocaleDateString('en-GB')}</span>
+                                  </div>
+                                )}
+                                {ride?.departureTime && (
+                                  <div className="flex items-center space-x-1">
+                                    <Clock className="w-3 h-3" />
+                                    <span>{ride.departureTime}</span>
+                                  </div>
+                                )}
+                                {enhancedBooking.totalCost && (
+                                  <div className="flex items-center space-x-1">
+                                    <span className="font-medium text-green-600">£{enhancedBooking.totalCost}</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             
                             {/* Last Message Preview */}
                             <p className={`text-sm truncate ${conversation.unreadCount > 0 ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
-                              {conversation.lastMessage.senderId === user?.id ? 'You: ' : ''}
+                              {conversation.lastMessage.senderId === user?.id ? 'You: ' : `${partnerName}: `}
                               {conversation.lastMessage.message}
                             </p>
                           </div>
