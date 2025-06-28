@@ -21,7 +21,8 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Repositioned status badges: "Pending/Confirmed" badges now appear next to location/destination for cleaner layout
 - ✅ Updated status badge system: "Matched" changed to "Confirmed" with green badge for better user clarity
 - ✅ Updated dashboard metrics cards: Changed "Notifications" to "Completed Rides" showing actual ride completion counts
-- ✅ Fixed "Live Requests" card logic to show accurate counts: drivers see posted rides currently live (excluding counter offers), riders see pending unconfirmed requests
+- ✅ Fixed "Live Requests/Live Rides" card logic to show accurate counts: drivers see posted rides currently live (excluding counter offers), riders see pending unconfirmed requests
+- ✅ Updated card title from "Total Rides" to "Live Rides" for drivers to match the "Live Requests" terminology for riders
 - ✅ Renamed "Active Requests" to "Live Requests" for better clarity matching dashboard sections
 - ✅ Eliminated misleading metrics by separating ride requests from booking requests in dashboard calculations
 - ✅ MAJOR ARCHITECTURAL SIMPLIFICATION: Unified rideId system - merged rideRequestId and rideId into single unified rideId field
