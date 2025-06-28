@@ -807,23 +807,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/messages/:bookingId', async (req, res) => {
-    try {
-      const session = await storage.getSession(req.cookies.session);
-      if (!session) {
-        res.clearCookie('session');
-        return res.status(401).json({ error: "Invalid session" });
-      }
-
-      const { bookingId } = req.params;
-      const messages = await storage.getMessagesByBooking(bookingId);
-      res.json({ messages });
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-      res.status(500).json({ error: "Failed to fetch messages" });
-    }
-  });
-
   app.get("/api/messages/all", async (req, res) => {
     try {
       const sessionId = req.cookies.session;
@@ -875,6 +858,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Get all messages error:', error);
       res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get('/api/messages/:bookingId', async (req, res) => {
+    try {
+      const session = await storage.getSession(req.cookies.session);
+      if (!session) {
+        res.clearCookie('session');
+        return res.status(401).json({ error: "Invalid session" });
+      }
+
+      const { bookingId } = req.params;
+      const messages = await storage.getMessagesByBooking(bookingId);
+      res.json({ messages });
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      res.status(500).json({ error: "Failed to fetch messages" });
     }
   });
 
