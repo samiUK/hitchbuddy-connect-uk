@@ -886,7 +886,7 @@ const Dashboard = () => {
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Notifications</CardTitle>
+                    <CardTitle className="text-sm font-medium">Completed Rides</CardTitle>
                     <Star className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
@@ -895,22 +895,18 @@ const Dashboard = () => {
                         let count = 0;
                         
                         if (userType === 'driver') {
-                          // Driver notifications: pending booking requests + unread messages + unread notifications
-                          count += bookings.filter((b: any) => b.driverId === user?.id && b.status === 'pending').length;
-                          count += bookings.filter((b: any) => b.driverId === user?.id && b.hasUnreadMessages).length;
-                          count += notifications.filter((n: any) => !n.isRead).length;
+                          // Driver: count completed rides where user was the driver
+                          count = bookings.filter((b: any) => b.driverId === user?.id && b.status === 'completed').length;
                         } else {
-                          // Rider notifications: counter offers + unread messages + unread notifications
-                          count += bookings.filter((b: any) => b.riderId === user?.id && b.rideRequestId && b.status === 'pending').length;
-                          count += bookings.filter((b: any) => b.riderId === user?.id && b.hasUnreadMessages).length;
-                          count += notifications.filter((n: any) => !n.isRead).length;
+                          // Rider: count completed rides where user was the rider
+                          count = bookings.filter((b: any) => b.riderId === user?.id && b.status === 'completed').length;
                         }
                         
                         return count;
                       })()}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {userType === 'driver' ? 'Actions needed & messages' : 'Updates & messages'}
+                      {userType === 'driver' ? 'Rides you completed' : 'Rides you took'}
                     </p>
                   </CardContent>
                 </Card>
