@@ -50,7 +50,7 @@ import { formatDateToDDMMYYYY, formatDateWithRecurring } from "@/lib/dateUtils";
 const Dashboard = () => {
   const { user, signOut, updateProfile } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'overview' | 'post' | 'rides' | 'requests'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'post' | 'rides' | 'requests' | 'messages'>('overview');
   const [showRideRequestForm, setShowRideRequestForm] = useState(false);
   const [showPostRideForm, setShowPostRideForm] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -71,12 +71,14 @@ const Dashboard = () => {
   const [quickActionsDismissed, setQuickActionsDismissed] = useState(false);
   const [showModifyRideModal, setShowModifyRideModal] = useState(false);
   const [selectedRideToModify, setSelectedRideToModify] = useState<any>(null);
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [messagesLoading, setMessagesLoading] = useState(false);
   
   const userType = user?.userType || 'rider';
 
   // Navigation handler for notifications
   const handleNotificationNavigation = (section: string) => {
-    const validTabs = ['overview', 'post', 'rides', 'requests'] as const;
+    const validTabs = ['overview', 'post', 'rides', 'requests', 'messages'] as const;
     type ValidTab = typeof validTabs[number];
     
     if (validTabs.includes(section as ValidTab)) {
@@ -116,8 +118,72 @@ const Dashboard = () => {
   useEffect(() => {
     if (user) {
       fetchData();
+      fetchConversations();
     }
   }, [user, userType]);
+
+  const fetchConversations = async () => {
+    if (!user?.id) return;
+    
+    setMessagesLoading(true);
+    try {
+      // Get all bookings for this user to find conversations
+      const response = await fetch('/api/bookings', { credentials: 'include' });
+      if (response.ok) {
+        const bookingsData = await response.json();
+        const allBookings = bookingsData.bookings || [];
+        
+        // Group bookings by conversation partner
+        const conversationMap = new Map();
+        
+        for (const booking of allBookings) {
+          // Only include confirmed bookings that have messages
+          if (booking.status === 'confirmed') {
+            // Fetch messages for this booking
+            try {
+              const messagesResponse = await fetch(`/api/bookings/${booking.id}/messages`, { credentials: 'include' });
+              if (messagesResponse.ok) {
+                const messages = await messagesResponse.json();
+                if (messages.length > 0) {
+                  const partnerId = booking.riderId === user.id ? booking.driverId : booking.riderId;
+                  const partnerType = booking.riderId === user.id ? 'driver' : 'rider';
+                  
+                  const lastMessage = messages[messages.length - 1];
+                  const unreadCount = messages.filter((m: any) => !m.isRead && m.senderId !== user.id).length;
+                  
+                  // Use partner ID as key to avoid duplicates
+                  if (!conversationMap.has(partnerId) || 
+                      new Date(lastMessage.createdAt) > new Date(conversationMap.get(partnerId).lastMessage.createdAt)) {
+                    conversationMap.set(partnerId, {
+                      booking,
+                      partnerId,
+                      partnerType,
+                      messages,
+                      lastMessage,
+                      unreadCount
+                    });
+                  }
+                }
+              }
+            } catch (error) {
+              console.error('Error fetching messages for booking:', booking.id, error);
+            }
+          }
+        }
+        
+        // Convert map to array and sort by last message time
+        const conversationsList = Array.from(conversationMap.values()).sort((a, b) => 
+          new Date(b.lastMessage.createdAt).getTime() - new Date(a.lastMessage.createdAt).getTime()
+        );
+        
+        setConversations(conversationsList);
+      }
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+    } finally {
+      setMessagesLoading(false);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -824,7 +890,8 @@ const Dashboard = () => {
           {[
             { id: 'overview', label: 'Overview', icon: Navigation },
             { id: 'rides', label: userType === 'driver' ? 'My Rides & Bookings' : 'My Rides & Bookings', icon: Car },
-            { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'Available Rides', icon: userType === 'driver' ? Search : Search }
+            { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'Available Rides', icon: userType === 'driver' ? Search : Search },
+            { id: 'messages', label: 'My Messages', icon: MessageCircle }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -2095,102 +2162,106 @@ const Dashboard = () => {
 
         {activeTab === 'messages' && (
           <div className="space-y-6">
-            <div className="text-center py-12">
-              <MessageCircle className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No messages yet</h3>
-              <p className="text-gray-500">
-                Your conversations with other users will appear here
-              </p>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">My Messages</h2>
+              <Badge variant="outline" className="text-blue-600">
+                {conversations.reduce((total: number, conv: any) => total + conv.unreadCount, 0)} unread
+              </Badge>
             </div>
-          </div>
-        )}
-        {activeTab === 'messages' && (
-          <div className="space-y-6">
-            <div className="grid gap-4">
-              {bookings.filter(booking => booking.status === 'confirmed').map((booking: any) => {
-                const relatedRide = rides.find(r => r.id === booking.rideId);
-                const isDriver = booking.driverId === user?.id;
-                return (
-                  <Card key={booking.id} className={`p-4 border-green-300 bg-green-50 ${booking.hasUnreadMessages ? 'ring-2 ring-blue-500 shadow-lg' : ''}`}>
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <Badge variant="outline" className="text-xs font-mono bg-blue-50 text-blue-700 border-blue-200 mb-2">
-                          {relatedRide?.rideId || 'RB-PENDING'}
-                        </Badge>
-                        <div className="flex items-center space-x-2 mb-2">
-                          <MapPin className="h-4 w-4 text-gray-500" />
-                          <span className="font-medium flex items-center">
-                            {relatedRide?.fromLocation || 'Not specified'} → {relatedRide?.toLocation || 'Not specified'}
-                            {booking.hasUnreadMessages && (
-                              <span className="ml-2 text-xs bg-red-500 text-white px-2 py-1 rounded-full">New Message</span>
-                            )}
-                          </span>
-                          <Badge variant="default" className="bg-green-600">
-                            Confirmed
-                          </Badge>
-                          {booking.jobId && (
-                            <Badge variant="outline" className="text-xs">
-                              {booking.jobId}
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
-                          {booking.selectedDate ? (
-                            <div className="flex items-center space-x-1">
-                              <Calendar className="h-4 w-4" />
-                              <span>{formatDateWithRecurring(booking.selectedDate, relatedRide?.isRecurring)}</span>
+
+            {messagesLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Loading conversations...</span>
+              </div>
+            ) : conversations.length === 0 ? (
+              <div className="text-center py-12">
+                <MessageCircle className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No messages yet</h3>
+                <p className="text-gray-500 mb-1">
+                  Your conversations with other users will appear here
+                </p>
+                <p className="text-sm text-gray-400">
+                  Complete a trip booking to start messaging
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {conversations.map((conversation: any) => {
+                  // Get partner details from booking
+                  const ride = rides.find((r: any) => r.id === conversation.booking.rideId);
+                  const partnerName = conversation.partnerType === 'driver' 
+                    ? `Driver` 
+                    : `Rider`;
+                  
+                  return (
+                    <Card key={conversation.partnerId} className="hover:shadow-md transition-shadow cursor-pointer"
+                          onClick={() => {
+                            setSelectedBooking(conversation.booking);
+                            setShowChatPopup(true);
+                            fetchConversations(); // Refresh to update unread counts
+                          }}>
+                      <CardContent className="p-4">
+                        <div className="flex items-start space-x-4">
+                          {/* Avatar */}
+                          <div className="flex-shrink-0">
+                            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                              <User className="w-6 h-6 text-blue-600" />
                             </div>
-                          ) : relatedRide?.departureDate && (
-                            <div className="flex items-center space-x-1">
-                              <Calendar className="h-4 w-4" />
-                              <span>{formatDateWithRecurring(relatedRide.departureDate, relatedRide.isRecurring)}</span>
+                          </div>
+                          
+                          {/* Conversation Details */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center space-x-2">
+                                <h3 className="text-sm font-medium text-gray-900">
+                                  {partnerName}
+                                </h3>
+                                <Badge variant="outline" className="text-xs">
+                                  {conversation.partnerType}
+                                </Badge>
+                                {conversation.unreadCount > 0 && (
+                                  <Badge variant="destructive" className="text-xs">
+                                    {conversation.unreadCount}
+                                  </Badge>
+                                )}
+                              </div>
+                              <span className="text-xs text-gray-500">
+                                {new Date(conversation.lastMessage.createdAt).toLocaleString()}
+                              </span>
                             </div>
-                          )}
-                          <div className="flex items-center space-x-1">
-                            <Clock className="h-4 w-4" />
-                            <span>{relatedRide?.departureTime}</span>
+                            
+                            {/* Trip Details */}
+                            <div className="flex items-center space-x-2 mb-2 text-xs text-gray-600">
+                              <MapPin className="w-3 h-3" />
+                              <span className="truncate">
+                                {ride?.fromLocation || 'Trip'} → {ride?.toLocation || 'Destination'}
+                              </span>
+                              {ride?.rideId && (
+                                <Badge variant="outline" className="text-xs font-mono">
+                                  {ride.rideId}
+                                </Badge>
+                              )}
+                            </div>
+                            
+                            {/* Last Message Preview */}
+                            <p className={`text-sm truncate ${conversation.unreadCount > 0 ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
+                              {conversation.lastMessage.senderId === user?.id ? 'You: ' : ''}
+                              {conversation.lastMessage.message}
+                            </p>
                           </div>
-                          <div className="flex items-center space-x-1">
-                            <User className="h-4 w-4" />
-                            <span>{booking.seatsBooked} seats</span>
+                          
+                          {/* Chat Icon */}
+                          <div className="flex-shrink-0">
+                            <MessageCircle className="w-5 h-5 text-gray-400" />
                           </div>
                         </div>
-                        <div className="text-sm text-gray-600">
-                          <p><strong>{isDriver ? 'Rider' : 'Driver'} Phone:</strong> {booking.phoneNumber}</p>
-                          {booking.message && <p><strong>Message:</strong> {booking.message}</p>}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-[22px] font-bold text-green-600 mb-2">
-                          £{booking.totalCost}
-                        </div>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleMessageRider(booking)}
-                          className="relative"
-                        >
-                          <MessageCircle className="h-4 w-4 mr-1" />
-                          {booking.driverId === user?.id ? 'Message Rider' : 'Message Driver'}
-                          {booking.hasUnreadMessages && (
-                            <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse"></span>
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                );
-              })}
-              {bookings.filter(booking => booking.status === 'confirmed').length === 0 && (
-                <div className="text-center py-12">
-                  <MessageCircle className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No confirmed rides yet</h3>
-                  <p className="text-gray-500">
-                    Your confirmed rides will appear here
-                  </p>
-                </div>
-              )}
-            </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
