@@ -8,10 +8,10 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Configure database connection using postgres-js
+// Configure database connection using postgres-js for Replit PostgreSQL
 const queryClient = postgres(process.env.DATABASE_URL, {
   prepare: false,
-  ssl: process.env.DATABASE_URL.includes('neon') ? 'require' : false,
+  ssl: process.env.NODE_ENV === 'production' ? 'require' : false,
 });
 
 export const db = drizzle(queryClient, { schema });
