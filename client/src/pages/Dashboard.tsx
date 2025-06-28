@@ -1339,7 +1339,11 @@ const Dashboard = () => {
                                   <Button 
                                     size="sm" 
                                     variant="outline"
-                                    onClick={() => handleMessageRider(booking)}
+                                    onClick={() => {
+                                      // Find the enhanced booking from our state that has user details
+                                      const enhancedBooking = bookings.find((b: any) => b.id === booking.id) || booking;
+                                      handleMessageRider(enhancedBooking);
+                                    }}
                                     className="relative"
                                   >
                                     <MessageCircle className="h-4 w-4 mr-1" />
@@ -1714,7 +1718,11 @@ const Dashboard = () => {
                                   <Button 
                                     size="sm" 
                                     variant="outline"
-                                    onClick={() => handleMessageRider(booking)}
+                                    onClick={() => {
+                                      // Find the enhanced booking from our state that has user details
+                                      const enhancedBooking = bookings.find((b: any) => b.id === booking.id) || booking;
+                                      handleMessageRider(enhancedBooking);
+                                    }}
                                     className="relative"
                                   >
                                     <MessageCircle className="h-4 w-4 mr-1" />
