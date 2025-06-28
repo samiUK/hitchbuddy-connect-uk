@@ -8,7 +8,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator';
 import { useNotifications } from '@/hooks/useNotifications';
 
-export const NotificationCenter = () => {
+interface NotificationCenterProps {
+  onNavigate?: (section: string) => void;
+}
+
+export const NotificationCenter = ({ onNavigate }: NotificationCenterProps) => {
   const { 
     notifications, 
     unreadCount, 
@@ -48,10 +52,37 @@ export const NotificationCenter = () => {
       await markAsRead(notification.id);
     }
     
-    // Handle navigation based on notification type
-    if (notification.type === 'message' && notification.relatedId) {
-      // Could trigger opening chat popup here
-
+    // Close notification panel
+    setIsOpen(false);
+    
+    // Navigate to relevant section based on notification type
+    if (onNavigate) {
+      switch (notification.type) {
+        case 'booking_request':
+          // Take drivers to "My Rides & Bookings" to see pending requests
+          onNavigate('rides');
+          break;
+        case 'counter_offer':
+          // Take riders to "My Trips & Bookings" to see counter offers
+          onNavigate('rides');
+          break;
+        case 'booking_confirmed':
+          // Take users to "My Trips & Bookings" to see confirmed bookings
+          onNavigate('rides');
+          break;
+        case 'message':
+          // Take users to "My Trips & Bookings" where they can access chat
+          onNavigate('rides');
+          break;
+        case 'trip_request':
+          // Take drivers to "Find Requests" to see new trip requests
+          onNavigate('requests');
+          break;
+        default:
+          // Default to overview
+          onNavigate('overview');
+          break;
+      }
     }
   };
 

@@ -72,6 +72,18 @@ const Dashboard = () => {
   const [selectedRideToModify, setSelectedRideToModify] = useState<any>(null);
   
   const userType = user?.userType || 'rider';
+
+  // Navigation handler for notifications
+  const handleNotificationNavigation = (section: string) => {
+    const validTabs = ['overview', 'post', 'rides', 'requests'] as const;
+    type ValidTab = typeof validTabs[number];
+    
+    if (validTabs.includes(section as ValidTab)) {
+      setActiveTab(section as ValidTab);
+    } else {
+      setActiveTab('overview');
+    }
+  };
   const firstName = user?.firstName || '';
   const lastName = user?.lastName || '';
 
@@ -717,7 +729,7 @@ const Dashboard = () => {
               </div>
               
               {/* Notification Center */}
-              <NotificationCenter />
+              <NotificationCenter onNavigate={handleNotificationNavigation} />
               
               {/* Settings Dropdown */}
               <DropdownMenu>
