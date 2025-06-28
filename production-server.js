@@ -13,6 +13,7 @@ const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 console.log('🚀 Starting HitchBuddy production deployment...');
 
@@ -258,7 +259,7 @@ app.get('*', (req, res) => {
 
 // Start the production server with full API functionality
 setupServer().then((httpServer) => {
-  httpServer.listen(PORT, '0.0.0.0', () => {
+  httpServer.listen(PORT, HOST, () => {
     console.log(`🎯 HitchBuddy production server running on port ${PORT}`);
     console.log(`🌐 Environment: ${process.env.NODE_ENV || 'production'}`);
     console.log(`🔗 Live at: https://hitchbuddyapp.replit.app`);
