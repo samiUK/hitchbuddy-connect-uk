@@ -843,7 +843,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const { bookingId } = req.params;
       const messages = await storage.getMessagesByBooking(bookingId);
-      res.json(messages);
+      res.json({ messages });
     } catch (error) {
       console.error('Error fetching messages:', error);
       res.status(500).json({ error: "Failed to fetch messages" });

@@ -317,9 +317,19 @@ const Dashboard = () => {
         });
         if (response.ok) {
           const riderData = await response.json();
+          console.log('Fetched rider data:', riderData);
           otherUserDetails = {
             otherUserName: `${riderData.user.firstName} ${riderData.user.lastName}`,
             otherUserAvatar: riderData.user.avatarUrl,
+            otherUserType: 'rider'
+          };
+        } else {
+          console.error('Failed to fetch rider details, status:', response.status);
+          const errorData = await response.text();
+          console.error('Error response:', errorData);
+          otherUserDetails = {
+            otherUserName: 'Rider',
+            otherUserAvatar: null,
             otherUserType: 'rider'
           };
         }
@@ -339,9 +349,19 @@ const Dashboard = () => {
         });
         if (response.ok) {
           const driverData = await response.json();
+          console.log('Fetched driver data:', driverData);
           otherUserDetails = {
             otherUserName: `${driverData.user.firstName} ${driverData.user.lastName}`,
             otherUserAvatar: driverData.user.avatarUrl,
+            otherUserType: 'driver'
+          };
+        } else {
+          console.error('Failed to fetch driver details, status:', response.status);
+          const errorData = await response.text();
+          console.error('Error response:', errorData);
+          otherUserDetails = {
+            otherUserName: 'Driver',
+            otherUserAvatar: null,
             otherUserType: 'driver'
           };
         }

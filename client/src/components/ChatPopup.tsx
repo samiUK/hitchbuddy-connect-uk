@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send, User, Car, MessageCircle, Phone, Clock } from 'lucide-react';
+import { X, Send, User, Car, MessageCircle, Phone, Clock, MapPin, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -59,7 +59,7 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
       
       setIsLoadingHistory(true);
       try {
-        const response = await fetch(`/api/messages/${booking.id}`, {
+        const response = await fetch(`/api/bookings/${booking.id}/messages`, {
           credentials: 'include'
         });
         
@@ -205,7 +205,7 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
               <Avatar className="w-12 h-12 border-2 border-white/30 shadow-lg">
                 <AvatarImage src={otherUser.avatar} alt={otherUser.name} />
                 <AvatarFallback className="bg-white/20 text-white text-lg font-semibold">
-                  {otherUser.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                  {otherUser.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
