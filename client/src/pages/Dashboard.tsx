@@ -863,11 +863,35 @@ const Dashboard = () => {
                     <div className="text-2xl font-bold">
                       {userType === 'driver' 
                         ? rides.filter(r => r.driverId === user?.id && r.status === 'active').length 
-                        : rideRequests.filter(req => req.riderId === user?.id && req.status === 'active').length
+                        : (() => {
+                            // For riders: count ride requests that are still pending (not matched/confirmed)
+                            const pendingRequests = rideRequests.filter(req => 
+                              req.riderId === user?.id && req.status === 'active'
+                            );
+                            
+                            // Filter out requests that have been confirmed (have confirmed bookings)
+                            const unconfirmedRequests = pendingRequests.filter(request => {
+                              const hasConfirmedBooking = bookings.some(booking => 
+                                booking.riderId === user?.id &&
+                                booking.status === 'confirmed' &&
+                                // Check if this booking matches the request by route and date/time
+                                rides.some(ride => 
+                                  ride.id === booking.rideId &&
+                                  ride.fromLocation === request.fromLocation &&
+                                  ride.toLocation === request.toLocation &&
+                                  ride.departureDate === request.departureDate &&
+                                  ride.departureTime === request.departureTime
+                                )
+                              );
+                              return !hasConfirmedBooking;
+                            });
+                            
+                            return unconfirmedRequests.length;
+                          })()
                       }
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {userType === 'driver' ? 'Active rides posted' : 'Your active requests'}
+                      {userType === 'driver' ? 'Active rides posted' : 'Pending requests awaiting confirmation'}
                     </p>
                   </CardContent>
                 </Card>
