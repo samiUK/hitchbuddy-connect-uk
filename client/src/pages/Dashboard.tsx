@@ -307,73 +307,29 @@ const Dashboard = () => {
   const handleMessageRider = async (booking: any) => {
     const ride = rides.find(r => r.id === booking.rideId);
     
-    // Get user details for the chat
+    // Use the enhanced booking data that now includes user information
+    const isCurrentUserDriver = user?.id === booking.driverId;
     let otherUserDetails = {};
-    if (user?.userType === 'driver') {
-      // Driver messaging rider - get rider details
-      try {
-        const response = await fetch(`/api/auth/user/${booking.riderId}`, {
-          credentials: 'include'
-        });
-        if (response.ok) {
-          const riderData = await response.json();
-          console.log('Fetched rider data:', riderData);
-          otherUserDetails = {
-            otherUserName: `${riderData.user.firstName} ${riderData.user.lastName}`,
-            otherUserAvatar: riderData.user.avatarUrl,
-            otherUserType: 'rider'
-          };
-        } else {
-          console.error('Failed to fetch rider details, status:', response.status);
-          const errorData = await response.text();
-          console.error('Error response:', errorData);
-          otherUserDetails = {
-            otherUserName: 'Rider',
-            otherUserAvatar: null,
-            otherUserType: 'rider'
-          };
-        }
-      } catch (error) {
-        console.error('Error fetching rider details:', error);
-        otherUserDetails = {
-          otherUserName: 'Rider',
-          otherUserAvatar: null,
-          otherUserType: 'rider'
-        };
-      }
+    
+    if (isCurrentUserDriver) {
+      // Current user is driver, other user is rider
+      otherUserDetails = {
+        otherUserName: booking.riderName || 'Rider',
+        otherUserAvatar: booking.riderAvatar || null,
+        otherUserType: 'rider'
+      };
     } else {
-      // Rider messaging driver - get driver details
-      try {
-        const response = await fetch(`/api/auth/user/${booking.driverId}`, {
-          credentials: 'include'
-        });
-        if (response.ok) {
-          const driverData = await response.json();
-          console.log('Fetched driver data:', driverData);
-          otherUserDetails = {
-            otherUserName: `${driverData.user.firstName} ${driverData.user.lastName}`,
-            otherUserAvatar: driverData.user.avatarUrl,
-            otherUserType: 'driver'
-          };
-        } else {
-          console.error('Failed to fetch driver details, status:', response.status);
-          const errorData = await response.text();
-          console.error('Error response:', errorData);
-          otherUserDetails = {
-            otherUserName: 'Driver',
-            otherUserAvatar: null,
-            otherUserType: 'driver'
-          };
-        }
-      } catch (error) {
-        console.error('Error fetching driver details:', error);
-        otherUserDetails = {
-          otherUserName: 'Driver',
-          otherUserAvatar: null,
-          otherUserType: 'driver'
-        };
-      }
+      // Current user is rider, other user is driver
+      otherUserDetails = {
+        otherUserName: booking.driverName || 'Driver',
+        otherUserAvatar: booking.driverAvatar || null,
+        otherUserType: 'driver'
+      };
     }
+
+    console.log('Chat setup - Current user:', user?.firstName, user?.lastName);
+    console.log('Chat setup - Booking data:', booking);
+    console.log('Chat setup - Other user details:', otherUserDetails);
 
     setSelectedBooking({
       ...booking,

@@ -653,7 +653,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const bookings = await storage.getBookingsByUser(session.userId);
-      res.json({ bookings });
+      
+      // Enhance bookings with user details for chat functionality
+      const enhancedBookings = await Promise.all(bookings.map(async (booking) => {
+        const rider = await storage.getUser(booking.riderId);
+        const driver = await storage.getUser(booking.driverId);
+        
+        return {
+          ...booking,
+          riderName: rider ? `${rider.firstName} ${rider.lastName}` : 'Rider',
+          riderAvatar: rider?.avatarUrl || null,
+          driverName: driver ? `${driver.firstName} ${driver.lastName}` : 'Driver',
+          driverAvatar: driver?.avatarUrl || null
+        };
+      }));
+      
+      res.json({ bookings: enhancedBookings });
     } catch (error) {
       console.error('Get bookings error:', error);
       res.status(500).json({ error: "Internal server error" });
