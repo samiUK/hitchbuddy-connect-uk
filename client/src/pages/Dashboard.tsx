@@ -29,7 +29,8 @@ import {
   Calendar,
   PoundSterling,
   Check,
-  X
+  X,
+  Plus
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuthNew";
@@ -823,8 +824,7 @@ const Dashboard = () => {
           {[
             { id: 'overview', label: 'Overview', icon: Navigation },
             { id: 'rides', label: userType === 'driver' ? 'My Rides & Bookings' : 'My Rides & Bookings', icon: Car },
-            { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'Available Rides', icon: userType === 'driver' ? Search : Search },
-            { id: 'post', label: userType === 'driver' ? 'Post New Ride' : 'Request a Ride', icon: Calendar }
+            { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'Available Rides', icon: userType === 'driver' ? Search : Search }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -1080,33 +1080,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {activeTab === 'post' && !showProfileEdit && (
-          <div className="space-y-6">
-            <div className="max-w-2xl">
-              {userType === 'driver' ? (
-                <PostNewRideForm 
-                  onClose={() => {
-                    clearSavedFormData();
-                    setActiveTab('overview');
-                    fetchData();
-                  }}
-                  savedData={getSavedFormData()}
-                  onDataChange={handleFormDataSave}
-                />
-              ) : (
-                <NewRideRequestForm 
-                  onClose={() => {
-                    clearSavedFormData();
-                    setActiveTab('overview');
-                    fetchData();
-                  }}
-                  savedData={getSavedFormData()}
-                  onDataChange={handleFormDataSave}
-                />
-              )}
-            </div>
-          </div>
-        )}
+
 
         {/* Profile Edit Form */}
         {showProfileEdit && (
@@ -1121,10 +1095,21 @@ const Dashboard = () => {
                   {/* My Posted Rides Section */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900">My Posted Rides</h3>
-                      <Badge variant="outline" className="text-blue-600">
-                        {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).length} active
-                      </Badge>
+                      <div className="flex items-center space-x-4">
+                        <h3 className="text-lg font-semibold text-gray-900">My Posted Rides</h3>
+                        <Badge variant="outline" className="text-blue-600">
+                          {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).length} active
+                        </Badge>
+                      </div>
+                      <Button 
+                        onClick={() => {
+                          setShowPostRideForm(true);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Post New Ride
+                      </Button>
                     </div>
                     
                     {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).length === 0 ? (
@@ -1554,10 +1539,21 @@ const Dashboard = () => {
                   {/* My Live Requests Section (only for riders) */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900 text-left">My Live Requests</h3>
-                      <Badge variant="outline" className="text-blue-600">
-                        {rideRequests.filter((req: any) => req.status === 'active').length} active
-                      </Badge>
+                      <div className="flex items-center space-x-4">
+                        <h3 className="text-lg font-semibold text-gray-900 text-left">My Live Requests</h3>
+                        <Badge variant="outline" className="text-blue-600">
+                          {rideRequests.filter((req: any) => req.status === 'active').length} active
+                        </Badge>
+                      </div>
+                      <Button 
+                        onClick={() => {
+                          setShowRideRequestForm(true);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Request New Ride
+                      </Button>
                     </div>
                     
                     {rideRequests.filter((req: any) => req.status === 'active').length === 0 ? (
@@ -2236,6 +2232,62 @@ const Dashboard = () => {
               setSelectedRideToModify(null);
             }}
           />
+        )}
+
+        {/* Post New Ride Modal */}
+        {showPostRideForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Post New Ride</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowPostRideForm(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="p-6">
+                <PostNewRideForm 
+                  onClose={() => {
+                    setShowPostRideForm(false);
+                    fetchData();
+                  }}
+                  savedData={getSavedFormData()}
+                  onDataChange={handleFormDataSave}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Request New Ride Modal */}
+        {showRideRequestForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Request New Ride</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowRideRequestForm(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="p-6">
+                <NewRideRequestForm 
+                  onClose={() => {
+                    setShowRideRequestForm(false);
+                    fetchData();
+                  }}
+                  savedData={getSavedFormData()}
+                  onDataChange={handleFormDataSave}
+                />
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
