@@ -8,7 +8,7 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Configure database connection using postgres-js for Replit PostgreSQL
+// Configure database connection using postgres-js for Neon PostgreSQL
 const queryClient = postgres(process.env.DATABASE_URL, {
   prepare: false,
   ssl: 'require',
