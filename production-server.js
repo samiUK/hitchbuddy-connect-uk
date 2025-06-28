@@ -3,6 +3,10 @@ import { createServer } from 'http';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import { registerRoutes } from './server/routes.js';
+import { rideScheduler } from './server/scheduler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -53,12 +57,30 @@ app.get(['/health', '/healthz', '/ready', '/ping', '/status', '/api/health'], (r
   });
 });
 
-// Basic API endpoints for functionality
-app.get('/api/auth/me', (req, res) => res.json({ user: null }));
-app.get('/api/notifications', (req, res) => res.json({ notifications: [], unreadCount: 0 }));
-app.get('/api/rides', (req, res) => res.json([]));
-app.get('/api/ride-requests', (req, res) => res.json([]));
-app.get('/api/bookings', (req, res) => res.json([]));
+// Session configuration for production
+app.use(cookieParser());
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'hitchbuddy-production-secret-key-2024',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Set to true if using HTTPS
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Log startup
+console.log('🔄 Starting ride cancellation scheduler...');
+rideScheduler.start();
+
+// Register all API routes from development environment
+async function setupServer() {
+  const server = createServer(app);
+  await registerRoutes(app);
+  console.log('✅ All API routes registered successfully');
+  return server;
+}
 
 // Serve static files from build directory
 const staticDirs = [
@@ -234,67 +256,58 @@ app.get('*', (req, res) => {
   res.send(hitchbuddyHtml);
 });
 
-// Create HTTP server
-const server = createServer(app);
-
-// Enhanced server startup
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`🎯 HitchBuddy production server running on port ${PORT}`);
-  console.log(`🌐 Environment: ${process.env.NODE_ENV || 'production'}`);
-  console.log(`🔗 Live at: https://hitchbuddyapp.replit.app`);
-  console.log(`✅ Health endpoints: /health, /ready, /status`);
-  console.log(`📊 Static files: ${staticDir ? 'Found' : 'Not found'}`);
-  
-  // Signal deployment readiness
-  if (process.send) {
-    process.send('ready');
-  }
-});
-
-// Robust error handling
-server.on('error', (err) => {
-  console.error('❌ Server error:', err.message);
-  if (err.code === 'EADDRINUSE') {
-    console.log(`🔄 Port ${PORT} busy, retrying on ${PORT + 1}`);
-    setTimeout(() => {
-      server.listen(PORT + 1, '0.0.0.0');
-    }, 1000);
-  } else if (err.code === 'EACCES') {
-    console.log(`🔄 Permission denied on port ${PORT}, trying 8080`);
-    setTimeout(() => {
-      server.listen(8080, '0.0.0.0');
-    }, 1000);
-  }
-});
-
-// Graceful shutdown handling
-const gracefulShutdown = (signal) => {
-  console.log(`📢 Received ${signal} - initiating graceful shutdown`);
-  server.close(() => {
-    console.log('🔄 Server closed successfully');
-    process.exit(0);
+// Start the production server with full API functionality
+setupServer().then((httpServer) => {
+  httpServer.listen(PORT, '0.0.0.0', () => {
+    console.log(`🎯 HitchBuddy production server running on port ${PORT}`);
+    console.log(`🌐 Environment: ${process.env.NODE_ENV || 'production'}`);
+    console.log(`🔗 Live at: https://hitchbuddyapp.replit.app`);
+    console.log(`✅ Health endpoints: /health, /ready, /status`);
+    console.log(`📊 Static files: ${staticDir ? 'Found' : 'Not found'}`);
+    
+    // Signal deployment readiness
+    if (process.send) {
+      process.send('ready');
+    }
   });
-  
-  // Force exit after timeout
-  setTimeout(() => {
-    console.log('⏰ Force exit after timeout');
-    process.exit(1);
-  }, 15000);
-};
 
-// Signal handlers
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-process.on('SIGUSR2', () => gracefulShutdown('SIGUSR2'));
+  // Robust error handling
+  httpServer.on('error', (err) => {
+    console.error('❌ Server error:', err.message);
+    if (err.code === 'EADDRINUSE') {
+      console.log(`🔄 Port ${PORT} busy, retrying on ${PORT + 1}`);
+      setTimeout(() => {
+        httpServer.listen(PORT + 1, '0.0.0.0');
+      }, 1000);
+    } else if (err.code === 'EACCES') {
+      console.log(`🔄 Permission denied on port ${PORT}, trying 8080`);
+      setTimeout(() => {
+        httpServer.listen(8080, '0.0.0.0');
+      }, 1000);
+    }
+  });
 
-// Prevent crashes
-process.on('uncaughtException', (err) => {
-  console.error('💥 Uncaught Exception:', err);
-  process.exit(1);
-});
+  // Graceful shutdown handling
+  const gracefulShutdown = (signal) => {
+    console.log(`📢 Received ${signal} - initiating graceful shutdown`);
+    httpServer.close(() => {
+      console.log('🔄 Server closed successfully');
+      process.exit(0);
+    });
+    
+    // Force exit after timeout
+    setTimeout(() => {
+      console.log('⏰ Force exit after timeout');
+      process.exit(1);
+    }, 10000);
+  };
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
+  // Register shutdown handlers
+  process.on('SIGTERM', gracefulShutdown);
+  process.on('SIGINT', gracefulShutdown);
+  process.on('SIGUSR2', gracefulShutdown); // For nodemon restarts
+}).catch((error) => {
+  console.error('❌ Failed to start production server:', error);
   process.exit(1);
 });
 
