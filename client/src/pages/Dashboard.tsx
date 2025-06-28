@@ -184,12 +184,14 @@ const Dashboard = () => {
         }
       }
 
-      // Fetch bookings for all users
-      const bookingsResponse = await fetch('/api/bookings', {
-        credentials: 'include'
+      // Fetch bookings for all users with cache busting
+      const bookingsResponse = await fetch(`/api/bookings?_t=${Date.now()}`, {
+        credentials: 'include',
+        cache: 'no-cache'
       });
       if (bookingsResponse.ok) {
         const bookingsData = await bookingsResponse.json();
+        console.log('Frontend received bookings data:', bookingsData);
         setBookings(bookingsData.bookings || []);
         
         // Create notifications for drivers about pending booking requests only (not ride requests)
