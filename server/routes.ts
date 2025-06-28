@@ -824,7 +824,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/messages/:bookingId", async (req, res) => {
+  app.get("/api/messages/all", async (req, res) => {
     try {
       const sessionId = req.cookies.session;
       if (!sessionId) {
@@ -837,12 +837,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "Invalid session" });
       }
 
-      const bookingId = req.params.bookingId;
-      const messages = await storage.getMessagesByBooking(bookingId);
+      const user = await storage.getUser(session.userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Get all bookings for the user
+      const userBookings = await storage.getBookingsByUser(user.id);
       
-      res.json({ messages });
+      // Get messages for each booking and group them
+      const messageThreads = [];
+      for (const booking of userBookings) {
+        const messages = await storage.getMessagesByBooking(booking.id);
+        if (messages.length > 0) {
+          // Get the other user's details
+          const otherUserId = booking.driverId === user.id ? booking.riderId : booking.driverId;
+          const otherUser = await storage.getUser(otherUserId);
+          
+          // Get ride details
+          const ride = await storage.getRide(booking.rideId);
+          
+          messageThreads.push({
+            booking,
+            ride,
+            otherUser,
+            messages,
+            lastMessage: messages[messages.length - 1],
+            unreadCount: messages.filter(msg => !msg.isRead && msg.senderId !== user.id).length
+          });
+        }
+      }
+
+      // Sort by last message timestamp
+      messageThreads.sort((a, b) => new Date(b.lastMessage.createdAt).getTime() - new Date(a.lastMessage.createdAt).getTime());
+      
+      res.json({ messageThreads });
     } catch (error) {
-      console.error('Get messages error:', error);
+      console.error('Get all messages error:', error);
       res.status(500).json({ error: "Internal server error" });
     }
   });
