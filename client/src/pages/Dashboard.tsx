@@ -309,8 +309,15 @@ const Dashboard = () => {
   const handleMessageRider = async (booking: any) => {
     const ride = rides.find(r => r.id === booking.rideId);
     
+    console.log('Chat setup - Looking for booking ID:', booking.id);
+    console.log('Chat setup - Available bookings:', bookings.map((b: any) => ({ id: b.id, hasRiderName: !!b.riderName, hasDriverName: !!b.driverName })));
+    
     // Find the enhanced booking from our bookings state (which has user details)
     const enhancedBooking = bookings.find((b: any) => b.id === booking.id) || booking;
+    
+    console.log('Chat setup - Found enhanced booking:', enhancedBooking.id === booking.id ? 'YES' : 'NO');
+    console.log('Chat setup - Enhanced booking has riderName:', !!enhancedBooking.riderName);
+    console.log('Chat setup - Enhanced booking has driverName:', !!enhancedBooking.driverName);
     
     // Use the enhanced booking data that includes user information
     const isCurrentUserDriver = user?.id === enhancedBooking.driverId;
@@ -332,14 +339,7 @@ const Dashboard = () => {
       };
     }
 
-    console.log('Chat setup - Current user:', user?.firstName, user?.lastName);
-    console.log('Chat setup - Enhanced booking data:', enhancedBooking);
-    console.log('Chat setup - Enhanced booking fields:');
-    console.log('  - riderName:', enhancedBooking.riderName);
-    console.log('  - riderAvatar:', enhancedBooking.riderAvatar);
-    console.log('  - driverName:', enhancedBooking.driverName);
-    console.log('  - driverAvatar:', enhancedBooking.driverAvatar);
-    console.log('Chat setup - Other user details:', otherUserDetails);
+    console.log('Chat setup - Final other user details:', otherUserDetails);
 
     setSelectedBooking({
       ...enhancedBooking,
