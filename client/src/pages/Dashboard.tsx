@@ -52,7 +52,7 @@ import { formatDateToDDMMYYYY, formatDateWithRecurring } from "@/lib/dateUtils";
 const Dashboard = () => {
   const { user, signOut, updateProfile } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'overview' | 'post' | 'rides' | 'requests' | 'messages'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'post' | 'rides' | 'requests'>('overview');
   const [showRideRequestForm, setShowRideRequestForm] = useState(false);
   const [showPostRideForm, setShowPostRideForm] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -73,7 +73,7 @@ const Dashboard = () => {
   const [quickActionsDismissed, setQuickActionsDismissed] = useState(false);
   const [showModifyRideModal, setShowModifyRideModal] = useState(false);
   const [selectedRideToModify, setSelectedRideToModify] = useState<any>(null);
-  const [allMessages, setAllMessages] = useState<any[]>([]);
+
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [ratedUser, setRatedUser] = useState<any>(null);
   
@@ -81,7 +81,7 @@ const Dashboard = () => {
 
   // Navigation handler for notifications
   const handleNotificationNavigation = (section: string) => {
-    const validTabs = ['overview', 'post', 'rides', 'requests', 'messages'] as const;
+    const validTabs = ['overview', 'post', 'rides', 'requests'] as const;
     type ValidTab = typeof validTabs[number];
     
     if (validTabs.includes(section as ValidTab)) {
@@ -160,8 +160,7 @@ const Dashboard = () => {
         fetchRides(),
         fetchRideRequests(), 
         fetchBookings(),
-        fetchNotifications(),
-        fetchAllMessages()
+        fetchNotifications()
       ]);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -226,19 +225,7 @@ const Dashboard = () => {
     }
   };
 
-  const fetchAllMessages = async () => {
-    try {
-      const response = await fetch('/api/messages/all', {
-        credentials: 'include'
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setAllMessages(data.conversations || []);
-      }
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-    }
-  };
+
 
   useEffect(() => {
     if (user) {
@@ -369,7 +356,7 @@ const Dashboard = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)}>
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Navigation className="h-4 w-4" />
               Overview
@@ -381,10 +368,6 @@ const Dashboard = () => {
             <TabsTrigger value="requests" className="flex items-center gap-2">
               <Search className="h-4 w-4" />
               {userType === 'driver' ? 'Find Requests' : 'Available Rides'}
-            </TabsTrigger>
-            <TabsTrigger value="messages" className="flex items-center gap-2">
-              <MessageCircle className="h-4 w-4" />
-              My Messages
             </TabsTrigger>
             <TabsTrigger value="post" className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
@@ -610,38 +593,7 @@ const Dashboard = () => {
             {/* Content for find requests/available rides */}
           </TabsContent>
 
-          {/* Messages Tab */}
-          <TabsContent value="messages" className="space-y-6">
-            <h2 className="text-2xl font-bold">My Messages</h2>
-            <div className="grid gap-4">
-              {allMessages.map((conversation: any) => (
-                <Card key={conversation.bookingId} className="cursor-pointer hover:bg-gray-50" 
-                      onClick={() => {
-                        setSelectedBooking(conversation);
-                        setShowChatPopup(true);
-                      }}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <Avatar>
-                          <AvatarImage src={conversation.otherUserAvatar} />
-                          <AvatarFallback>{conversation.otherUserName[0]}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h3 className="font-medium">{conversation.otherUserName}</h3>
-                          <p className="text-sm text-gray-600">{conversation.rideDetails}</p>
-                          <p className="text-sm text-gray-500">{conversation.lastMessage}</p>
-                        </div>
-                      </div>
-                      {conversation.unreadCount > 0 && (
-                        <Badge variant="destructive">{conversation.unreadCount}</Badge>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
+
 
           {/* Post New Ride/Request Tab */}
           <TabsContent value="post">

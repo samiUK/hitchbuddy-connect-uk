@@ -11,6 +11,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - **Deployment**: Replit-native deployment
 
 ## Recent Changes
+- ✅ Reverted Dashboard to original 4-tab layout at user request (removed "My Messages" tab)
+- ✅ Maintained all original functionality: notifications, profile completion data, user type switching
+- ✅ Preserved sleek UI with overview stats, notification center, and all existing features
 - ✅ Enhanced notification system with click-to-navigate functionality
 - ✅ Notifications now automatically take users to relevant dashboard sections when clicked
 - ✅ Added smart navigation mapping: booking requests → My Rides & Bookings, messages → chat areas, etc.
