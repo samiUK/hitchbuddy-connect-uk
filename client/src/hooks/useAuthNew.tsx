@@ -8,7 +8,6 @@ interface User {
   phone?: string;
   userType: 'rider' | 'driver';
   avatarUrl?: string;
-  city?: string;
   createdAt: string;
   updatedAt: string;
 }
