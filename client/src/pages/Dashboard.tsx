@@ -1539,8 +1539,16 @@ const Dashboard = () => {
                       <div className="grid gap-4">
                         {rideRequests.filter(req => {
                           // Check if this request has been confirmed by looking for a confirmed booking
+                          // that matches the request's route and rider
                           const hasConfirmedBooking = bookings.some(booking => 
-                            booking.rideRequestId === req.id && booking.status === 'confirmed'
+                            booking.riderId === req.riderId && 
+                            booking.status === 'confirmed' &&
+                            rides.some(ride => 
+                              ride.id === booking.rideId &&
+                              ride.fromLocation === req.fromLocation &&
+                              ride.toLocation === req.toLocation &&
+                              ride.departureDate === req.departureDate
+                            )
                           );
                           return (req.status === 'active' || req.status === 'pending') && 
                                  req.status !== 'matched' && 
