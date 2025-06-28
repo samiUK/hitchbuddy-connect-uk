@@ -2234,7 +2234,7 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Last Message Preview */}
-                            <p className={`text-sm truncate text-right ${conversation.unreadCount > 0 ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
+                            <p className={`text-sm truncate text-left ${conversation.unreadCount > 0 ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
                               {conversation.lastMessage.senderId === user?.id ? 'You: ' : `${partnerName}: `}
                               {conversation.lastMessage.message}
                             </p>
