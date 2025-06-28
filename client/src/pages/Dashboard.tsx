@@ -309,37 +309,40 @@ const Dashboard = () => {
   const handleMessageRider = async (booking: any) => {
     const ride = rides.find(r => r.id === booking.rideId);
     
-    // Use the enhanced booking data that now includes user information
-    const isCurrentUserDriver = user?.id === booking.driverId;
+    // Find the enhanced booking from our bookings state (which has user details)
+    const enhancedBooking = bookings.find((b: any) => b.id === booking.id) || booking;
+    
+    // Use the enhanced booking data that includes user information
+    const isCurrentUserDriver = user?.id === enhancedBooking.driverId;
     let otherUserDetails = {};
     
     if (isCurrentUserDriver) {
       // Current user is driver, other user is rider
       otherUserDetails = {
-        otherUserName: booking.riderName || 'Rider',
-        otherUserAvatar: booking.riderAvatar || null,
+        otherUserName: enhancedBooking.riderName || 'Rider',
+        otherUserAvatar: enhancedBooking.riderAvatar || null,
         otherUserType: 'rider'
       };
     } else {
       // Current user is rider, other user is driver
       otherUserDetails = {
-        otherUserName: booking.driverName || 'Driver',
-        otherUserAvatar: booking.driverAvatar || null,
+        otherUserName: enhancedBooking.driverName || 'Driver',
+        otherUserAvatar: enhancedBooking.driverAvatar || null,
         otherUserType: 'driver'
       };
     }
 
     console.log('Chat setup - Current user:', user?.firstName, user?.lastName);
-    console.log('Chat setup - Booking data:', booking);
+    console.log('Chat setup - Enhanced booking data:', enhancedBooking);
     console.log('Chat setup - Enhanced booking fields:');
-    console.log('  - riderName:', booking.riderName);
-    console.log('  - riderAvatar:', booking.riderAvatar);
-    console.log('  - driverName:', booking.driverName);
-    console.log('  - driverAvatar:', booking.driverAvatar);
+    console.log('  - riderName:', enhancedBooking.riderName);
+    console.log('  - riderAvatar:', enhancedBooking.riderAvatar);
+    console.log('  - driverName:', enhancedBooking.driverName);
+    console.log('  - driverAvatar:', enhancedBooking.driverAvatar);
     console.log('Chat setup - Other user details:', otherUserDetails);
 
     setSelectedBooking({
-      ...booking,
+      ...enhancedBooking,
       ...otherUserDetails,
       fromLocation: ride?.fromLocation || 'Unknown',
       toLocation: ride?.toLocation || 'Unknown',
