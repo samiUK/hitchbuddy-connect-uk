@@ -17,6 +17,7 @@ export const users = pgTable("users", {
   county: text("county"),
   postcode: text("postcode"),
   country: text("country"),
+  profileCompletedAt: timestamp("profile_completed_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

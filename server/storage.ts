@@ -97,6 +97,29 @@ export class PostgreSQLStorage implements IStorage {
     if (updates.country !== undefined) updateData.country = updates.country;
     if (updates.userType !== undefined) updateData.userType = updates.userType;
     if (updates.avatarUrl !== undefined) updateData.avatarUrl = updates.avatarUrl;
+    if (updates.profileCompletedAt !== undefined) updateData.profileCompletedAt = updates.profileCompletedAt;
+    
+    // Check if profile is being completed for the first time
+    const currentUser = await this.getUser(id);
+    if (currentUser && !currentUser.profileCompletedAt) {
+      // Calculate profile completeness
+      const profileFields = {
+        firstName: updateData.firstName || currentUser.firstName,
+        lastName: updateData.lastName || currentUser.lastName,
+        phone: updateData.phone || currentUser.phone,
+        city: updateData.city || currentUser.city,
+        avatarUrl: updateData.avatarUrl || currentUser.avatarUrl
+      };
+      
+      const completedFields = Object.values(profileFields).filter(value => value && value.trim() !== '').length;
+      const totalFields = Object.keys(profileFields).length;
+      
+      // If profile is now 100% complete, set the completion timestamp
+      if (completedFields === totalFields) {
+        updateData.profileCompletedAt = new Date();
+        console.log('Storage: Profile completed, setting completion timestamp');
+      }
+    }
     
     console.log('Storage: Final update data:', updateData);
     

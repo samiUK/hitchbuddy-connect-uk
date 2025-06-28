@@ -114,6 +114,17 @@ const Dashboard = () => {
   };
 
   const profileCompleteness = calculateProfileCompleteness();
+  
+  // Check if profile status should be hidden (after 24 hours of completion)
+  const shouldHideProfileStatus = () => {
+    if (!user?.profileCompletedAt || profileCompleteness.percentage < 100) return false;
+    
+    const completedAt = new Date(user.profileCompletedAt);
+    const now = new Date();
+    const hoursDiff = (now.getTime() - completedAt.getTime()) / (1000 * 60 * 60);
+    
+    return hoursDiff > 24;
+  };
 
   useEffect(() => {
     if (user) {
@@ -1004,87 +1015,90 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className={`${profileCompleteness.percentage < 100 ? 'cursor-pointer hover:shadow-md' : ''} transition-shadow`} onClick={profileCompleteness.percentage < 100 ? () => setShowProfileEdit(true) : undefined}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Profile Status</CardTitle>
-                    <Badge variant={profileCompleteness.percentage === 100 ? "default" : "secondary"} className="ml-2">
-                      {profileCompleteness.percentage}%
-                    </Badge>
-                  </div>
-                  <CardDescription>
-                    {profileCompleteness.percentage === 100 
-                      ? "Your profile is complete!" 
-                      : "Click to complete your profile"
-                    }
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {/* Progress Bar */}
-                    <div>
-                      <div className="bg-gray-200 rounded-full h-3">
-                        <div 
-                          className={`h-3 rounded-full transition-all duration-500 ${
-                            profileCompleteness.percentage === 100 
-                              ? 'bg-green-500' 
-                              : profileCompleteness.percentage >= 75 
-                                ? 'bg-blue-500' 
-                                : profileCompleteness.percentage >= 50 
-                                  ? 'bg-yellow-500' 
-                                  : 'bg-red-500'
-                          }`}
-                          style={{ width: `${profileCompleteness.percentage}%` }}
-                        ></div>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {profileCompleteness.score} of {profileCompleteness.total} fields completed
-                      </p>
+              {/* Profile Status Card - Hide after 24 hours of completion */}
+              {!shouldHideProfileStatus() && (
+                <Card className={`${profileCompleteness.percentage < 100 ? 'cursor-pointer hover:shadow-md' : ''} transition-shadow`} onClick={profileCompleteness.percentage < 100 ? () => setShowProfileEdit(true) : undefined}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle>Profile Status</CardTitle>
+                      <Badge variant={profileCompleteness.percentage === 100 ? "default" : "secondary"} className="ml-2">
+                        {profileCompleteness.percentage}%
+                      </Badge>
                     </div>
-
-                    {/* Missing Fields - Only show if profile is incomplete */}
-                    {profileCompleteness.percentage < 100 && profileCompleteness.missing.length > 0 && (
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium text-gray-700">Missing:</p>
-                        <div className="flex flex-wrap gap-1">
-                          {profileCompleteness.missing.slice(0, 3).map((field) => (
-                            <Badge key={field} variant="outline" className="text-xs">
-                              {field}
-                            </Badge>
-                          ))}
-                          {profileCompleteness.missing.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{profileCompleteness.missing.length - 3} more
-                            </Badge>
-                          )}
+                    <CardDescription>
+                      {profileCompleteness.percentage === 100 
+                        ? "Your profile is complete!" 
+                        : "Click to complete your profile"
+                      }
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {/* Progress Bar */}
+                      <div>
+                        <div className="bg-gray-200 rounded-full h-3">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-500 ${
+                              profileCompleteness.percentage === 100 
+                                ? 'bg-green-500' 
+                                : profileCompleteness.percentage >= 75 
+                                  ? 'bg-blue-500' 
+                                  : profileCompleteness.percentage >= 50 
+                                    ? 'bg-yellow-500' 
+                                    : 'bg-red-500'
+                            }`}
+                            style={{ width: `${profileCompleteness.percentage}%` }}
+                          ></div>
                         </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {profileCompleteness.score} of {profileCompleteness.total} fields completed
+                        </p>
                       </div>
-                    )}
 
-                    {/* Complete Button - Only show if profile is not complete */}
-                    {profileCompleteness.percentage < 100 && (
-                      <Button 
-                        size="sm" 
-                        className="w-full"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowProfileEdit(true);
-                        }}
-                      >
-                        Complete Profile
-                      </Button>
-                    )}
+                      {/* Missing Fields - Only show if profile is incomplete */}
+                      {profileCompleteness.percentage < 100 && profileCompleteness.missing.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium text-gray-700">Missing:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {profileCompleteness.missing.slice(0, 3).map((field) => (
+                              <Badge key={field} variant="outline" className="text-xs">
+                                {field}
+                              </Badge>
+                            ))}
+                            {profileCompleteness.missing.length > 3 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{profileCompleteness.missing.length - 3} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      )}
 
-                    {/* Success Message */}
-                    {profileCompleteness.percentage === 100 && (
-                      <div className="flex items-center space-x-2 text-green-600">
-                        <User className="h-4 w-4" />
-                        <span className="text-sm font-medium">Profile Complete!</span>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                      {/* Complete Button - Only show if profile is not complete */}
+                      {profileCompleteness.percentage < 100 && (
+                        <Button 
+                          size="sm" 
+                          className="w-full"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowProfileEdit(true);
+                          }}
+                        >
+                          Complete Profile
+                        </Button>
+                      )}
+
+                      {/* Success Message */}
+                      {profileCompleteness.percentage === 100 && (
+                        <div className="flex items-center space-x-2 text-green-600">
+                          <User className="h-4 w-4" />
+                          <span className="text-sm font-medium">Profile Complete!</span>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         )}

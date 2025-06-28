@@ -18,6 +18,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Implemented "Last message" header with left-aligned text formatting for better organization
 - ✅ Mobile-optimized messaging interface with responsive design for conversation cards
 - ✅ Unified chat experience across desktop and mobile devices with proper scaling and layout adjustments
+- ✅ Implemented 24-hour profile status auto-hide feature
+- ✅ Added profileCompletedAt timestamp tracking in database schema
+- ✅ Profile status card automatically disappears 24 hours after completion
 - ✅ Enhanced notification system with click-to-navigate functionality
 - ✅ Notifications now automatically take users to relevant dashboard sections when clicked
 - ✅ Added smart navigation mapping: booking requests → My Rides & Bookings, messages → chat areas, etc.
