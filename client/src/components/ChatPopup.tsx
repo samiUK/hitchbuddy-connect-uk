@@ -46,11 +46,18 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
   }, []);
 
   const isCurrentUserDriver = currentUser?.id === booking?.driverId;
+  
+  console.log('ChatPopup - Current user:', currentUser);
+  console.log('ChatPopup - Booking object:', booking);
+  console.log('ChatPopup - Is current user driver:', isCurrentUserDriver);
+  
   const otherUser = {
     name: booking?.otherUserName || (isCurrentUserDriver ? 'Rider' : 'Driver'),
     type: booking?.otherUserType || (isCurrentUserDriver ? 'rider' : 'driver'),
     avatar: booking?.otherUserAvatar
   };
+  
+  console.log('ChatPopup - Other user object:', otherUser);
 
   // Load chat history from database
   useEffect(() => {

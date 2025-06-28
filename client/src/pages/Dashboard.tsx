@@ -329,6 +329,11 @@ const Dashboard = () => {
 
     console.log('Chat setup - Current user:', user?.firstName, user?.lastName);
     console.log('Chat setup - Booking data:', booking);
+    console.log('Chat setup - Enhanced booking fields:');
+    console.log('  - riderName:', booking.riderName);
+    console.log('  - riderAvatar:', booking.riderAvatar);
+    console.log('  - driverName:', booking.driverName);
+    console.log('  - driverAvatar:', booking.driverAvatar);
     console.log('Chat setup - Other user details:', otherUserDetails);
 
     setSelectedBooking({
