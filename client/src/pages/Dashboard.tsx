@@ -2147,8 +2147,9 @@ const Dashboard = () => {
                   return (
                     <Card key={conversation.partnerId} className="hover:shadow-md transition-shadow cursor-pointer"
                           onClick={() => {
-                            setSelectedBooking(conversation.booking);
-                            setShowChatPopup(true);
+                            // Find the enhanced booking from our state that has user details
+                            const enhancedBooking = bookings.find((b: any) => b.id === conversation.booking.id) || conversation.booking;
+                            handleMessageRider(enhancedBooking);
                             fetchConversations(); // Refresh to update unread counts
                           }}>
                       <CardContent className="p-4">
