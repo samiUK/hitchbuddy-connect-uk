@@ -2234,10 +2234,15 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Last Message Preview */}
-                            <p className={`text-sm truncate text-left ${conversation.unreadCount > 0 ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
-                              {conversation.lastMessage.senderId === user?.id ? 'You: ' : `${partnerName}: `}
-                              {conversation.lastMessage.message}
-                            </p>
+                            <div className="space-y-1">
+                              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                                Last message
+                              </p>
+                              <p className={`text-sm truncate text-left ${conversation.unreadCount > 0 ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
+                                {conversation.lastMessage.senderId === user?.id ? 'You: ' : `${partnerName}: `}
+                                {conversation.lastMessage.message}
+                              </p>
+                            </div>
                           </div>
                           
                           {/* Chat Icon */}
