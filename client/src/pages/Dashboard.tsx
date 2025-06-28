@@ -127,56 +127,10 @@ const Dashboard = () => {
     
     setMessagesLoading(true);
     try {
-      // Get all bookings for this user to find conversations
-      const response = await fetch('/api/bookings', { credentials: 'include' });
+      const response = await fetch('/api/conversations', { credentials: 'include' });
       if (response.ok) {
-        const bookingsData = await response.json();
-        const allBookings = bookingsData.bookings || [];
-        
-        // Group bookings by conversation partner
-        const conversationMap = new Map();
-        
-        for (const booking of allBookings) {
-          // Only include confirmed bookings that have messages
-          if (booking.status === 'confirmed') {
-            // Fetch messages for this booking
-            try {
-              const messagesResponse = await fetch(`/api/bookings/${booking.id}/messages`, { credentials: 'include' });
-              if (messagesResponse.ok) {
-                const messages = await messagesResponse.json();
-                if (messages.length > 0) {
-                  const partnerId = booking.riderId === user.id ? booking.driverId : booking.riderId;
-                  const partnerType = booking.riderId === user.id ? 'driver' : 'rider';
-                  
-                  const lastMessage = messages[messages.length - 1];
-                  const unreadCount = messages.filter((m: any) => !m.isRead && m.senderId !== user.id).length;
-                  
-                  // Use partner ID as key to avoid duplicates
-                  if (!conversationMap.has(partnerId) || 
-                      new Date(lastMessage.createdAt) > new Date(conversationMap.get(partnerId).lastMessage.createdAt)) {
-                    conversationMap.set(partnerId, {
-                      booking,
-                      partnerId,
-                      partnerType,
-                      messages,
-                      lastMessage,
-                      unreadCount
-                    });
-                  }
-                }
-              }
-            } catch (error) {
-              console.error('Error fetching messages for booking:', booking.id, error);
-            }
-          }
-        }
-        
-        // Convert map to array and sort by last message time
-        const conversationsList = Array.from(conversationMap.values()).sort((a, b) => 
-          new Date(b.lastMessage.createdAt).getTime() - new Date(a.lastMessage.createdAt).getTime()
-        );
-        
-        setConversations(conversationsList);
+        const conversationsData = await response.json();
+        setConversations(conversationsData);
       }
     } catch (error) {
       console.error('Error fetching conversations:', error);
@@ -634,6 +588,8 @@ const Dashboard = () => {
           title: "Message sent!",
           description: "Your message has been sent to the rider.",
         });
+        // Refresh conversations to update unread counts and message previews
+        fetchConversations();
       } else {
         toast({
           title: "Error",

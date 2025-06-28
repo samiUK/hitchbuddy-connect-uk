@@ -792,6 +792,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Booking ID and message are required" });
       }
 
+      // Get booking details to find the recipient
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+
+      // Determine recipient (if sender is driver, recipient is rider, and vice versa)
+      const recipientId = booking.driverId === session.userId ? booking.riderId : booking.driverId;
+      
+      // Get sender details for notification
+      const sender = await storage.getUser(session.userId);
+      if (!sender) {
+        return res.status(404).json({ error: "Sender not found" });
+      }
+
       const messageData = {
         bookingId,
         senderId: session.userId,
@@ -800,6 +815,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       const newMessage = await storage.createMessage(messageData);
+      
+      // Create notification for the recipient
+      await storage.createNotification({
+        userId: recipientId,
+        type: 'message',
+        title: 'New Message',
+        message: `${sender.firstName} has sent you a message: "${message.substring(0, 50)}${message.length > 50 ? '...' : ''}"`,
+        relatedId: bookingId,
+        isRead: false
+      });
+
       res.json({ message: newMessage });
     } catch (error) {
       console.error('Error creating message:', error);
@@ -807,7 +833,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/messages/:bookingId', async (req, res) => {
+  app.get('/api/bookings/:bookingId/messages', async (req, res) => {
     try {
       const session = await storage.getSession(req.cookies.session);
       if (!session) {
@@ -817,33 +843,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const { bookingId } = req.params;
       const messages = await storage.getMessagesByBooking(bookingId);
-      res.json({ messages });
+      res.json(messages);
     } catch (error) {
       console.error('Error fetching messages:', error);
       res.status(500).json({ error: "Failed to fetch messages" });
     }
   });
 
-  app.get("/api/messages/:bookingId", async (req, res) => {
+  // Get all conversations for a user
+  app.get('/api/conversations', async (req, res) => {
     try {
-      const sessionId = req.cookies.session;
-      if (!sessionId) {
-        return res.status(401).json({ error: "Not authenticated" });
-      }
-
-      const session = await storage.getSession(sessionId);
+      const session = await storage.getSession(req.cookies.session);
       if (!session) {
         res.clearCookie('session');
         return res.status(401).json({ error: "Invalid session" });
       }
 
-      const bookingId = req.params.bookingId;
-      const messages = await storage.getMessagesByBooking(bookingId);
+      // Get all confirmed bookings for this user
+      const bookings = await storage.getBookingsByUser(session.userId);
+      const confirmedBookings = bookings.filter(booking => booking.status === 'confirmed');
       
-      res.json({ messages });
+      const conversations = [];
+      
+      for (const booking of confirmedBookings) {
+        try {
+          const messages = await storage.getMessagesByBooking(booking.id);
+          if (messages.length > 0) {
+            const partnerId = booking.riderId === session.userId ? booking.driverId : booking.riderId;
+            const partner = await storage.getUser(partnerId);
+            
+            if (partner) {
+              const lastMessage = messages[messages.length - 1];
+              const unreadCount = messages.filter(m => !m.isRead && m.senderId !== session.userId).length;
+              
+              conversations.push({
+                booking,
+                partner: {
+                  id: partner.id,
+                  firstName: partner.firstName,
+                  lastName: partner.lastName,
+                  avatarUrl: partner.avatarUrl
+                },
+                messages,
+                lastMessage,
+                unreadCount
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error processing booking messages:', booking.id, error);
+        }
+      }
+      
+      // Sort by last message timestamp
+      conversations.sort((a, b) => 
+        new Date(b.lastMessage.createdAt).getTime() - new Date(a.lastMessage.createdAt).getTime()
+      );
+      
+      res.json(conversations);
     } catch (error) {
-      console.error('Get messages error:', error);
-      res.status(500).json({ error: "Internal server error" });
+      console.error('Error fetching conversations:', error);
+      res.status(500).json({ error: "Failed to fetch conversations" });
     }
   });
 

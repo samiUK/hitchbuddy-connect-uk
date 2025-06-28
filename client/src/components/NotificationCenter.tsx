@@ -71,8 +71,8 @@ export const NotificationCenter = ({ onNavigate }: NotificationCenterProps) => {
           onNavigate('rides');
           break;
         case 'message':
-          // Take users to "My Trips & Bookings" where they can access chat
-          onNavigate('rides');
+          // Take users to "My Messages" tab to see conversations
+          onNavigate('messages');
           break;
         case 'trip_request':
           // Take drivers to "Find Requests" to see new trip requests
