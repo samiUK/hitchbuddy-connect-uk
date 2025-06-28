@@ -862,13 +862,12 @@ const Dashboard = () => {
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {userType === 'driver' 
-                        ? rides.filter(r => r.driverId === user?.id).length 
-                        : rideRequests.filter(req => req.status === 'active').length + 
-                          bookings.filter(booking => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId).length
+                        ? rides.filter(r => r.driverId === user?.id && r.status === 'active').length 
+                        : rideRequests.filter(req => req.riderId === user?.id && req.status === 'active').length
                       }
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {userType === 'driver' ? 'Rides you\'ve posted' : 'Request awaiting for Driver approval'}
+                      {userType === 'driver' ? 'Active rides posted' : 'Your active requests'}
                     </p>
                   </CardContent>
                 </Card>
