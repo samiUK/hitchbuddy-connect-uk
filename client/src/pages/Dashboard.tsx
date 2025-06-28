@@ -1852,7 +1852,7 @@ const Dashboard = () => {
                 {/* Unified Request Cards - Both Ride Requests and Booking Requests */}
                 
                 {/* Ride Requests from Riders */}
-                {rideRequests.filter((request: any) => request.status === 'active').map((request: any) => (
+                {rideRequests.filter((request: any) => request.status === 'active' && request.riderId !== user?.id).map((request: any) => (
                   <Card key={`request-${request.id}`} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
@@ -1978,7 +1978,7 @@ const Dashboard = () => {
                 })}
                 
                 {/* Empty State */}
-                {rideRequests.filter((request: any) => request.status === 'active').length === 0 && 
+                {rideRequests.filter((request: any) => request.status === 'active' && request.riderId !== user?.id).length === 0 && 
                  bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && !booking.rideRequestId).length === 0 && (
                   <div className="text-center py-12">
                     <Search className="h-16 w-16 mx-auto mb-4 text-gray-300" />
@@ -1993,8 +1993,8 @@ const Dashboard = () => {
               // Riders see available rides from drivers (next 60 days)
               <div className="space-y-4">
                 {rides.filter((ride: any) => {
-                  // Don't show user's own rides (except for test user)
-                  if (ride.driverId === user?.id && user?.email !== 'coolsami_uk@yahoo.com') {
+                  // Don't show user's own rides
+                  if (ride.driverId === user?.id) {
                     return false;
                   }
                   
@@ -2076,7 +2076,7 @@ const Dashboard = () => {
                 ))}
                 {rides.filter((ride: any) => {
                   // Filter logic same as above for consistency
-                  if (ride.driverId === user?.id && user?.email !== 'coolsami_uk@yahoo.com') return false;
+                  if (ride.driverId === user?.id) return false;
                   
                   if (ride.isRecurring === 'true' || ride.isRecurring === true) {
                     return true;
