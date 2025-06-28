@@ -2158,27 +2158,27 @@ const Dashboard = () => {
                             handleMessageRider(enhancedBooking);
                             fetchConversations(); // Refresh to update unread counts
                           }}>
-                      <CardContent className="p-4">
-                        <div className="flex items-start space-x-4">
+                      <CardContent className="p-3 sm:p-4">
+                        <div className="flex items-start space-x-3 sm:space-x-4">
                           {/* Partner Avatar */}
                           <div className="flex-shrink-0">
                             {partnerAvatar ? (
                               <img 
                                 src={partnerAvatar} 
                                 alt={partnerName}
-                                className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gray-200"
                               />
                             ) : (
-                              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                <User className="w-6 h-6 text-blue-600" />
+                              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <User className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                               </div>
                             )}
                           </div>
                           
                           {/* Conversation Details */}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1">
-                              <div className="flex items-center space-x-2">
+                            <div className="flex items-start justify-between mb-1 sm:items-center">
+                              <div className="flex items-center space-x-1 sm:space-x-2 flex-wrap">
                                 <h3 className="text-sm font-medium text-gray-900">
                                   {partnerName}
                                 </h3>
@@ -2191,7 +2191,7 @@ const Dashboard = () => {
                                   </Badge>
                                 )}
                               </div>
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-gray-500 ml-2 flex-shrink-0">
                                 {new Date(conversation.lastMessage.createdAt).toLocaleString()}
                               </span>
                             </div>
@@ -2201,22 +2201,27 @@ const Dashboard = () => {
                               {/* Route and Ride ID */}
                               <div className="flex items-center space-x-2 text-xs text-gray-600">
                                 <MapPin className="w-3 h-3 flex-shrink-0" />
-                                <span className="truncate font-medium">
+                                <span className="truncate font-medium flex-1">
                                   {ride?.fromLocation || 'Trip'} → {ride?.toLocation || 'Destination'}
                                 </span>
                                 {ride?.rideId && (
-                                  <Badge variant="outline" className="text-xs font-mono">
+                                  <Badge variant="outline" className="text-xs font-mono hidden sm:inline-flex">
                                     {ride.rideId}
                                   </Badge>
                                 )}
                               </div>
                               
-                              {/* Date, Time, and Price */}
-                              <div className="flex items-center space-x-3 text-xs text-gray-500">
+                              {/* Date, Time, and Price - Mobile Optimized */}
+                              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-gray-500">
                                 {ride?.departureDate && (
                                   <div className="flex items-center space-x-1">
                                     <Calendar className="w-3 h-3" />
-                                    <span>{new Date(ride.departureDate).toLocaleDateString('en-GB')}</span>
+                                    <span className="hidden sm:inline">
+                                      {new Date(ride.departureDate).toLocaleDateString('en-GB')}
+                                    </span>
+                                    <span className="sm:hidden">
+                                      {new Date(ride.departureDate).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}
+                                    </span>
                                   </div>
                                 )}
                                 {ride?.departureTime && (
@@ -2230,6 +2235,12 @@ const Dashboard = () => {
                                     <span className="font-medium text-green-600">£{enhancedBooking.totalCost}</span>
                                   </div>
                                 )}
+                                {/* Show Ride ID on mobile if hidden above */}
+                                {ride?.rideId && (
+                                  <Badge variant="outline" className="text-xs font-mono sm:hidden">
+                                    {ride.rideId}
+                                  </Badge>
+                                )}
                               </div>
                             </div>
                             
@@ -2239,7 +2250,12 @@ const Dashboard = () => {
                                 Last message
                               </p>
                               <p className={`text-sm truncate text-left ${conversation.unreadCount > 0 ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
-                                {conversation.lastMessage.senderId === user?.id ? 'You: ' : `${partnerName}: `}
+                                <span className="hidden sm:inline">
+                                  {conversation.lastMessage.senderId === user?.id ? 'You: ' : `${partnerName}: `}
+                                </span>
+                                <span className="sm:hidden">
+                                  {conversation.lastMessage.senderId === user?.id ? 'You: ' : ''}
+                                </span>
                                 {conversation.lastMessage.message}
                               </p>
                             </div>
@@ -2247,7 +2263,7 @@ const Dashboard = () => {
                           
                           {/* Chat Icon */}
                           <div className="flex-shrink-0">
-                            <MessageCircle className="w-5 h-5 text-gray-400" />
+                            <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                           </div>
                         </div>
                       </CardContent>
