@@ -202,22 +202,25 @@ export const ChatPopup = ({ isOpen, onClose, booking, currentUser, onSendMessage
         <CardHeader className="bg-gradient-to-r from-blue-600 to-green-600 text-white p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Avatar className="w-10 h-10 border-2 border-white/20">
+              <Avatar className="w-12 h-12 border-2 border-white/30 shadow-lg">
                 <AvatarImage src={otherUser.avatar} alt={otherUser.name} />
-                <AvatarFallback className="bg-white/20 text-white">
-                  {otherUser.type === 'driver' ? <Car className="h-5 w-5" /> : <User className="h-5 w-5" />}
+                <AvatarFallback className="bg-white/20 text-white text-lg font-semibold">
+                  {otherUser.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <CardTitle className="text-base font-semibold">
-                  {otherUser.type === 'driver' ? 'Driver' : 'Rider'}: {otherUser.name}
+              <div className="flex-1">
+                <CardTitle className="text-lg font-semibold leading-tight">
+                  {otherUser.name}
                 </CardTitle>
-                <div className="flex items-center space-x-2 text-sm opacity-90">
-                  <Badge variant="secondary" className="bg-white/20 text-white border-0 text-xs">
-                    {booking?.status || 'Active'}
+                <div className="flex items-center space-x-2 text-sm opacity-90 mt-1">
+                  <Badge variant="secondary" className="bg-white/20 text-white border-0 text-xs px-2 py-0.5">
+                    {otherUser.type === 'driver' ? 'Driver' : 'Rider'}
                   </Badge>
-                  <span>•</span>
-                  <span className="text-xs">Online</span>
+                  <span className="text-xs">•</span>
+                  <div className="flex items-center space-x-1">
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span className="text-xs">Online</span>
+                  </div>
                 </div>
               </div>
             </div>
