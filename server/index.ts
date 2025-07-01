@@ -20,22 +20,25 @@ server.listen(PORT, "0.0.0.0", () => {
 });
 
 async function startServer() {
-  // Setup routes and Vite AFTER server is already listening
+  if (process.env.NODE_ENV === "production") {
+    // Production: Skip Vite, just serve static files
+    console.log('[production] Production mode - serving static files only');
+    const { serveStatic } = await import("./vite.js");
+    serveStatic(app);
+    await registerRoutes(app);
+    return;
+  }
+  
+  // Development mode: Full setup with Vite and scheduler
   await registerRoutes(app);
   await setupVite(app, server);
   
-  // Only difference: disable scheduler in production
-  if (process.env.NODE_ENV === "production") {
-    console.log('[production] Scheduler disabled to prevent deployment race condition');
-  } else {
-    // Start scheduler ONLY in development
-    try {
-      const { rideScheduler } = await import("./scheduler.js");
-      scheduler = rideScheduler;
-      scheduler.start();
-    } catch (error) {
-      console.error('[scheduler] Failed to start:', error);
-    }
+  try {
+    const { rideScheduler } = await import("./scheduler.js");
+    scheduler = rideScheduler;
+    scheduler.start();
+  } catch (error) {
+    console.error('[scheduler] Failed to start:', error);
   }
 }
 

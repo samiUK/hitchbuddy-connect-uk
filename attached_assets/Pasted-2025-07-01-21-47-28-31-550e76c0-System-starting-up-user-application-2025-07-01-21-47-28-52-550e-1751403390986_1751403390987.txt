@@ -1,0 +1,92 @@
+2025-07-01 21:47:28.31
+550e76c0
+System
+starting up user application
+2025-07-01 21:47:28.52
+550e76c0
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2025-07-01 21:47:28.53
+550e76c0
+System
+error proxying request error=dial tcp 127.0.0.1:5000: connect: connection refused
+2025-07-01 21:47:28.55
+550e76c0
+System
+error proxying request error=dial tcp 127.0.0.1:5000: connect: connection refused
+2025-07-01 21:47:28.58
+550e76c0
+System
+error proxying request error=dial tcp 127.0.0.1:5000: connect: connection refused
+2025-07-01 21:47:28.65
+550e76c0
+System
+error proxying request error=dial tcp 127.0.0.1:5000: connect: connection refused
+2025-07-01 21:47:28.70
+550e76c0
+System
+error proxying request error=dial tcp 127.0.0.1:5000: connect: connection refused
+2025-07-01 21:47:29.02
+550e76c0
+System
+error proxying request error=dial tcp 127.0.0.1:5000: connect: connection refused
+2025-07-01 21:47:29.62
+550e76c0
+System
+error proxying request error=dial tcp 127.0.0.1:5000: connect: connection refused
+2025-07-01 21:47:29.74
+550e76c0
+System
+error proxying request error=dial tcp 127.0.0.1:5000: connect: connection refused
+2025-07-01 21:47:29.94
+550e76c0
+User
+> rest-express@1.0.0 start
+2025-07-01 21:47:29.94
+550e76c0
+User
+> NODE_ENV=production node dist/index.js
+2025-07-01 21:47:31.04
+550e76c0
+User
+[express] serving on port 5000
+2025-07-01 21:47:31.07
+550e76c0
+User
+Re-optimizing dependencies because vite config has changed
+2025-07-01 21:47:31.10
+550e76c0
+User
+[production] Scheduler disabled to prevent deployment race condition
+2025-07-01 21:47:32.13
+550e76c0
+System
+error proxying request error=context canceled
+2025-07-01 21:47:32.65
+550e76c0
+User
+8:47:32 PM [vite] Pre-transform error: Failed to load url /src/main.tsx?v=faEOoZjx0jVvy6Dey9M9D (resolved id: /src/main.tsx?v=faEOoZjx0jVvy6Dey9M9D). Does the file exist?
+2025-07-01 21:47:32.66
+550e76c0
+System
+error proxying request error=read tcp 127.0.0.1:54636->127.0.0.1:5000: read: connection reset by peer
+2025-07-01 21:47:32.67
+550e76c0
+User
+npm notice
+2025-07-01 21:47:32.67
+550e76c0
+User
+npm notice New major version of npm available! 10.8.2 -> 11.4.2
+2025-07-01 21:47:32.67
+550e76c0
+User
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.4.2
+2025-07-01 21:47:32.67
+550e76c0
+User
+npm notice To update run: npm install -g npm@11.4.2
+2025-07-01 21:47:32.67
+550e76c0
+User
+npm notice
