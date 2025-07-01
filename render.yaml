@@ -1,13 +1,19 @@
 services:
   - type: web
     name: hitchbuddy
-    env: node
-    plan: starter
-    buildCommand: ./render-build.sh
-    startCommand: npm start
+    env: docker
+    region: frankfurt  # EU region closest to UK
+    plan: free
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 5000
-    autoDeploy: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hitchbuddy-db
+          property: connectionString
+
+databases:
+  - name: hitchbuddy-db
+    region: frankfurt  # EU region
+    plan: free
