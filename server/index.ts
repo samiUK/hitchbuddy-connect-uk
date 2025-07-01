@@ -16,34 +16,35 @@ const server = createServer(app);
 async function startServer() {
   const PORT = parseInt(process.env.PORT || '5000', 10);
   
-  // CRITICAL: Bind to port FIRST to prevent connection refused
-  server.listen(PORT, "0.0.0.0", () => {
-    console.log(`[express] serving on port ${PORT}`);
-  });
-  
-  // For production deployment, register routes but skip scheduler to prevent race conditions
+  // For production: Setup routes BEFORE binding to eliminate async delays
   if (process.env.NODE_ENV === "production") {
-    // Production setup - register routes but NO scheduler
+    console.log('[production] Scheduler disabled to prevent deployment race condition');
     await registerRoutes(app);
     const { serveStatic } = await import("./vite.js");
     serveStatic(app);
-    
-    // Skip scheduler in production deployment to eliminate race condition
-    console.log('[production] Scheduler disabled to prevent deployment race condition');
-    return;
+  } else {
+    // Development setup
+    await registerRoutes(app);
+    await setupVite(app, server);
   }
   
-  // Full initialization for development
-  await registerRoutes(app);
-  await setupVite(app, server);
+  // CRITICAL: Bind to port AFTER all setup is complete - no async delays
+  await new Promise<void>((resolve) => {
+    server.listen(PORT, "0.0.0.0", () => {
+      console.log(`[express] serving on port ${PORT}`);
+      resolve();
+    });
+  });
   
-  // Start scheduler AFTER server is listening - development only
-  try {
-    const { rideScheduler } = await import("./scheduler.js");
-    scheduler = rideScheduler;
-    scheduler.start();
-  } catch (error) {
-    console.error('[scheduler] Failed to start:', error);
+  // Start scheduler ONLY in development
+  if (process.env.NODE_ENV !== "production") {
+    try {
+      const { rideScheduler } = await import("./scheduler.js");
+      scheduler = rideScheduler;
+      scheduler.start();
+    } catch (error) {
+      console.error('[scheduler] Failed to start:', error);
+    }
   }
 }
 
