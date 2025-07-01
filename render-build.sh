@@ -58,13 +58,26 @@ EOF
     echo "Created fallback HTML file"
 fi
 
-# Build the production server using the Express-based production server
-echo "Building optimized production server..."
-if npx esbuild production-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js --minify; then
-    echo "Production server build successful"
+# Build the backend server with all API routes and database connectivity
+echo "Building complete HitchBuddy server with API routes..."
+if npx esbuild deploy-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js --minify; then
+    echo "Complete server build successful"
 else
     echo "Primary server build failed, trying alternative..."
-    NODE_PATH=./node_modules npx esbuild production-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js
+    NODE_PATH=./node_modules npx esbuild deploy-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js
+fi
+
+# Also copy the server directory to ensure routes are available
+echo "Copying server modules..."
+if [ -d "server" ]; then
+    cp -r server dist/server/
+    echo "✓ Server modules copied"
+fi
+
+# Copy shared schema
+if [ -d "shared" ]; then
+    cp -r shared dist/shared/
+    echo "✓ Shared modules copied"
 fi
 
 # Verify build outputs and display statistics
