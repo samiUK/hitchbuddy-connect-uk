@@ -30,8 +30,7 @@ export const LandingHero = ({ onGetStarted }: LandingHeroProps) => {
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
-            The affordable way to get to airports, stations, and beyond. 
-            Connect with trusted drivers and riders in your area.
+            The affordable way to get to and from airports, stations, and beyond. Connect with trusted drivers and riders in your area.
           </p>
 
           <div className="flex flex-wrap justify-center gap-6 mb-8">
