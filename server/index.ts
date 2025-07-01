@@ -16,16 +16,13 @@ const server = createServer(app);
 async function startServer() {
   const PORT = parseInt(process.env.PORT || '5000', 10);
   
-  // For production: Setup routes BEFORE binding to eliminate async delays
+  // Setup routes and Vite for both development and production
+  await registerRoutes(app);
+  await setupVite(app, server);
+  
+  // Only difference: disable scheduler in production
   if (process.env.NODE_ENV === "production") {
     console.log('[production] Scheduler disabled to prevent deployment race condition');
-    await registerRoutes(app);
-    const { serveStatic } = await import("./vite.js");
-    serveStatic(app);
-  } else {
-    // Development setup
-    await registerRoutes(app);
-    await setupVite(app, server);
   }
   
   // CRITICAL: Bind to port AFTER all setup is complete - no async delays
