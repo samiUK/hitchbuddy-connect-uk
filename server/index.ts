@@ -13,10 +13,15 @@ app.use(cookieParser());
 const server = createServer(app);
 
 async function startServer() {
-  await registerRoutes(app);
+  const PORT = parseInt(process.env.PORT || '5000', 10);
   
-  // Start the ride cancellation scheduler
-  rideScheduler.start();
+  // CRITICAL: Bind to port FIRST to prevent connection refused
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`[express] serving on port ${PORT}`);
+  });
+  
+  // Initialize routes after port binding
+  await registerRoutes(app);
   
   if (process.env.NODE_ENV === "production") {
     // Serve static files in production
@@ -26,11 +31,9 @@ async function startServer() {
     // Set up Vite dev server for development
     await setupVite(app, server);
   }
-
-  const PORT = parseInt(process.env.PORT || '5000', 10);
-  server.listen(PORT, "0.0.0.0", () => {
-    console.log(`[express] serving on port ${PORT}`);
-  });
+  
+  // Start scheduler AFTER server is listening
+  rideScheduler.start();
 }
 
 // Graceful shutdown
