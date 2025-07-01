@@ -1,12 +1,16 @@
 // Render.com entry point - runs deploy-server.js
-const { spawn } = require('child_process');
-const path = require('path');
+import { spawn } from 'child_process';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 console.log('[render] Starting HitchBuddy from api/index.js');
 console.log('[render] Current directory:', process.cwd());
 
 // Change to project root directory
-const projectRoot = path.resolve(__dirname, '..');
+const projectRoot = resolve(__dirname, '..');
 process.chdir(projectRoot);
 
 console.log('[render] Changed to project root:', process.cwd());
