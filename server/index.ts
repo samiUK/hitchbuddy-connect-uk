@@ -12,29 +12,23 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 const server = createServer(app);
+const PORT = parseInt(process.env.PORT || '5000', 10);
+
+// CRITICAL: Bind to port IMMEDIATELY to prevent connection refused
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`[express] serving on port ${PORT}`);
+});
 
 async function startServer() {
-  const PORT = parseInt(process.env.PORT || '5000', 10);
-  
-  // Setup routes and Vite for both development and production
+  // Setup routes and Vite AFTER server is already listening
   await registerRoutes(app);
   await setupVite(app, server);
   
   // Only difference: disable scheduler in production
   if (process.env.NODE_ENV === "production") {
     console.log('[production] Scheduler disabled to prevent deployment race condition');
-  }
-  
-  // CRITICAL: Bind to port AFTER all setup is complete - no async delays
-  await new Promise<void>((resolve) => {
-    server.listen(PORT, "0.0.0.0", () => {
-      console.log(`[express] serving on port ${PORT}`);
-      resolve();
-    });
-  });
-  
-  // Start scheduler ONLY in development
-  if (process.env.NODE_ENV !== "production") {
+  } else {
+    // Start scheduler ONLY in development
     try {
       const { rideScheduler } = await import("./scheduler.js");
       scheduler = rideScheduler;
