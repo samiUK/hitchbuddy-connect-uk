@@ -1,6 +1,6 @@
 import { createServer } from 'http';
-import { readFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
+import { readFileSync, existsSync, statSync } from 'fs';
+import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -8,23 +8,16 @@ const __dirname = dirname(__filename);
 
 const PORT = process.env.PORT || 5000;
 
-// Read the built HTML file with proper path resolution
+// Read the built React app HTML file
 let htmlContent = '';
-const possiblePaths = [
-  join(__dirname, 'dist', 'client', 'index.html'),
-  join(__dirname, 'dist', 'public', 'index.html'),
-  join(__dirname, 'client', 'dist', 'index.html')
-];
+const htmlPath = join(__dirname, 'dist', 'public', 'index.html');
 
-for (const htmlPath of possiblePaths) {
-  if (existsSync(htmlPath)) {
-    try {
-      htmlContent = readFileSync(htmlPath, 'utf8');
-      console.log(`[deploy] HTML loaded from: ${htmlPath}`);
-      break;
-    } catch (err) {
-      console.log(`[deploy] Failed to read ${htmlPath}:`, err.message);
-    }
+if (existsSync(htmlPath)) {
+  try {
+    htmlContent = readFileSync(htmlPath, 'utf8');
+    console.log(`[deploy] React app HTML loaded from: ${htmlPath}`);
+  } catch (err) {
+    console.log(`[deploy] Failed to read ${htmlPath}:`, err.message);
   }
 }
 
@@ -106,7 +99,26 @@ if (!htmlContent) {
 </html>`;
 }
 
-// Create server with comprehensive error handling
+// Function to get MIME type
+function getMimeType(filePath) {
+  const ext = extname(filePath).toLowerCase();
+  const mimeTypes = {
+    '.html': 'text/html',
+    '.js': 'application/javascript',
+    '.css': 'text/css',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.gif': 'image/gif',
+    '.ico': 'image/x-icon',
+    '.svg': 'image/svg+xml',
+    '.woff': 'font/woff',
+    '.woff2': 'font/woff2'
+  };
+  return mimeTypes[ext] || 'text/plain';
+}
+
+// Create server with static file serving
 const server = createServer((req, res) => {
   console.log(`[deploy] ${req.method} ${req.url}`);
   
@@ -134,7 +146,33 @@ const server = createServer((req, res) => {
       return;
     }
     
-    // Serve HTML for all other routes
+    // Serve static assets from dist/public
+    if (req.url.startsWith('/assets/')) {
+      const assetPath = join(__dirname, 'dist', 'public', req.url);
+      if (existsSync(assetPath)) {
+        const mimeType = getMimeType(assetPath);
+        const content = readFileSync(assetPath);
+        res.writeHead(200, { 
+          'Content-Type': mimeType,
+          'Cache-Control': 'public, max-age=31536000' // 1 year cache for assets
+        });
+        res.end(content);
+        return;
+      }
+    }
+    
+    // Serve favicon
+    if (req.url === '/favicon.ico') {
+      const faviconPath = join(__dirname, 'dist', 'public', 'favicon.ico');
+      if (existsSync(faviconPath)) {
+        const content = readFileSync(faviconPath);
+        res.writeHead(200, { 'Content-Type': 'image/x-icon' });
+        res.end(content);
+        return;
+      }
+    }
+    
+    // Serve HTML for all other routes (SPA routing)
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(htmlContent);
     
