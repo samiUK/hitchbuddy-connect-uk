@@ -1,5 +1,5 @@
 import { createServer } from 'http';
-import { readFileSync, existsSync, statSync } from 'fs';
+import { readFileSync, existsSync, statSync, readdirSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -10,14 +10,36 @@ const PORT = process.env.PORT || 5000;
 
 // Read the built React app HTML file
 let htmlContent = '';
-const htmlPath = join(__dirname, 'dist', 'public', 'index.html');
+const staticDir = join(__dirname, 'dist', 'public');
+const htmlPath = join(staticDir, 'index.html');
+
+console.log(`[deploy] Looking for HTML at: ${htmlPath}`);
+console.log(`[deploy] Static directory: ${staticDir}`);
+console.log(`[deploy] Static dir exists: ${existsSync(staticDir)}`);
 
 if (existsSync(htmlPath)) {
   try {
     htmlContent = readFileSync(htmlPath, 'utf8');
     console.log(`[deploy] React app HTML loaded from: ${htmlPath}`);
+    console.log(`[deploy] HTML length: ${htmlContent.length} characters`);
   } catch (err) {
     console.log(`[deploy] Failed to read ${htmlPath}:`, err.message);
+  }
+} else {
+  console.log(`[deploy] HTML file not found at ${htmlPath}`);
+  // List available files
+  try {
+    const files = readdirSync(staticDir);
+    console.log('[deploy] Available files in static dir:', files);
+    
+    // Check if assets directory exists
+    const assetsDir = join(staticDir, 'assets');
+    if (existsSync(assetsDir)) {
+      const assetFiles = readdirSync(assetsDir);
+      console.log('[deploy] Available asset files:', assetFiles);
+    }
+  } catch (err) {
+    console.log('[deploy] Cannot read static directory:', err.message);
   }
 }
 
@@ -149,15 +171,25 @@ const server = createServer((req, res) => {
     // Serve static assets from dist/public
     if (req.url.startsWith('/assets/')) {
       const assetPath = join(__dirname, 'dist', 'public', req.url);
+      console.log(`[deploy] Serving asset: ${req.url} -> ${assetPath}`);
+      console.log(`[deploy] Asset exists: ${existsSync(assetPath)}`);
+      
       if (existsSync(assetPath)) {
-        const mimeType = getMimeType(assetPath);
-        const content = readFileSync(assetPath);
-        res.writeHead(200, { 
-          'Content-Type': mimeType,
-          'Cache-Control': 'public, max-age=31536000' // 1 year cache for assets
-        });
-        res.end(content);
-        return;
+        try {
+          const mimeType = getMimeType(assetPath);
+          const content = readFileSync(assetPath);
+          console.log(`[deploy] Serving ${assetPath} as ${mimeType}, size: ${content.length} bytes`);
+          res.writeHead(200, { 
+            'Content-Type': mimeType,
+            'Cache-Control': 'public, max-age=31536000' // 1 year cache for assets
+          });
+          res.end(content);
+          return;
+        } catch (err) {
+          console.error(`[deploy] Error serving asset ${assetPath}:`, err);
+        }
+      } else {
+        console.log(`[deploy] Asset not found: ${assetPath}`);
       }
     }
     
