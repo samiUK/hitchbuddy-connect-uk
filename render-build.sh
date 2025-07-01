@@ -58,27 +58,37 @@ EOF
     echo "Created fallback HTML file"
 fi
 
-# Build the backend server with all API routes and database connectivity
-echo "Building complete HitchBuddy server with API routes..."
-if npx esbuild deploy-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js --minify; then
-    echo "Complete server build successful"
+# Build the complete HitchBuddy backend (using same process as local but with deploy server)
+echo "Building HitchBuddy frontend with Vite..."
+if timeout 300 npx vite build --mode production; then
+    echo "✓ Frontend built successfully"
 else
-    echo "Primary server build failed, trying alternative..."
-    NODE_PATH=./node_modules npx esbuild deploy-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js
+    echo "❌ Frontend build failed"
+    exit 1
 fi
 
-# Also copy the server directory to ensure routes are available
-echo "Copying server modules..."
+echo "Building HitchBuddy backend server..."
+if npx esbuild deploy-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js --minify; then
+    echo "✓ Backend server built successfully"
+else
+    echo "❌ Backend build failed"
+    exit 1
+fi
+
+# Ensure all server modules are available for production imports
+echo "Ensuring server modules are accessible..."
 if [ -d "server" ]; then
-    cp -r server dist/server/
+    cp -r server dist/server/ 2>/dev/null || true
     echo "✓ Server modules copied"
 fi
 
-# Copy shared schema
 if [ -d "shared" ]; then
-    cp -r shared dist/shared/
+    cp -r shared dist/shared/ 2>/dev/null || true
     echo "✓ Shared modules copied"
 fi
+
+# Copy package.json for module resolution
+cp package.json dist/ 2>/dev/null || true
 
 # Verify build outputs and display statistics
 echo "Verifying build outputs..."

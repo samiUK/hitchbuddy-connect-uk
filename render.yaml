@@ -5,16 +5,9 @@ services:
     region: frankfurt  # EU region closest to UK
     plan: free
     buildCommand: chmod +x render-build.sh && ./render-build.sh
-    startCommand: node deploy-server.js
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        fromDatabase:
-          name: hitchbuddy-db
-          property: connectionString
-
-databases:
-  - name: hitchbuddy-db
-    region: frankfurt  # EU region
-    plan: free
+        sync: false
