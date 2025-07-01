@@ -35,10 +35,7 @@ export const LandingHero = ({ onGetStarted }: LandingHeroProps) => {
           </p>
 
           <div className="flex flex-wrap justify-center gap-6 mb-8">
-            <div className="flex items-center space-x-2 text-gray-600">
-              <MapPin className="h-5 w-5 text-blue-600" />
-              <span>Airport connections</span>
-            </div>
+            
             <div className="flex items-center space-x-2 text-gray-600">
               <Clock className="h-5 w-5 text-green-600" />
               <span>Last-mile transport</span>
