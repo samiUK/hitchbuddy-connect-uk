@@ -176,7 +176,33 @@ const Index = () => {
         </div>
       </section> */}
 
-      
+      {/* Footer */}
+      <footer className="bg-gray-50 border-t border-gray-200 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="flex space-x-6 text-sm text-gray-600">
+              <a href="#" className="hover:text-gray-900 transition-colors">
+                Terms and Conditions
+              </a>
+              <a href="#" className="hover:text-gray-900 transition-colors">
+                Privacy Policy
+              </a>
+              <a href="#" className="hover:text-gray-900 transition-colors">
+                Cookie Settings
+              </a>
+            </div>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">H</span>
+                </div>
+                <span className="font-medium text-gray-900">HitchBuddy</span>
+              </div>
+              <span>, {new Date().getFullYear()} ©</span>
+            </div>
+          </div>
+        </div>
+      </footer>
 
       {/* Auth Modal */}
       <AuthModal 
