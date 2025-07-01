@@ -58,13 +58,13 @@ EOF
     echo "Created fallback HTML file"
 fi
 
-# Build the production server using the optimized deployment server
+# Build the production server using the Express-based production server
 echo "Building optimized production server..."
-if npx esbuild deploy-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js --minify; then
-    echo "Server build successful"
+if npx esbuild production-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js --minify; then
+    echo "Production server build successful"
 else
     echo "Primary server build failed, trying alternative..."
-    NODE_PATH=./node_modules npx esbuild deploy-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js
+    NODE_PATH=./node_modules npx esbuild production-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js
 fi
 
 # Verify build outputs and display statistics

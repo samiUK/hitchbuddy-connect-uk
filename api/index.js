@@ -19,10 +19,10 @@ console.log('[render] Changed to project root:', process.cwd());
 process.env.NODE_ENV = 'production';
 process.env.PORT = process.env.PORT || 10000;
 
-console.log('[render] Starting deploy-server.js');
+console.log('[render] Starting production-server.js');
 
-// Start our deploy server
-const serverProcess = spawn('node', ['deploy-server.js'], {
+// Start our production server with Express
+const serverProcess = spawn('node', ['production-server.js'], {
   stdio: 'inherit',
   cwd: projectRoot,
   env: process.env
