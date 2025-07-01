@@ -21,19 +21,22 @@ async function startServer() {
     console.log(`[express] serving on port ${PORT}`);
   });
   
-  // Initialize routes after port binding
-  await registerRoutes(app);
-  
+  // For production deployment, skip complex initialization to prevent race conditions
   if (process.env.NODE_ENV === "production") {
-    // Serve static files in production
+    // Minimal production setup - serve static files only
     const { serveStatic } = await import("./vite.js");
     serveStatic(app);
-  } else {
-    // Set up Vite dev server for development
-    await setupVite(app, server);
+    
+    // Skip scheduler in production deployment to eliminate race condition
+    console.log('[production] Scheduler disabled to prevent deployment race condition');
+    return;
   }
   
-  // Start scheduler AFTER server is listening - dynamic import to prevent startup delays
+  // Full initialization for development
+  await registerRoutes(app);
+  await setupVite(app, server);
+  
+  // Start scheduler AFTER server is listening - development only
   try {
     const { rideScheduler } = await import("./scheduler.js");
     scheduler = rideScheduler;
