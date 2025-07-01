@@ -3,7 +3,8 @@ import { createServer } from "http";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./routes.js";
 import { setupVite } from "./vite.js";
-import { rideScheduler } from "./scheduler.js";
+// Scheduler imported dynamically after server startup
+let scheduler: any = null;
 
 const app = express();
 app.use(express.json());
@@ -32,20 +33,26 @@ async function startServer() {
     await setupVite(app, server);
   }
   
-  // Start scheduler AFTER server is listening
-  rideScheduler.start();
+  // Start scheduler AFTER server is listening - dynamic import to prevent startup delays
+  try {
+    const { rideScheduler } = await import("./scheduler.js");
+    scheduler = rideScheduler;
+    scheduler.start();
+  } catch (error) {
+    console.error('[scheduler] Failed to start:', error);
+  }
 }
 
 // Graceful shutdown
 process.on('SIGINT', () => {
   console.log('\n[express] Shutting down gracefully...');
-  rideScheduler.stop();
+  if (scheduler) scheduler.stop();
   process.exit(0);
 });
 
 process.on('SIGTERM', () => {
   console.log('\n[express] Shutting down gracefully...');
-  rideScheduler.stop();
+  if (scheduler) scheduler.stop();
   process.exit(0);
 });
 
