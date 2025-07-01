@@ -21,9 +21,10 @@ async function startServer() {
     console.log(`[express] serving on port ${PORT}`);
   });
   
-  // For production deployment, skip complex initialization to prevent race conditions
+  // For production deployment, register routes but skip scheduler to prevent race conditions
   if (process.env.NODE_ENV === "production") {
-    // Minimal production setup - serve static files only
+    // Production setup - register routes but NO scheduler
+    await registerRoutes(app);
     const { serveStatic } = await import("./vite.js");
     serveStatic(app);
     
