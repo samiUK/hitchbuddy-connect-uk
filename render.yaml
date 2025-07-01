@@ -1,10 +1,11 @@
 services:
   - type: web
     name: hitchbuddy
-    env: docker
+    env: node
     region: frankfurt  # EU region closest to UK
     plan: free
-    dockerfilePath: ./Dockerfile
+    buildCommand: chmod +x render-build.sh && ./render-build.sh
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
