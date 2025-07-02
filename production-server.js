@@ -282,28 +282,38 @@ function setupStaticServing() {
               
               <div class="loader"></div>
               <p><strong>Loading React Application...</strong></p>
-              
-              <div class="debug">
-                <strong>Debug Info:</strong><br>
-                Port: ${PORT}<br>
-                Environment: Production<br>
-                Static Paths Checked: ${possibleStaticPaths.join(', ')}<br>
-                Working Directory: ${__dirname}
-              </div>
+              <p style="font-size: 0.9rem; color: #9ca3af; margin-top: 1rem;">Please wait while we prepare your ride-sharing experience.</p>
               
               <script>
-                // Auto-refresh every 10 seconds to check for React app
-                setTimeout(() => location.reload(), 10000);
+                // Auto-refresh every 5 seconds to check for React app
+                let attempts = 0;
+                const maxAttempts = 12; // Stop after 1 minute
                 
-                // Try to detect if React files become available
-                fetch('/health')
-                  .then(r => r.json())
-                  .then(data => {
-                    if (data.status === 'ok') {
-                      console.log('Server healthy, checking for React app...');
-                    }
-                  })
-                  .catch(e => console.log('Health check failed:', e));
+                function checkForApp() {
+                  attempts++;
+                  if (attempts > maxAttempts) {
+                    document.querySelector('.loader').style.display = 'none';
+                    document.querySelector('.container').innerHTML += 
+                      '<p style="color: #ef4444; margin-top: 1rem;">Application startup taking longer than expected. Please refresh the page.</p>';
+                    return;
+                  }
+                  
+                  // Check if React app assets are available
+                  fetch('/assets/index.js')
+                    .then(response => {
+                      if (response.ok) {
+                        location.reload();
+                      } else {
+                        setTimeout(checkForApp, 5000);
+                      }
+                    })
+                    .catch(() => {
+                      setTimeout(checkForApp, 5000);
+                    });
+                }
+                
+                // Start checking after initial delay
+                setTimeout(checkForApp, 3000);
               </script>
             </div>
           </body>

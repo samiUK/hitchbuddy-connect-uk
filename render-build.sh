@@ -104,18 +104,27 @@ cp -r shared dist/ 2>/dev/null || true
 # Ensure React build files are available in expected locations
 echo "Ensuring React build files are accessible..."
 if [ -d "dist/public" ]; then
-    # Copy from dist/public to dist for production server compatibility
-    cp dist/public/* dist/ 2>/dev/null || true
-    echo "✓ React build files copied to dist/"
-fi
-
-# Create backup locations for static files
-mkdir -p dist/static 2>/dev/null || true
-if [ -f "dist/index.html" ]; then
-    cp dist/index.html dist/static/ 2>/dev/null || true
+    # Copy React files to multiple locations for production server compatibility
+    cp -r dist/public/* dist/ 2>/dev/null || true
+    
+    # Ensure assets directory is available at root level
+    if [ -d "dist/public/assets" ]; then
+        cp -r dist/public/assets dist/ 2>/dev/null || true
+    fi
+    
+    # Copy index.html to root dist for easier serving
+    if [ -f "dist/public/index.html" ]; then
+        cp dist/public/index.html dist/index.html 2>/dev/null || true
+    fi
+    
+    echo "✓ React build files copied to multiple locations"
+    echo "✓ Static files available at dist/ and dist/public/"
+else
+    echo "❌ dist/public directory not found - React build may have failed"
 fi
 
 echo "✓ Complete server structure and React build ready"
+echo "✓ Files available for production serving"
 
 # Verify build outputs and display statistics
 echo "Verifying build outputs..."
