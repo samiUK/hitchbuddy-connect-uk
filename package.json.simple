@@ -1,0 +1,12 @@
+{
+  "name": "hitchbuddy",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "license": "MIT",
+  "scripts": {
+    "start": "node deploy-server.cjs"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
