@@ -94,18 +94,18 @@ const server = http.createServer((req, res) => {
   `);
 });
 
-// Start the direct React server
-console.log('[Dev] Starting direct React application...');
+// Start the real app server
+console.log('[Dev] Starting your actual HitchBuddy React application...');
 
 const { spawn } = require('child_process');
-const directServer = spawn('node', ['react-server-direct.js'], {
+const realAppServer = spawn('node', ['serve-real-app.js'], {
   stdio: 'inherit',
   env: { ...process.env, PORT: PORT },
   detached: false
 });
 
-directServer.on('error', (err) => {
-  console.log('[Dev] Direct server failed, starting simple fallback');
+realAppServer.on('error', (err) => {
+  console.log('[Dev] Real app server failed, starting fallback');
   const fallbackServer = spawn('node', ['simple-server.js'], {
     stdio: 'inherit',
     env: { ...process.env, PORT: PORT },
@@ -115,11 +115,11 @@ directServer.on('error', (err) => {
 
 // Handle cleanup
 process.on('SIGINT', () => {
-  directServer.kill();
+  realAppServer.kill();
   process.exit();
 });
 
 process.on('SIGTERM', () => {
-  directServer.kill();
+  realAppServer.kill();
   process.exit();
 });
