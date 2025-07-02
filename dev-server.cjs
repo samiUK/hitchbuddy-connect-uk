@@ -94,30 +94,32 @@ const server = http.createServer((req, res) => {
   `);
 });
 
-// Start the simple server without dependencies
-console.log('[Dev] Starting simple HitchBuddy server...');
+// Start the direct React server
+console.log('[Dev] Starting direct React application...');
 
 const { spawn } = require('child_process');
-const simpleServer = spawn('node', ['simple-server.js'], {
+const directServer = spawn('node', ['react-server-direct.js'], {
   stdio: 'inherit',
   env: { ...process.env, PORT: PORT },
   detached: false
 });
 
-simpleServer.on('error', (err) => {
-  console.log('[Dev] Simple server failed, starting inline fallback');
-  server.listen(PORT, '0.0.0.0', () => {
-    console.log(`[Dev] Inline fallback server running on port ${PORT}`);
+directServer.on('error', (err) => {
+  console.log('[Dev] Direct server failed, starting simple fallback');
+  const fallbackServer = spawn('node', ['simple-server.js'], {
+    stdio: 'inherit',
+    env: { ...process.env, PORT: PORT },
+    detached: false
   });
 });
 
 // Handle cleanup
 process.on('SIGINT', () => {
-  simpleServer.kill();
+  directServer.kill();
   process.exit();
 });
 
 process.on('SIGTERM', () => {
-  simpleServer.kill();
+  directServer.kill();
   process.exit();
 });
