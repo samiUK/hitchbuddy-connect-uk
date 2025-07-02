@@ -1,9 +1,10 @@
-console.log('[VITE] Starting Vite development server for your React app...');
+console.log('[HYBRID] Starting Vite dev server with backend proxy...');
 
 const { spawn } = require('child_process');
 const PORT = process.env.PORT || 5000;
 
-const viteServer = spawn('npx', ['vite', '--host', '0.0.0.0', '--port', PORT], {
+// Start the Vite development server which handles TypeScript compilation
+const viteServer = spawn('npx', ['vite', 'dev', '--host', '0.0.0.0', '--port', PORT], {
   stdio: 'inherit',
   cwd: 'client',
   env: { 
@@ -14,12 +15,12 @@ const viteServer = spawn('npx', ['vite', '--host', '0.0.0.0', '--port', PORT], {
 });
 
 viteServer.on('error', (err) => {
-  console.error('[VITE] Server error:', err.message);
+  console.error('[HYBRID] Vite server error:', err.message);
   process.exit(1);
 });
 
 viteServer.on('close', (code) => {
-  console.log(`[VITE] Server exited with code ${code}`);
+  console.log(`[HYBRID] Vite server exited with code ${code}`);
   process.exit(code);
 });
 
