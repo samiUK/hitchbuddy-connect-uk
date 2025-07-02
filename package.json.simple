@@ -4,6 +4,7 @@
   "type": "commonjs",
   "license": "MIT",
   "scripts": {
+    "build": "echo 'No build required - using standalone server'",
     "start": "node deploy-server.cjs"
   },
   "engines": {

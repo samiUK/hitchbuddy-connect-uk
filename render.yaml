@@ -2,7 +2,7 @@ services:
   - type: web
     name: hitchbuddy-app
     env: node
-    buildCommand: cp package.json.simple package.json && echo "Build complete - standalone server ready"
+    buildCommand: npm run build
     startCommand: node deploy-server.cjs
     region: frankfurt
     plan: free
