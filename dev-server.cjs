@@ -94,8 +94,30 @@ const server = http.createServer((req, res) => {
   `);
 });
 
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`[Dev] Development server running on port ${PORT}`);
-  console.log('[Dev] ES module/CommonJS inconsistency - using fallback server');
-  console.log('[Dev] Production deployment ready with deploy-server.cjs');
+// Start the working bypass server directly
+console.log('[Dev] Starting working HitchBuddy server...');
+
+const { spawn } = require('child_process');
+const bypassServer = spawn('node', ['server-bypass.js'], {
+  stdio: 'inherit',
+  env: { ...process.env, PORT: PORT },
+  detached: false
+});
+
+bypassServer.on('error', (err) => {
+  console.log('[Dev] Starting basic fallback server');
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`[Dev] Basic server running on port ${PORT}`);
+  });
+});
+
+// Handle cleanup
+process.on('SIGINT', () => {
+  bypassServer.kill();
+  process.exit();
+});
+
+process.on('SIGTERM', () => {
+  bypassServer.kill();
+  process.exit();
 });
