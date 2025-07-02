@@ -2,6 +2,7 @@ services:
   - type: web
     name: hitchbuddy
     env: node
+    runtime: node
     region: frankfurt  # EU region closest to UK
     plan: free
     buildCommand: chmod +x render-build.sh && ./render-build.sh
