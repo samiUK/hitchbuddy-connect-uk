@@ -50,6 +50,7 @@
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "lucide-react": "^0.525.0",
+    "pg": "^8.16.3",
     "postgres": "^3.4.7",
     "react": "^19.1.0",
     "react-day-picker": "^9.7.0",

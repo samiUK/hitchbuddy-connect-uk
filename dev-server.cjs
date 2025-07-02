@@ -1,12 +1,11 @@
-console.log('[HYBRID] Starting Vite dev server with backend proxy...');
+console.log('[REAL] Starting HitchBuddy with real PostgreSQL backend...');
 
 const { spawn } = require('child_process');
 const PORT = process.env.PORT || 5000;
 
-// Start the Vite development server which handles TypeScript compilation
-const viteServer = spawn('npx', ['vite', 'dev', '--host', '0.0.0.0', '--port', PORT], {
+// Start the real backend server with PostgreSQL database
+const realServer = spawn('node', ['hitchbuddy-real.js'], {
   stdio: 'inherit',
-  cwd: 'client',
   env: { 
     ...process.env, 
     PORT: PORT,
@@ -14,20 +13,20 @@ const viteServer = spawn('npx', ['vite', 'dev', '--host', '0.0.0.0', '--port', P
   }
 });
 
-viteServer.on('error', (err) => {
-  console.error('[HYBRID] Vite server error:', err.message);
+realServer.on('error', (err) => {
+  console.error('[REAL] Backend server error:', err.message);
   process.exit(1);
 });
 
-viteServer.on('close', (code) => {
-  console.log(`[HYBRID] Vite server exited with code ${code}`);
+realServer.on('close', (code) => {
+  console.log(`[REAL] Backend server exited with code ${code}`);
   process.exit(code);
 });
 
 process.on('SIGINT', () => {
-  viteServer.kill('SIGINT');
+  realServer.kill('SIGINT');
 });
 
 process.on('SIGTERM', () => {
-  viteServer.kill('SIGTERM');
+  realServer.kill('SIGTERM');
 });
