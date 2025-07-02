@@ -56,27 +56,53 @@ app.get('/api/ride-requests', (req, res) => {
   res.json([]);
 });
 
-// Serve static files from dist directory
-const staticPath = join(__dirname, 'dist');
-console.log(`[server] Looking for static files at: ${staticPath}`);
+// Serve static files from dist/public directory (Vite build output)
+const staticPaths = [
+  join(__dirname, 'dist/public'),
+  join(__dirname, 'dist'),
+  join(__dirname, 'public')
+];
 
-if (existsSync(staticPath)) {
-  console.log('[server] Serving static files from dist directory');
+let staticPath = null;
+for (const path of staticPaths) {
+  console.log(`[server] Checking for static files at: ${path}`);
+  if (existsSync(path)) {
+    staticPath = path;
+    console.log(`[server] Found static files at: ${staticPath}`);
+    break;
+  }
+}
+
+if (staticPath) {
+  console.log('[server] Serving static files from:', staticPath);
   app.use(express.static(staticPath, {
     maxAge: '1y',
     etag: true,
     lastModified: true
   }));
 } else {
-  console.error('[server] Static directory not found:', staticPath);
+  console.error('[server] No static directory found in any expected location');
 }
 
 // Catch-all handler for React Router
 app.get('*', (req, res) => {
-  const indexPath = join(__dirname, 'dist', 'index.html');
-  console.log(`[server] Looking for index.html at: ${indexPath}`);
+  const indexPaths = [
+    join(__dirname, 'dist/public', 'index.html'),
+    join(__dirname, 'dist', 'index.html'),
+    join(__dirname, 'public', 'index.html')
+  ];
   
-  if (existsSync(indexPath)) {
+  let indexPath = null;
+  for (const path of indexPaths) {
+    console.log(`[server] Looking for index.html at: ${path}`);
+    if (existsSync(path)) {
+      indexPath = path;
+      console.log(`[server] Found index.html at: ${indexPath}`);
+      break;
+    }
+  }
+  
+  if (indexPath) {
     console.log('[server] Serving React app from index.html');
     res.sendFile(indexPath);
   } else {
@@ -146,7 +172,7 @@ app.get('*', (req, res) => {
             <div class="loader"></div>
             <div class="status">Server Status: Online | EU Region: Frankfurt</div>
             <p><strong>Application Loading...</strong></p>
-            <p><small>Build Path: ${staticPath}<br>Index Path: ${indexPath}</small></p>
+            <p><small>Static Path: ${staticPath || 'Not found'}<br>Index Paths Checked: ${indexPaths.join(', ')}</small></p>
             <script>
               // Auto-refresh to check if React app becomes available
               setTimeout(() => location.reload(), 5000);

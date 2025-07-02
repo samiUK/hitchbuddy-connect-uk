@@ -101,7 +101,21 @@ cp drizzle.config.ts dist/ 2>/dev/null || true
 cp -r server dist/ 2>/dev/null || true
 cp -r shared dist/ 2>/dev/null || true
 
-echo "✓ Complete server structure ready"
+# Ensure React build files are available in expected locations
+echo "Ensuring React build files are accessible..."
+if [ -d "dist/public" ]; then
+    # Copy from dist/public to dist for production server compatibility
+    cp dist/public/* dist/ 2>/dev/null || true
+    echo "✓ React build files copied to dist/"
+fi
+
+# Create backup locations for static files
+mkdir -p dist/static 2>/dev/null || true
+if [ -f "dist/index.html" ]; then
+    cp dist/index.html dist/static/ 2>/dev/null || true
+fi
+
+echo "✓ Complete server structure and React build ready"
 
 # Verify build outputs and display statistics
 echo "Verifying build outputs..."
