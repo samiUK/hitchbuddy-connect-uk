@@ -11,8 +11,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Serve static files from the built React app
-app.use(express.static(path.join(__dirname, 'dist/public')));
+// Serve static files from the client public directory
+app.use(express.static(path.join(__dirname, 'client/public')));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -29,9 +29,9 @@ app.get('/api/auth/me', (req, res) => {
   res.json({ error: 'Not authenticated' });
 });
 
-// Serve React app for all other routes - using catch-all middleware
+// Serve React app for all other routes - using client HTML
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/public/index.html'));
+  res.sendFile(path.join(__dirname, 'client/index.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {

@@ -1,48 +1,101 @@
-const { createServer } = require('vite');
 const express = require('express');
 const path = require('path');
+const { exec } = require('child_process');
 
 const PORT = process.env.PORT || 5000;
 
 async function startDevServer() {
-  // Use built React app directly for reliable serving
-  console.log('🚀 Starting real HitchBuddy React application...');
-  startExpressFallback();
+  try {
+    console.log('🚀 Starting HitchBuddy React development server...');
+    
+    // Start Vite development server for client directory
+    const viteProcess = exec('cd client && npx vite --host 0.0.0.0 --port 3000', (error, stdout, stderr) => {
+      if (error) {
+        console.log('Vite process exited:', error.message);
+        return;
+      }
+    });
+
+    viteProcess.stdout.on('data', (data) => {
+      console.log(`[Vite] ${data}`);
+    });
+
+    viteProcess.stderr.on('data', (data) => {
+      console.log(`[Vite] ${data}`);
+    });
+
+    // Give Vite a moment to start
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    // Create Express proxy server
+    const app = express();
+    app.use(express.json());
+
+    // Health check
+    app.get('/health', (req, res) => {
+      res.json({
+        status: 'proxy server running',
+        app: 'HitchBuddy',
+        vite: 'http://localhost:3000',
+        features: ['React App', 'Authentication', 'Dashboard', 'Ride Management', 'Chat', 'Booking System']
+      });
+    });
+
+    // API routes (mock for development)
+    app.get('/api/auth/me', (req, res) => {
+      res.json({ error: 'Not authenticated' });
+    });
+
+    // Proxy all other requests to Vite
+    app.use('*', (req, res) => {
+      const url = `http://localhost:3000${req.originalUrl}`;
+      console.log(`Proxying: ${req.originalUrl} -> ${url}`);
+      
+      // Simple redirect to Vite dev server
+      res.redirect(url);
+    });
+
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`✅ HitchBuddy proxy server running on port ${PORT}`);
+      console.log('✅ Vite dev server on port 3000');
+      console.log('✅ Your original React app with Dashboard, Auth, etc. available');
+    });
+
+    return server;
+
+  } catch (error) {
+    console.error('❌ Failed to start dev server:', error.message);
+    startExpressFallback();
+  }
 }
 
 function startExpressFallback() {
+  console.log('🔄 Starting Express fallback server...');
+  
   const app = express();
-  
   app.use(express.json());
-  app.use(express.urlencoded({ extended: false }));
   
-  // Serve static files from the built React app
-  app.use(express.static(path.join(__dirname, 'dist/public')));
+  // Serve static files from client directory
+  app.use(express.static(path.join(__dirname, 'client/public')));
+  app.use('/src', express.static(path.join(__dirname, 'client/src')));
+  app.use('/assets', express.static(path.join(__dirname, 'client/src/assets')));
   
+  // Health check
   app.get('/health', (req, res) => {
     res.json({
-      status: 'development server running',
+      status: 'fallback server running',
       app: 'HitchBuddy',
-      mode: 'development',
-      features: ['React App', 'Authentication', 'Ride Management', 'Client-side Caching']
+      mode: 'fallback'
     });
   });
-  
-  // Basic API endpoints for testing
-  app.get('/api/auth/me', (req, res) => {
-    res.json({ error: 'Not authenticated' });
+
+  // Serve main React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/index.html'));
   });
-  
-  // Serve React app for all other routes
-  app.get('/*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist/public/index.html'));
-  });
-  
+
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Real HitchBuddy React app running on port ${PORT}`);
-    console.log('✅ Authentication system ready');
-    console.log('✅ Dashboard and components loaded');
-    console.log('✅ Client-side caching active');
+    console.log(`🔄 HitchBuddy fallback server running on port ${PORT}`);
   });
 }
 

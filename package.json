@@ -49,6 +49,7 @@
     "drizzle-zod": "^0.8.2",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
+    "http-proxy-middleware": "^3.0.5",
     "lucide-react": "^0.525.0",
     "postgres": "^3.4.7",
     "react": "^19.1.0",

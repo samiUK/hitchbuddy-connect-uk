@@ -3,8 +3,8 @@ console.log('[DEV] Starting HitchBuddy development server with your original Rea
 const { spawn } = require('child_process');
 const path = require('path');
 
-// Start the reliable production server
-const devServer = spawn('node', ['simple-production-server.js'], {
+// Start the reliable React development server
+const devServer = spawn('node', ['dev-server-final.cjs'], {
   stdio: 'inherit',
   env: { 
     ...process.env, 
