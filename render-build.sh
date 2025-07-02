@@ -75,20 +75,33 @@ else
     exit 1
 fi
 
-# Ensure all server modules are available for production imports
-echo "Ensuring server modules are accessible..."
+# Create the complete server structure for production
+echo "Setting up complete server structure..."
+
+# Create directories
+mkdir -p dist/server
+mkdir -p dist/shared
+
+# Copy ALL server files to ensure imports work
 if [ -d "server" ]; then
-    cp -r server dist/server/ 2>/dev/null || true
-    echo "✓ Server modules copied"
+    cp -r server/* dist/server/ 2>/dev/null || true
+    echo "✓ Server files copied to dist/server/"
 fi
 
 if [ -d "shared" ]; then
-    cp -r shared dist/shared/ 2>/dev/null || true
-    echo "✓ Shared modules copied"
+    cp -r shared/* dist/shared/ 2>/dev/null || true
+    echo "✓ Shared files copied to dist/shared/"
 fi
 
-# Copy package.json for module resolution
+# Copy essential files for module resolution
 cp package.json dist/ 2>/dev/null || true
+cp drizzle.config.ts dist/ 2>/dev/null || true
+
+# Also copy files to root level for import resolution
+cp -r server dist/ 2>/dev/null || true
+cp -r shared dist/ 2>/dev/null || true
+
+echo "✓ Complete server structure ready"
 
 # Verify build outputs and display statistics
 echo "Verifying build outputs..."

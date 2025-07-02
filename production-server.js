@@ -160,28 +160,48 @@ app.get('*', (req, res) => {
 
 // Attempt to load full API routes if available
 async function loadFullAPI() {
-  try {
-    // Try to dynamically import and register full routes
-    const routes = await import('./server/routes.js');
-    if (routes.registerRoutes) {
-      console.log('[server] Loading full API routes...');
-      await routes.registerRoutes(app);
-      console.log('[server] Full API routes loaded successfully');
+  const possiblePaths = [
+    './server/routes.js',
+    './dist/server/routes.js', 
+    '/opt/render/project/src/server/routes.js',
+    '/opt/render/project/src/dist/server/routes.js'
+  ];
+
+  for (const path of possiblePaths) {
+    try {
+      console.log(`[server] Trying to load routes from: ${path}`);
+      const routes = await import(path);
+      if (routes.registerRoutes) {
+        console.log('[server] Loading full API routes...');
+        await routes.registerRoutes(app);
+        console.log('[server] Full API routes loaded successfully');
+        break;
+      }
+    } catch (error) {
+      console.log(`[server] Could not load from ${path}: ${error.message}`);
     }
-  } catch (error) {
-    console.log('[server] Full API routes not available, using fallback routes');
-    console.log(`[server] Error: ${error.message}`);
   }
 
-  try {
-    // Try to start scheduler if available
-    const scheduler = await import('./server/scheduler.js');
-    if (scheduler.rideScheduler) {
-      scheduler.rideScheduler.start();
-      console.log('[scheduler] Started ride cancellation scheduler');
+  // Try to start scheduler
+  const schedulerPaths = [
+    './server/scheduler.js',
+    './dist/server/scheduler.js',
+    '/opt/render/project/src/server/scheduler.js',
+    '/opt/render/project/src/dist/server/scheduler.js'
+  ];
+
+  for (const path of schedulerPaths) {
+    try {
+      console.log(`[scheduler] Trying to load from: ${path}`);
+      const scheduler = await import(path);
+      if (scheduler.rideScheduler) {
+        scheduler.rideScheduler.start();
+        console.log('[scheduler] Started ride cancellation scheduler');
+        break;
+      }
+    } catch (error) {
+      console.log(`[scheduler] Could not load from ${path}: ${error.message}`);
     }
-  } catch (error) {
-    console.log('[scheduler] Scheduler not available');
   }
 }
 
