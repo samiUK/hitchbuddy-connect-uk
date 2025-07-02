@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "echo 'No build required - using standalone server'",
-    "start": "node deploy-server.cjs"
+    "start": "node deploy-server.cjs",
+    "dev": "node dev-server.cjs"
   },
   "engines": {
     "node": ">=18.0.0"
