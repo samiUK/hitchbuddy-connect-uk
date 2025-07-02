@@ -94,30 +94,30 @@ const server = http.createServer((req, res) => {
   `);
 });
 
-// Start the working bypass server directly
-console.log('[Dev] Starting working HitchBuddy server...');
+// Start the real React development server
+console.log('[Dev] Starting real HitchBuddy React application...');
 
 const { spawn } = require('child_process');
-const bypassServer = spawn('node', ['server-bypass.js'], {
+const realServer = spawn('node', ['server-real.js'], {
   stdio: 'inherit',
   env: { ...process.env, PORT: PORT },
   detached: false
 });
 
-bypassServer.on('error', (err) => {
-  console.log('[Dev] Starting basic fallback server');
+realServer.on('error', (err) => {
+  console.log('[Dev] Real server failed, starting static fallback');
   server.listen(PORT, '0.0.0.0', () => {
-    console.log(`[Dev] Basic server running on port ${PORT}`);
+    console.log(`[Dev] Static fallback server running on port ${PORT}`);
   });
 });
 
 // Handle cleanup
 process.on('SIGINT', () => {
-  bypassServer.kill();
+  realServer.kill();
   process.exit();
 });
 
 process.on('SIGTERM', () => {
-  bypassServer.kill();
+  realServer.kill();
   process.exit();
 });
