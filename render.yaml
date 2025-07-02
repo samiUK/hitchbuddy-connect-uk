@@ -2,7 +2,7 @@ services:
   - type: web
     name: hitchbuddy-node
     env: node
-    buildCommand: npm ci --include=dev && npx vite build && cp static-server.cjs ./
+    buildCommand: cp static-server.cjs ./
     startCommand: node static-server.cjs
     region: frankfurt
     plan: free
