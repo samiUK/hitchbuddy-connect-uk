@@ -2,7 +2,7 @@ services:
   - type: web
     name: hitchbuddy-app
     env: node
-    buildCommand: npm run build
+    buildCommand: ./deploy-build.sh
     startCommand: node deploy-server.cjs
     region: frankfurt
     plan: free
