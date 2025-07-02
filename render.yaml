@@ -1,9 +1,8 @@
 services:
   - type: web
-    name: hitchbuddy
+    name: hitchbuddy-node
     env: node
-    runtime: node
-    region: frankfurt  # EU region closest to UK
+    region: frankfurt
     plan: free
     buildCommand: chmod +x render-build.sh && ./render-build.sh
     startCommand: node static-server.cjs
