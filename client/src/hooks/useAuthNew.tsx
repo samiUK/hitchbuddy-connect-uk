@@ -1,4 +1,5 @@
 import { useState, useEffect, createContext, useContext } from 'react';
+import { ClientStorage } from '../utils/clientStorage';
 
 interface User {
   id: string;
@@ -42,6 +43,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const checkAuth = async () => {
     try {
+      // Try to get cached user first
+      const cachedUser = ClientStorage.getCachedUserProfile();
+      if (cachedUser) {
+        setUser(cachedUser);
+        setLoading(false);
+        // Validate cached user in background
+        validateCachedUser(cachedUser);
+        return;
+      }
+
       const response = await fetch('/api/auth/me', {
         credentials: 'include'
       });
@@ -49,14 +60,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
+        // Cache the user profile
+        ClientStorage.cacheUserProfile(data.user);
       } else {
         setUser(null);
+        ClientStorage.clearCache('hitchbuddy_user_profile');
       }
     } catch (error) {
       console.error('Auth check failed:', error);
       setUser(null);
+      ClientStorage.clearCache('hitchbuddy_user_profile');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const validateCachedUser = async (cachedUser: User) => {
+    try {
+      const response = await fetch('/api/auth/me', {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (JSON.stringify(data.user) !== JSON.stringify(cachedUser)) {
+          setUser(data.user);
+          ClientStorage.cacheUserProfile(data.user);
+        }
+      } else {
+        setUser(null);
+        ClientStorage.clearCache('hitchbuddy_user_profile');
+      }
+    } catch (error) {
+      // Keep cached user if validation fails
+      console.warn('User validation failed, keeping cached user');
     }
   };
 
