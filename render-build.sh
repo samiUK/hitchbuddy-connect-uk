@@ -68,7 +68,7 @@ else
 fi
 
 echo "Building HitchBuddy backend server..."
-if npx esbuild deploy-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js --minify; then
+if npx esbuild production-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js --minify; then
     echo "✓ Backend server built successfully"
 else
     echo "❌ Backend build failed"
