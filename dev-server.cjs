@@ -94,30 +94,30 @@ const server = http.createServer((req, res) => {
   `);
 });
 
-// Start the real React development server
-console.log('[Dev] Starting real HitchBuddy React application...');
+// Start the simple server without dependencies
+console.log('[Dev] Starting simple HitchBuddy server...');
 
 const { spawn } = require('child_process');
-const realServer = spawn('node', ['server-real.js'], {
+const simpleServer = spawn('node', ['simple-server.js'], {
   stdio: 'inherit',
   env: { ...process.env, PORT: PORT },
   detached: false
 });
 
-realServer.on('error', (err) => {
-  console.log('[Dev] Real server failed, starting static fallback');
+simpleServer.on('error', (err) => {
+  console.log('[Dev] Simple server failed, starting inline fallback');
   server.listen(PORT, '0.0.0.0', () => {
-    console.log(`[Dev] Static fallback server running on port ${PORT}`);
+    console.log(`[Dev] Inline fallback server running on port ${PORT}`);
   });
 });
 
 // Handle cleanup
 process.on('SIGINT', () => {
-  realServer.kill();
+  simpleServer.kill();
   process.exit();
 });
 
 process.on('SIGTERM', () => {
-  realServer.kill();
+  simpleServer.kill();
   process.exit();
 });
