@@ -2,7 +2,7 @@ const http = require('http');
 const { exec } = require('child_process');
 const fs = require('fs');
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 
 // Simple development server that works when tsx is broken
 const server = http.createServer((req, res) => {
@@ -41,6 +41,6 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`[Dev] Development server running on port ${PORT}`);
-  console.log('[Dev] tsx dependency issue detected - using fallback server');
+  console.log('[Dev] ES module/CommonJS inconsistency - using fallback server');
   console.log('[Dev] Production deployment ready with deploy-server.cjs');
 });
