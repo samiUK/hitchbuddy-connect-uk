@@ -62,18 +62,30 @@ fi
 echo "Building HitchBuddy frontend with Vite..."
 if timeout 300 npx vite build --mode production; then
     echo "✓ Frontend built successfully"
+    
+    # Verify React build files exist
+    if [ -f "dist/public/index.html" ]; then
+        echo "✓ React index.html created successfully"
+    else
+        echo "❌ React build missing index.html"
+        exit 1
+    fi
+    
+    if [ -d "dist/public/assets" ]; then
+        echo "✓ React assets directory created"
+        ls -la dist/public/assets/
+    else
+        echo "❌ React assets directory missing"
+        exit 1
+    fi
 else
     echo "❌ Frontend build failed"
     exit 1
 fi
 
-echo "Building HitchBuddy backend server..."
-if npx esbuild production-server.js --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js --minify; then
-    echo "✓ Backend server built successfully"
-else
-    echo "❌ Backend build failed"
-    exit 1
-fi
+echo "Copying deploy server (no backend bundling needed)..."
+cp deploy-server.js dist/index.js
+echo "✓ Deploy server ready"
 
 # Create the complete server structure for production
 echo "Setting up complete server structure..."
