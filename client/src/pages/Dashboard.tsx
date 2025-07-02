@@ -55,13 +55,13 @@ const Dashboard = () => {
   const [showPostRideForm, setShowPostRideForm] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [isUpdatingUserType, setIsUpdatingUserType] = useState(false);
-  const [rides, setRides] = useState<any[]>([]);
-  const [rideRequests, setRideRequests] = useState<any[]>([]);
+  const [rides, setRides] = useState([]);
+  const [rideRequests, setRideRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedRide, setSelectedRide] = useState<any>(null);
+  const [selectedRide, setSelectedRide] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [bookings, setBookings] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [showChatPopup, setShowChatPopup] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [savedFormData, setSavedFormData] = useState<any>(null);
@@ -75,9 +75,6 @@ const Dashboard = () => {
   const [messagesLoading, setMessagesLoading] = useState(false);
   
   const userType = user?.userType || 'rider';
-
-  // Safe array helper to prevent length errors
-  const safeArray = (arr: any) => Array.isArray(arr) ? arr : [];
 
   // Navigation handler for notifications
   const handleNotificationNavigation = (section: string) => {
@@ -210,7 +207,7 @@ const Dashboard = () => {
         
         // Create notifications for drivers about pending booking requests only (not ride requests)
         if (userType === 'driver') {
-          const pendingBookings = safeArray(bookingsData.bookings).filter(b => 
+          const pendingBookings = bookingsData.bookings.filter(b => 
             b.status === 'pending' && b.driverId === user?.id && b.rideId // Only for actual ride bookings, not ride requests
           );
           setNotifications(pendingBookings.map(booking => ({
@@ -231,9 +228,9 @@ const Dashboard = () => {
   const handleBookingAction = async (bookingId: string, action: 'confirmed' | 'cancelled' | 'completed') => {
     try {
       // Check if this is a counter offer decline or driver cancellation
-      const booking = safeArray(bookings).find(b => b.id === bookingId);
+      const booking = bookings.find(b => b.id === bookingId);
       const isCounterOfferDecline = action === 'cancelled' && booking?.rideId && 
-        safeArray(rides).find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'));
+        rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'));
       
       // Check if this is a driver cancelling a booking request (should return to global pool)
       const isDriverCancellation = action === 'cancelled' && booking?.rideRequestId && 
@@ -713,45 +710,8 @@ const Dashboard = () => {
 
 
 
-  // Early return with loading state if data is not properly loaded
-  if (!Array.isArray(rides) || !Array.isArray(rideRequests) || !Array.isArray(bookings) || !Array.isArray(notifications)) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center">
-          <div className="bg-gradient-to-r from-blue-600 to-green-600 p-3 rounded-lg mb-4 mx-auto w-fit">
-            <Car className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">HitchBuddy Dashboard</h1>
-          <p className="text-gray-600 mb-4">Loading your ride-sharing platform...</p>
-          <div className="space-y-3 text-left">
-            <div className="flex items-center justify-between p-3 bg-blue-50 rounded">
-              <span className="text-sm font-medium">Database</span>
-              <span className="text-sm font-medium text-blue-600">Connected ✓</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded">
-              <span className="text-sm font-medium">Backend API</span>
-              <span className="text-sm font-medium text-green-600">Running ✓</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-yellow-50 rounded">
-              <span className="text-sm font-medium">Frontend</span>
-              <span className="text-sm font-medium text-yellow-600">Loading...</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Ensure all arrays are properly initialized to prevent undefined errors
-  const safeRides = Array.isArray(rides) ? rides : [];
-  const safeRideRequests = Array.isArray(rideRequests) ? rideRequests : [];
-  const safeBookings = Array.isArray(bookings) ? bookings : [];
-  const safeNotifications = Array.isArray(notifications) ? notifications : [];
-  const safeConversations = Array.isArray(conversations) ? conversations : [];
-
-  try {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -839,7 +799,7 @@ const Dashboard = () => {
         
 
         {/* Quick Actions & Notifications */}
-        {safeNotifications.length > 0 && !quickActionsDismissed && (
+        {notifications.length > 0 && !quickActionsDismissed && (
           <Card className="mb-6 border-orange-200 bg-orange-50">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-lg text-orange-800">Quick Actions</CardTitle>
@@ -897,9 +857,9 @@ const Dashboard = () => {
             >
               <tab.icon className="h-4 w-4" />
               <span>{tab.label}</span>
-              {tab.id === 'rides' && safeArray(notifications).length > 0 && userType === 'driver' && (
+              {tab.id === 'rides' && notifications.length > 0 && userType === 'driver' && (
                 <Badge variant="destructive" className="ml-1 text-xs">
-                  {safeArray(notifications).length}
+                  {notifications.length}
                 </Badge>
               )}
             </button>
@@ -922,36 +882,31 @@ const Dashboard = () => {
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {userType === 'driver' 
-                        ? safeArray(rides).filter(r => r.driverId === user?.id && r.status === 'active' && !r.notes?.includes('Counter offer')).length 
+                        ? rides.filter(r => r.driverId === user?.id && r.status === 'active' && !r.notes?.includes('Counter offer')).length 
                         : (() => {
                             // For riders: count ride requests that are still pending (not matched/confirmed)
-                            const pendingRequests = safeArray(rideRequests).filter(req => 
+                            const pendingRequests = rideRequests.filter(req => 
                               req.riderId === user?.id && req.status === 'active'
                             );
                             
                             // Filter out requests that have been confirmed (have confirmed bookings)
-                            const unconfirmedRequests = safeArray(pendingRequests).filter(request => {
-                              try {
-                                const hasConfirmedBooking = safeArray(bookings).some(booking => 
-                                  booking?.riderId === user?.id &&
-                                  booking?.status === 'confirmed' &&
-                                  // Check if this booking matches the request by route and date/time
-                                  safeArray(rides).some(ride => 
-                                    ride?.id === booking?.rideId &&
-                                    ride?.fromLocation === request?.fromLocation &&
-                                    ride?.toLocation === request?.toLocation &&
-                                    ride?.departureDate === request?.departureDate &&
-                                    ride?.departureTime === request?.departureTime
-                                  )
-                                );
-                                return !hasConfirmedBooking;
-                              } catch (error) {
-                                console.error('Error filtering requests:', error);
-                                return true;
-                              }
+                            const unconfirmedRequests = pendingRequests.filter(request => {
+                              const hasConfirmedBooking = bookings.some(booking => 
+                                booking.riderId === user?.id &&
+                                booking.status === 'confirmed' &&
+                                // Check if this booking matches the request by route and date/time
+                                rides.some(ride => 
+                                  ride.id === booking.rideId &&
+                                  ride.fromLocation === request.fromLocation &&
+                                  ride.toLocation === request.toLocation &&
+                                  ride.departureDate === request.departureDate &&
+                                  ride.departureTime === request.departureTime
+                                )
+                              );
+                              return !hasConfirmedBooking;
                             });
                             
-                            return safeArray(unconfirmedRequests).length;
+                            return unconfirmedRequests.length;
                           })()
                       }
                     </div>
@@ -966,7 +921,7 @@ const Dashboard = () => {
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{safeArray(bookings).filter(b => b.status === 'confirmed').length}</div>
+                    <div className="text-2xl font-bold">{bookings.filter(b => b.status === 'confirmed').length}</div>
                     <p className="text-xs text-muted-foreground">
                       {userType === 'driver' ? 'Confirmed bookings' : 'Your upcoming rides'}
                     </p>
@@ -984,10 +939,10 @@ const Dashboard = () => {
                         
                         if (userType === 'driver') {
                           // Driver: count completed rides where user was the driver
-                          count = safeArray(bookings).filter((b: any) => b.driverId === user?.id && b.status === 'completed').length;
+                          count = bookings.filter((b: any) => b.driverId === user?.id && b.status === 'completed').length;
                         } else {
                           // Rider: count completed rides where user was the rider
-                          count = safeArray(bookings).filter((b: any) => b.riderId === user?.id && b.status === 'completed').length;
+                          count = bookings.filter((b: any) => b.riderId === user?.id && b.status === 'completed').length;
                         }
                         
                         return count;
@@ -1039,7 +994,7 @@ const Dashboard = () => {
                       <span className="text-sm text-gray-600">
                         {userType === 'driver' ? 'Rides Offered' : 'Rides Taken'}
                       </span>
-                      <span className="font-semibold">{safeArray(rides).filter(r => userType === 'driver' ? r.driverId === user?.id : false).length}</span>
+                      <span className="font-semibold">{rides.filter(r => userType === 'driver' ? r.driverId === user?.id : false).length}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">Rating</span>
@@ -1054,7 +1009,7 @@ const Dashboard = () => {
                       <span className="text-sm text-gray-600">
                         {userType === 'driver' ? 'Earnings' : 'Money Saved'}
                       </span>
-                      <span className="font-semibold">£{safeArray(bookings).filter(b => b.status === 'completed').reduce((sum, b) => sum + parseFloat(b.totalCost || '0'), 0).toFixed(2)}</span>
+                      <span className="font-semibold">£{bookings.filter(b => b.status === 'completed').reduce((sum, b) => sum + parseFloat(b.totalCost || '0'), 0).toFixed(2)}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -1101,18 +1056,18 @@ const Dashboard = () => {
                       </div>
 
                       {/* Missing Fields - Only show if profile is incomplete */}
-                      {profileCompleteness.percentage < 100 && safeArray(profileCompleteness.missing).length > 0 && (
+                      {profileCompleteness.percentage < 100 && profileCompleteness.missing.length > 0 && (
                         <div className="space-y-2">
                           <p className="text-sm font-medium text-gray-700">Missing:</p>
                           <div className="flex flex-wrap gap-1">
-                            {safeArray(profileCompleteness.missing).slice(0, 3).map((field) => (
+                            {profileCompleteness.missing.slice(0, 3).map((field) => (
                               <Badge key={field} variant="outline" className="text-xs">
                                 {field}
                               </Badge>
                             ))}
-                            {safeArray(profileCompleteness.missing).length > 3 && (
+                            {profileCompleteness.missing.length > 3 && (
                               <Badge variant="outline" className="text-xs">
-                                +{safeArray(profileCompleteness.missing).length - 3} more
+                                +{profileCompleteness.missing.length - 3} more
                               </Badge>
                             )}
                           </div>
@@ -1166,7 +1121,7 @@ const Dashboard = () => {
                       <div className="flex items-center space-x-4">
                         <h3 className="text-lg font-semibold text-gray-900">My Posted Rides</h3>
                         <Badge variant="outline" className="text-blue-600">
-                          {safeArray(rides).filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).length} active
+                          {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).length} active
                         </Badge>
                       </div>
                       <Button 
@@ -1180,7 +1135,7 @@ const Dashboard = () => {
                       </Button>
                     </div>
                     
-                    {safeArray(rides).filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).length === 0 ? (
+                    {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).length === 0 ? (
                       <div className="text-center py-6 text-gray-500">
                         <Car className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No active ride posts</p>
@@ -1188,7 +1143,7 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="grid gap-4">
-                        {safeArray(rides).filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).map((ride) => (
+                        {rides.filter(ride => ride.driverId === user?.id && ride.status === 'active' && !ride.notes?.includes('Counter offer')).map((ride) => (
                           <Card key={ride.id} className="border-blue-200 bg-blue-50">
                             <CardContent className="p-4">
                               <div className="flex justify-between">
@@ -1266,18 +1221,18 @@ const Dashboard = () => {
                   </div>
 
                   {/* Counter Offers Sent Section - Only for counter offers sent by this driver */}
-                  {safeArray(bookings).filter(booking => booking?.driverId === user?.id && booking?.status === 'pending' && booking?.rideId && safeArray(rides).find(r => r?.id === booking?.rideId && r?.rideId && r?.rideId?.startsWith('CO-'))).length > 0 && (
+                  {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length > 0 && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-gray-900 text-left">Counter Offers Sent</h3>
                         <Badge variant="outline" className="text-orange-600">
-                          {safeArray(bookings).filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && safeArray(rides).find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length} pending
+                          {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length} pending
                         </Badge>
                       </div>
                       
                       <div className="space-y-4">
-                        {safeArray(bookings).filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && safeArray(rides).find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).map((booking: any) => {
-                          const relatedRide = safeArray(rides).find(r => r.id === booking.rideId);
+                        {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).map((booking: any) => {
+                          const relatedRide = rides.find(r => r.id === booking.rideId);
                           return (
                             <Card key={booking.id} className="p-4 border-orange-300 bg-orange-50">
                               <div className="flex justify-between items-start">
@@ -1437,7 +1392,7 @@ const Dashboard = () => {
                           </Card>
                         );
                       })}
-                      {safeArray(bookings).filter(booking => booking.driverId === user?.id && booking.status === 'confirmed').length === 0 && (
+                      {bookings.filter(booking => booking.driverId === user?.id && booking.status === 'confirmed').length === 0 && (
                         <div className="text-center py-8 text-gray-500">
                           <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p>No upcoming rides yet.</p>
@@ -1493,7 +1448,7 @@ const Dashboard = () => {
                           </Card>
                         );
                       })}
-                      {safeArray(bookings).filter(booking => booking.driverId === user?.id && (booking.status === 'completed' || booking.status === 'cancelled')).length === 0 && (
+                      {bookings.filter(booking => booking.driverId === user?.id && (booking.status === 'completed' || booking.status === 'cancelled')).length === 0 && (
                         <div className="text-center py-8 text-gray-500">
                           <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p>No past rides yet.</p>
@@ -1507,12 +1462,12 @@ const Dashboard = () => {
                 // Riders see their bookings with same structure
                 <div className="space-y-6">
                   {/* Counter Offers Section - show all counter offers received by this rider */}
-                  {safeArray(bookings).filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId && safeArray(rides).find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length > 0 && (
+                  {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length > 0 && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-gray-900">Counter Offers</h3>
                         <Badge variant="outline" className="text-orange-600">
-                          {safeArray(bookings).filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId && safeArray(rides).find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length} pending
+                          {bookings.filter((booking: any) => booking.riderId === user?.id && booking.status === 'pending' && booking.rideId && rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'))).length} pending
                         </Badge>
                       </div>
                       
@@ -1614,7 +1569,7 @@ const Dashboard = () => {
                       <div className="flex items-center space-x-4">
                         <h3 className="text-lg font-semibold text-gray-900 text-left">My Live Requests</h3>
                         <Badge variant="outline" className="text-blue-600">
-                          {safeArray(rideRequests).filter((req: any) => req.status === 'active').length} active
+                          {rideRequests.filter((req: any) => req.status === 'active').length} active
                         </Badge>
                       </div>
                       <Button 
@@ -1628,7 +1583,7 @@ const Dashboard = () => {
                       </Button>
                     </div>
                     
-                    {safeArray(rideRequests).filter((req: any) => req.status === 'active').length === 0 ? (
+                    {rideRequests.filter((req: any) => req.status === 'active').length === 0 ? (
                       <div className="text-center py-6 text-gray-500">
                         <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No active ride requests</p>
@@ -1816,7 +1771,7 @@ const Dashboard = () => {
                           </Card>
                         );
                       })}
-                      {safeArray(bookings).filter(booking => booking.riderId === user?.id && booking.status === 'confirmed').length === 0 && (
+                      {bookings.filter(booking => booking.riderId === user?.id && booking.status === 'confirmed').length === 0 && (
                         <div className="text-center py-8 text-gray-500">
                           <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p>No upcoming rides yet.</p>
@@ -1872,7 +1827,7 @@ const Dashboard = () => {
                           </Card>
                         );
                       })}
-                      {safeArray(bookings).filter(booking => booking.riderId === user?.id && (booking.status === 'completed' || booking.status === 'cancelled')).length === 0 && (
+                      {bookings.filter(booking => booking.riderId === user?.id && (booking.status === 'completed' || booking.status === 'cancelled')).length === 0 && (
                         <div className="text-center py-8 text-gray-500">
                           <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p>No past rides yet.</p>
@@ -2023,8 +1978,8 @@ const Dashboard = () => {
                 })}
                 
                 {/* Empty State */}
-                {safeArray(rideRequests).filter((request: any) => request.status === 'active' && request.riderId !== user?.id).length === 0 && 
-                 safeArray(bookings).filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && !booking.rideRequestId).length === 0 && (
+                {rideRequests.filter((request: any) => request.status === 'active' && request.riderId !== user?.id).length === 0 && 
+                 bookings.filter(booking => booking.driverId === user?.id && booking.status === 'pending' && booking.rideId && !booking.rideRequestId).length === 0 && (
                   <div className="text-center py-12">
                     <Search className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No ride requests</h3>
@@ -2119,7 +2074,7 @@ const Dashboard = () => {
                     </div>
                   </Card>
                 ))}
-                {safeArray(rides).filter((ride: any) => {
+                {rides.filter((ride: any) => {
                   // Filter logic same as above for consistency
                   if (ride.driverId === user?.id) return false;
                   
@@ -2183,7 +2138,7 @@ const Dashboard = () => {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 <span className="ml-3 text-gray-600">Loading conversations...</span>
               </div>
-            ) : safeArray(conversations).length === 0 ? (
+            ) : conversations.length === 0 ? (
               <div className="text-center py-12">
                 <MessageCircle className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No messages yet</h3>
@@ -2432,39 +2387,6 @@ const Dashboard = () => {
       </div>
     </div>
   );
-  } catch (error) {
-    console.error('Dashboard render error:', error);
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center">
-          <div className="bg-gradient-to-r from-blue-600 to-green-600 p-3 rounded-lg mb-4 mx-auto w-fit">
-            <Car className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">HitchBuddy Dashboard</h1>
-          <p className="text-gray-600 mb-4">Welcome to your ride-sharing platform!</p>
-          <div className="space-y-3 text-left">
-            <div className="flex items-center justify-between p-3 bg-blue-50 rounded">
-              <span className="text-sm font-medium">Total Rides</span>
-              <span className="text-lg font-bold text-blue-600">9</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded">
-              <span className="text-sm font-medium">Active Users</span>
-              <span className="text-lg font-bold text-green-600">3</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-purple-50 rounded">
-              <span className="text-sm font-medium">Database</span>
-              <span className="text-sm font-medium text-purple-600">Connected ✓</span>
-            </div>
-          </div>
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <p className="text-xs text-gray-500">
-              Your HitchBuddy application is running with real PostgreSQL data. The complete dashboard is loading in the background.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 };
 
 export default Dashboard;

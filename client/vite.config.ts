@@ -7,17 +7,10 @@ export default defineConfig({
     react(),
   ],
   server: {
-    host: '0.0.0.0',
+    host: true,
     port: 5000,
     strictPort: false,
-    allowedHosts: [
-      'localhost',
-      '127.0.0.1',
-      '.replit.dev',
-      '.replit.app',
-      '.worf.replit.dev',
-      '605a8f2f-3a25-4df1-902d-3aaee1a1c6b0-00-217wf2xlb5x3s.worf.replit.dev'
-    ],
+    allowedHosts: 'all',
     hmr: {
       port: 443,
       clientPort: 443,

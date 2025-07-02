@@ -1,32 +1,32 @@
-console.log('[REAL] Starting HitchBuddy with real PostgreSQL backend...');
+console.log('[DEV] Starting HitchBuddy development server with your original React app...');
 
 const { spawn } = require('child_process');
-const PORT = process.env.PORT || 5000;
+const path = require('path');
 
-// Start the real backend server with PostgreSQL database
-const realServer = spawn('node', ['hitchbuddy-real.js'], {
+// Start the reliable production server
+const devServer = spawn('node', ['simple-production-server.js'], {
   stdio: 'inherit',
   env: { 
     ...process.env, 
-    PORT: PORT,
-    NODE_ENV: 'development'
+    NODE_ENV: 'development',
+    PORT: process.env.PORT || 5000
   }
 });
 
-realServer.on('error', (err) => {
-  console.error('[REAL] Backend server error:', err.message);
+devServer.on('error', (err) => {
+  console.error('[DEV] Server error:', err.message);
   process.exit(1);
 });
 
-realServer.on('close', (code) => {
-  console.log(`[REAL] Backend server exited with code ${code}`);
+devServer.on('close', (code) => {
+  console.log(`[DEV] Server exited with code ${code}`);
   process.exit(code);
 });
 
 process.on('SIGINT', () => {
-  realServer.kill('SIGINT');
+  devServer.kill('SIGINT');
 });
 
 process.on('SIGTERM', () => {
-  realServer.kill('SIGTERM');
+  devServer.kill('SIGTERM');
 });

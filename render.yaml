@@ -4,8 +4,8 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: bash deploy-build.sh
-    startCommand: node hitchbuddy-real.js
+    buildCommand: echo "No build required - using dependency-free server"
+    startCommand: node server-fullstack.js
     envVars:
       - key: NODE_ENV
         value: production

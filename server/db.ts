@@ -8,12 +8,12 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Configure database connection using postgres-js for Neon PostgreSQL
+// Configure database connection for Replit PostgreSQL
 const queryClient = postgres(process.env.DATABASE_URL, {
   prepare: false,
-  ssl: 'require',
+  max: 1,
   connection: {
-    options: `--search_path=public`
+    application_name: 'hitchbuddy'
   }
 });
 
