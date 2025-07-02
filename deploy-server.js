@@ -1,12 +1,8 @@
-import express from "express";
-import { createServer } from "http";
-import cookieParser from "cookie-parser";
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import { existsSync } from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const express = require("express");
+const { createServer } = require("http");
+const cookieParser = require("cookie-parser");
+const { join } = require('path');
+const { existsSync } = require('fs');
 
 const app = express();
 app.use(express.json());
@@ -29,127 +25,96 @@ app.get('/health', (req, res) => {
 // Load full backend if available
 async function loadBackend() {
   try {
-    const { registerRoutes } = await import('./server/routes.js');
-    await registerRoutes(app);
-    console.log('[server] Full API routes loaded');
+    // Try to import and run the TypeScript server using tsx
+    const path = require('path');
+    const serverPath = path.join(process.cwd(), 'server', 'routes.ts');
     
-    const { rideScheduler } = await import('./server/scheduler.js');
-    rideScheduler.start();
-    console.log('[scheduler] Started');
+    // Use dynamic import to load ES modules from CommonJS
+    const { createRequire } = require('module');
+    const require2 = createRequire(import.meta.url || require.resolve(__filename));
+    
+    // For now, just skip backend loading and serve static files
+    console.log('[express] Backend loading skipped - serving static files only');
   } catch (error) {
-    console.log('[server] Using basic fallbacks');
-    app.get('/api/*', (req, res) => res.status(503).json({ error: 'Service starting' }));
+    console.log('[express] Backend not available, serving static files only:', error.message);
   }
 }
 
-// Setup React app serving
-const staticPaths = [
-  join(__dirname, 'dist/public'),
-  join(__dirname, 'dist'),
-  join(__dirname, 'public')
-];
+// Configure static file serving
+function setupStaticFiles() {
+  // CORS headers for cross-origin requests
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(200);
+    } else {
+      next();
+    }
+  });
 
-let staticPath = null;
-for (const path of staticPaths) {
-  if (existsSync(path) && existsSync(join(path, 'index.html'))) {
-    staticPath = path;
-    break;
+  // Serve static files from multiple possible locations
+  const staticPaths = [
+    join(process.cwd(), 'dist'),
+    join(process.cwd(), 'dist/public'),
+    join(process.cwd(), 'client/dist'),
+    join(process.cwd(), 'build'),
+    join(process.cwd(), 'public')
+  ];
+
+  let staticDir = null;
+  for (const path of staticPaths) {
+    if (existsSync(path)) {
+      staticDir = path;
+      console.log(`[express] Found static files at: ${path}`);
+      break;
+    }
+  }
+
+  if (staticDir) {
+    app.use(express.static(staticDir));
+    
+    // Handle React routing - serve index.html for all non-API routes
+    app.get('*', (req, res) => {
+      if (!req.url.startsWith('/api/')) {
+        const indexPath = join(staticDir, 'index.html');
+        if (existsSync(indexPath)) {
+          res.sendFile(indexPath);
+        } else {
+          res.status(404).send('React app not found');
+        }
+      }
+    });
+  } else {
+    console.log('[express] No static files found, serving basic response');
+    app.get('*', (req, res) => {
+      if (!req.url.startsWith('/api/')) {
+        res.send(`
+          <html>
+            <head><title>HitchBuddy</title></head>
+            <body>
+              <h1>HitchBuddy</h1>
+              <p>Server is running but React app not found</p>
+              <p>Build the app with: npm run build</p>
+            </body>
+          </html>
+        `);
+      }
+    });
   }
 }
 
-if (staticPath) {
-  console.log(`[static] Serving React from: ${staticPath}`);
-  app.use(express.static(staticPath));
-  app.get('*', (req, res) => {
-    res.sendFile(join(staticPath, 'index.html'));
-  });
-} else {
-  // Clean fallback without debug info
-  app.get('*', (req, res) => {
-    res.send(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>HitchBuddy</title>
-          <style>
-            body { 
-              font-family: Arial, sans-serif; 
-              background: linear-gradient(135deg, #3b82f6, #10b981);
-              min-height: 100vh; 
-              margin: 0; 
-              display: flex; 
-              align-items: center; 
-              justify-content: center; 
-            }
-            .container { 
-              background: white; 
-              padding: 2rem; 
-              border-radius: 1rem; 
-              text-align: center; 
-              max-width: 400px; 
-              box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            }
-            .logo { 
-              font-size: 2.5rem; 
-              color: #3b82f6; 
-              margin-bottom: 1rem; 
-              font-weight: bold; 
-            }
-            h1 { 
-              font-size: 1.8rem; 
-              margin-bottom: 1rem; 
-              color: #1f2937; 
-            }
-            p { 
-              color: #6b7280; 
-              margin-bottom: 2rem; 
-            }
-            .status { 
-              background: #10b981; 
-              color: white; 
-              padding: 0.5rem 1rem; 
-              border-radius: 0.5rem; 
-              display: inline-block; 
-              margin-bottom: 1rem; 
-            }
-            .loader { 
-              border: 3px solid #f3f4f6; 
-              border-top: 3px solid #3b82f6; 
-              border-radius: 50%; 
-              width: 30px; 
-              height: 30px; 
-              animation: spin 1s linear infinite; 
-              margin: 1rem auto; 
-            }
-            @keyframes spin { 
-              0% { transform: rotate(0deg); } 
-              100% { transform: rotate(360deg); } 
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="logo">🚗 HitchBuddy</div>
-            <h1>Share Your Journey, Save the Planet</h1>
-            <p>The affordable way to get to and from airports, stations, and beyond.</p>
-            <div class="status">Server Online</div>
-            <div class="loader"></div>
-            <p>Loading your ride-sharing experience...</p>
-            <script>
-              setTimeout(() => location.reload(), 5000);
-            </script>
-          </div>
-        </body>
-      </html>
-    `);
-  });
+// Initialize the server
+async function initialize() {
+  // Load backend routes first
+  await loadBackend();
+  
+  // Setup static file serving
+  setupStaticFiles();
+  
+  console.log('[express] Server initialization complete');
 }
 
-// Initialize
-loadBackend();
-
-process.on('SIGTERM', () => {
-  server.close(() => process.exit(0));
-});
+// Start initialization
+initialize().catch(console.error);

@@ -83,9 +83,9 @@ else
     exit 1
 fi
 
-echo "Copying deploy server (no backend bundling needed)..."
-cp deploy-server.js dist/index.js
-echo "✓ Deploy server ready"
+echo "Copying static production server..."
+cp static-server.cjs ./
+echo "✓ Static production server ready"
 
 # Create the complete server structure for production
 echo "Setting up complete server structure..."

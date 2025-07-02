@@ -5,7 +5,7 @@ services:
     region: frankfurt  # EU region closest to UK
     plan: free
     buildCommand: chmod +x render-build.sh && ./render-build.sh
-    startCommand: node deploy-server.js
+    startCommand: node static-server.cjs
     envVars:
       - key: NODE_ENV
         value: production
