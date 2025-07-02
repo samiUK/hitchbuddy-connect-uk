@@ -2,8 +2,8 @@ services:
   - type: web
     name: hitchbuddy-node
     env: node
-    buildCommand: cp static-server.cjs ./
-    startCommand: node static-server.cjs
+    buildCommand: cp deploy-server.cjs ./
+    startCommand: node deploy-server.cjs
     region: frankfurt
     plan: free
     envVars:
