@@ -381,11 +381,12 @@ const server = http.createServer(async (req, res) => {
   // Serve static files - React app
   let filePath = pathname === '/' ? '/index.html' : pathname;
   
-  // Check for built app first
+  // Check for built app first, but prefer live development files when NODE_ENV is development
   const buildPath = path.join(__dirname, 'dist/public');
   const clientPath = path.join(__dirname, 'client');
   
   let fullPath;
+  // For development, prioritize dist/public for deployment preparation
   if (fs.existsSync(buildPath)) {
     fullPath = path.join(buildPath, filePath);
     if (!fs.existsSync(fullPath) && !filePath.includes('.')) {
