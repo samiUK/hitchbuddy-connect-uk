@@ -930,7 +930,7 @@ const Dashboard = () => {
                             );
                             
                             // Filter out requests that have been confirmed (have confirmed bookings)
-                            const unconfirmedRequests = pendingRequests.filter(request => {
+                            const unconfirmedRequests = safeArray(pendingRequests).filter(request => {
                               try {
                                 const hasConfirmedBooking = safeArray(bookings).some(booking => 
                                   booking?.riderId === user?.id &&
@@ -951,7 +951,7 @@ const Dashboard = () => {
                               }
                             });
                             
-                            return unconfirmedRequests.length;
+                            return safeArray(unconfirmedRequests).length;
                           })()
                       }
                     </div>
@@ -1101,18 +1101,18 @@ const Dashboard = () => {
                       </div>
 
                       {/* Missing Fields - Only show if profile is incomplete */}
-                      {profileCompleteness.percentage < 100 && profileCompleteness.missing.length > 0 && (
+                      {profileCompleteness.percentage < 100 && safeArray(profileCompleteness.missing).length > 0 && (
                         <div className="space-y-2">
                           <p className="text-sm font-medium text-gray-700">Missing:</p>
                           <div className="flex flex-wrap gap-1">
-                            {profileCompleteness.missing.slice(0, 3).map((field) => (
+                            {safeArray(profileCompleteness.missing).slice(0, 3).map((field) => (
                               <Badge key={field} variant="outline" className="text-xs">
                                 {field}
                               </Badge>
                             ))}
-                            {profileCompleteness.missing.length > 3 && (
+                            {safeArray(profileCompleteness.missing).length > 3 && (
                               <Badge variant="outline" className="text-xs">
-                                +{profileCompleteness.missing.length - 3} more
+                                +{safeArray(profileCompleteness.missing).length - 3} more
                               </Badge>
                             )}
                           </div>
@@ -2119,7 +2119,7 @@ const Dashboard = () => {
                     </div>
                   </Card>
                 ))}
-                {rides.filter((ride: any) => {
+                {safeArray(rides).filter((ride: any) => {
                   // Filter logic same as above for consistency
                   if (ride.driverId === user?.id) return false;
                   
@@ -2183,7 +2183,7 @@ const Dashboard = () => {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 <span className="ml-3 text-gray-600">Loading conversations...</span>
               </div>
-            ) : conversations.length === 0 ? (
+            ) : safeArray(conversations).length === 0 ? (
               <div className="text-center py-12">
                 <MessageCircle className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No messages yet</h3>
