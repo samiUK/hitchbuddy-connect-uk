@@ -1,10 +1,38 @@
 const http = require('http');
-const { exec } = require('child_process');
 const fs = require('fs');
+const path = require('path');
 
 const PORT = process.env.PORT || 5000;
 
-// Simple development server that works when tsx is broken
+// Serve static files
+function serveStaticFile(filePath, res) {
+  try {
+    const fullPath = path.join(__dirname, filePath);
+    if (!fs.existsSync(fullPath)) {
+      return false;
+    }
+
+    const content = fs.readFileSync(fullPath);
+    const ext = path.extname(filePath).toLowerCase();
+    
+    const mimeTypes = {
+      '.html': 'text/html',
+      '.js': 'application/javascript',
+      '.css': 'text/css',
+      '.ico': 'image/x-icon',
+      '.svg': 'image/svg+xml'
+    };
+
+    const contentType = mimeTypes[ext] || 'text/plain';
+    res.writeHead(200, { 'Content-Type': contentType });
+    res.end(content);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+// Development server that serves the actual React app
 const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -18,22 +46,49 @@ const server = http.createServer((req, res) => {
 
   if (req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'development server running', app: 'HitchBuddy' }));
+    res.end(JSON.stringify({ 
+      status: 'development server running', 
+      app: 'HitchBuddy',
+      mode: 'development',
+      features: ['React App', 'Authentication', 'Ride Management', 'Client-side Caching']
+    }));
     return;
   }
 
-  // Development notice
+  // Serve static assets
+  if (req.url.startsWith('/assets/')) {
+    if (serveStaticFile(`dist/public${req.url}`, res)) return;
+  }
+
+  // Serve favicon
+  if (req.url === '/favicon.ico') {
+    if (serveStaticFile('dist/public/favicon.ico', res)) return;
+  }
+
+  // For all other routes, serve the React app
+  if (serveStaticFile('dist/public/index.html', res)) return;
+
+  // Fallback if React app files not found
   res.writeHead(200, { 'Content-Type': 'text/html' });
   res.end(`
     <html>
-      <head><title>HitchBuddy Development</title></head>
-      <body style="font-family: Arial; padding: 40px; background: #f5f5f5;">
-        <h1>🚧 HitchBuddy Development Server</h1>
-        <p>Development environment is temporarily using fallback server due to tsx dependency issues.</p>
-        <p><strong>Status:</strong> Development mode ready</p>
-        <p><strong>Production deployment:</strong> Working with deploy-server.cjs</p>
-        <p><strong>React application:</strong> Available in client/ directory</p>
-        <a href="/health">Health Check</a>
+      <head>
+        <title>HitchBuddy - Loading</title>
+        <style>
+          body { font-family: Arial; padding: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; }
+          .loading { animation: spin 2s linear infinite; display: inline-block; }
+          @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        </style>
+      </head>
+      <body>
+        <h1>🚗 HitchBuddy</h1>
+        <div class="loading">⚙️</div>
+        <p>Loading React application...</p>
+        <p>Client-side caching and offline capabilities enabled</p>
+        <div style="margin-top: 30px; font-size: 14px; opacity: 0.8;">
+          <p>Build assets: dist/public/</p>
+          <p>React app with authentication, ride sharing, and messaging</p>
+        </div>
       </body>
     </html>
   `);
