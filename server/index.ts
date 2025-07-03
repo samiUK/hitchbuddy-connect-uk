@@ -29,9 +29,9 @@ async function startServer() {
     return;
   }
   
-  // Development mode: Full setup with Vite and scheduler
+  // Development mode: Just API routes, no Vite (frontend served separately)
+  console.log('[development] API-only mode - frontend served by separate Vite process');
   await registerRoutes(app);
-  await setupVite(app, server);
   
   try {
     const { rideScheduler } = await import("./scheduler.ts");

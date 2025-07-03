@@ -3,13 +3,16 @@ console.log('🚗 Starting Original HitchBuddy with Vite...');
 const { spawn } = require('child_process');
 const path = require('path');
 
-// Start Vite dev server directly in client directory with proper host binding
-const viteProcess = spawn('npx', ['vite', '--host', '0.0.0.0', '--port', '5000'], {
+// Start Vite dev server directly in client directory with Replit-friendly config
+const viteProcess = spawn('npx', ['vite', '--host', '--port', '5000'], {
   cwd: path.join(__dirname, 'client'),
   stdio: 'inherit',
   env: { 
     ...process.env,
-    NODE_ENV: 'development'
+    NODE_ENV: 'development',
+    REPLIT_DB_URL: process.env.REPLIT_DB_URL,
+    REPL_ID: process.env.REPL_ID,
+    REPL_SLUG: process.env.REPL_SLUG
   }
 });
 
