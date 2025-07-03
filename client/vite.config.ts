@@ -7,12 +7,12 @@ export default defineConfig({
     react(),
   ],
   server: {
-    host: true,
+    host: '0.0.0.0',
     port: 5000,
     strictPort: false,
-    allowedHosts: 'all',
+    allowedHosts: true,
     hmr: {
-      port: 443,
+      port: 5000,
       clientPort: 443,
     },
     proxy: {
