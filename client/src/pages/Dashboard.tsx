@@ -63,6 +63,12 @@ const Dashboard = () => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  
+  // Ensure arrays are always defined to prevent length errors
+  const safeRides = Array.isArray(rides) ? rides : [];
+  const safeRideRequests = Array.isArray(rideRequests) ? rideRequests : [];
+  const safeBookings = Array.isArray(bookings) ? bookings : [];
+  const safeNotifications = Array.isArray(notifications) ? notifications : [];
   const [showChatPopup, setShowChatPopup] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [savedFormData, setSavedFormData] = useState<any>(null);
@@ -162,7 +168,8 @@ const Dashboard = () => {
         });
         if (requestsResponse.ok) {
           const data = await requestsResponse.json();
-          setRideRequests(data.rideRequests || []);
+          const requestsArray = Array.isArray(data) ? data : (data.rideRequests || []);
+          setRideRequests(requestsArray);
         }
         
         // Fetch driver's own rides
@@ -171,7 +178,8 @@ const Dashboard = () => {
         });
         if (myRidesResponse.ok) {
           const data = await myRidesResponse.json();
-          setRides(data.rides || []);
+          const ridesArray = Array.isArray(data) ? data : (data.rides || []);
+          setRides(ridesArray);
         }
       } else {
         // Fetch available rides for riders (only riders should see rides)
@@ -180,7 +188,8 @@ const Dashboard = () => {
         });
         if (ridesResponse.ok) {
           const data = await ridesResponse.json();
-          setRides(data.rides || []);
+          const ridesArray = Array.isArray(data) ? data : (data.rides || []);
+          setRides(ridesArray);
         }
         
         // Fetch rider's own requests
@@ -189,8 +198,8 @@ const Dashboard = () => {
         });
         if (myRequestsResponse.ok) {
           const data = await myRequestsResponse.json();
-
-          setRideRequests(data.rideRequests || []);
+          const requestsArray = Array.isArray(data) ? data : (data.rideRequests || []);
+          setRideRequests(requestsArray);
         } else {
           console.error('Failed to fetch rider requests:', myRequestsResponse.status);
         }
@@ -204,12 +213,14 @@ const Dashboard = () => {
       if (bookingsResponse.ok) {
         const bookingsData = await bookingsResponse.json();
         console.log('Frontend received bookings data:', bookingsData);
-        setBookings(bookingsData.bookings || []);
+        // Handle both array and object responses
+        const bookingsArray = Array.isArray(bookingsData) ? bookingsData : (bookingsData.bookings || []);
+        setBookings(bookingsArray);
         
         // Create notifications for drivers about pending booking requests only (not ride requests)
-        if (userType === 'driver') {
-          const pendingBookings = bookingsData.bookings.filter(b => 
-            b.status === 'pending' && b.driverId === user?.id && b.rideId // Only for actual ride bookings, not ride requests
+        if (userType === 'driver' && bookingsArray.length > 0) {
+          const pendingBookings = bookingsArray.filter(b => 
+            b && b.status === 'pending' && b.driverId === user?.id && b.rideId // Only for actual ride bookings, not ride requests
           );
           setNotifications(pendingBookings.map(booking => ({
             id: booking.id,
@@ -229,9 +240,9 @@ const Dashboard = () => {
   const handleBookingAction = async (bookingId: string, action: 'confirmed' | 'cancelled' | 'completed') => {
     try {
       // Check if this is a counter offer decline or driver cancellation
-      const booking = bookings.find(b => b.id === bookingId);
+      const booking = safeBookings.find(b => b && b.id === bookingId);
       const isCounterOfferDecline = action === 'cancelled' && booking?.rideId && 
-        rides.find(r => r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'));
+        safeRides.find(r => r && r.id === booking.rideId && r.rideId && r.rideId.startsWith('CO-'));
       
       // Check if this is a driver cancelling a booking request (should return to global pool)
       const isDriverCancellation = action === 'cancelled' && booking?.rideRequestId && 

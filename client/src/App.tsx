@@ -6,7 +6,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { LocalStorageStatus } from './components/LocalStorageStatus';
 import Index from './pages/Index';
 import Auth from './pages/Auth';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/Dashboard.simple';
 import NotFound from './pages/NotFound';
 import './App.css';
 
