@@ -1,7 +1,8 @@
-console.log('🚗 Starting HitchBuddy Development Server...');
+console.log('🚗 Starting Original HitchBuddy React Application...');
 
 const express = require('express');
 const path = require('path');
+const { spawn } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// CORS for development
+// CORS
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -26,81 +27,70 @@ app.use((req, res, next) => {
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
-    app: 'HitchBuddy',
+    app: 'HitchBuddy Original',
     mode: 'development',
-    port: PORT,
-    message: 'Development server running successfully'
+    features: ['React Dashboard', 'Authentication', 'Ride Management', 'Messaging', 'Booking System']
   });
 });
 
-// Serve the React app
-app.get('*', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>HitchBuddy - Development Server</title>
-      <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-      <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-      <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-    <body>
-      <div id="root"></div>
-      <script>
-        console.log('HitchBuddy Development Server loaded successfully');
-        
-        const { useState, useEffect, createElement: h } = React;
-        
-        const App = () => {
-          return h('div', {
-            className: 'min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8'
-          }, 
-            h('div', { className: 'max-w-4xl mx-auto' },
-              h('div', { className: 'bg-white rounded-lg shadow-xl p-8 text-center' },
-                h('h1', { className: 'text-4xl font-bold text-gray-900 mb-4' }, 'HitchBuddy'),
-                h('p', { className: 'text-xl text-gray-600 mb-8' }, 'Share Your Journey, Save the Planet'),
-                h('div', { className: 'bg-green-50 border border-green-200 rounded-lg p-6 mb-6' },
-                  h('h3', { className: 'font-semibold text-green-900 mb-2' }, '✅ Development Server Running'),
-                  h('p', { className: 'text-green-700' }, 'HitchBuddy development server is now working correctly!')
-                ),
-                h('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-6' },
-                  h('div', { className: 'bg-blue-50 p-6 rounded-lg' },
-                    h('h3', { className: 'font-semibold text-blue-900 mb-2' }, 'Smart Matching'),
-                    h('p', { className: 'text-blue-700' }, 'AI-powered route optimization')
-                  ),
-                  h('div', { className: 'bg-green-50 p-6 rounded-lg' },
-                    h('h3', { className: 'font-semibold text-green-900 mb-2' }, 'Eco-Friendly'),
-                    h('p', { className: 'text-green-700' }, 'Reduce carbon footprint')
-                  ),
-                  h('div', { className: 'bg-purple-50 p-6 rounded-lg' },
-                    h('h3', { className: 'font-semibold text-purple-900 mb-2' }, 'Community'),
-                    h('p', { className: 'text-purple-700' }, 'Connect with travelers')
-                  )
-                )
-              )
-            )
-          );
-        };
-        
-        ReactDOM.render(React.createElement(App), document.getElementById('root'));
-      </script>
-    </body>
-    </html>
-  `);
+// Serve the built React app if it exists
+app.use(express.static(path.join(__dirname, 'client', 'dist')));
+
+// Start Vite dev server for React app
+const viteProcess = spawn('npx', ['vite', '--host', '0.0.0.0', '--port', '5173'], {
+  cwd: path.join(__dirname, 'client'),
+  stdio: 'inherit',
+  env: { ...process.env }
 });
 
-// Start server
+// Proxy all non-API requests to Vite dev server
+app.get('*', (req, res) => {
+  // Proxy to Vite dev server
+  const { createProxyMiddleware } = require('http-proxy-middleware');
+  const proxy = createProxyMiddleware({
+    target: 'http://localhost:5173',
+    changeOrigin: true,
+    onError: (err, req, res) => {
+      console.log('Vite dev server not ready, serving fallback...');
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>HitchBuddy Loading...</title>
+          <meta http-equiv="refresh" content="3">
+        </head>
+        <body>
+          <div style="text-align: center; padding: 50px; font-family: Arial;">
+            <h1>🚗 HitchBuddy Starting...</h1>
+            <p>Your original React application is loading...</p>
+            <p>This page will refresh automatically.</p>
+          </div>
+        </body>
+        </html>
+      `);
+    }
+  });
+  proxy(req, res);
+});
+
+// Start Express server
 const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`[dev-server] HitchBuddy running on port ${PORT}`);
-  console.log(`[dev-server] Visit: http://localhost:${PORT}`);
+  console.log(`[hitchbuddy] Original React app serving on port ${PORT}`);
+  console.log(`[hitchbuddy] Vite dev server starting on port 5173`);
+  console.log(`[hitchbuddy] Visit: http://localhost:${PORT}`);
 });
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-  console.log('\nShutting down development server...');
+  console.log('\nShutting down HitchBuddy...');
+  viteProcess.kill('SIGINT');
   server.close(() => {
     process.exit(0);
   });
+});
+
+viteProcess.on('close', (code) => {
+  if (code !== 0) {
+    console.log(`Vite process exited with code ${code}`);
+  }
 });
