@@ -48,7 +48,7 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.44.2",
     "drizzle-zod": "^0.8.2",
-    "express": "^5.1.0",
+    "express": "^4.19.2",
     "helmet": "^8.1.0",
     "http-proxy-middleware": "^3.0.5",
     "lucide-react": "^0.525.0",

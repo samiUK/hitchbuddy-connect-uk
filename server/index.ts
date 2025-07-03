@@ -34,7 +34,7 @@ async function startServer() {
   await setupVite(app, server);
   
   try {
-    const { rideScheduler } = await import("./scheduler.js");
+    const { rideScheduler } = await import("./scheduler.ts");
     scheduler = rideScheduler;
     scheduler.start();
   } catch (error) {
