@@ -15,6 +15,33 @@ export default defineConfig({
       port: 443,
       clientPort: 443,
     },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        configure: (proxy, options) => {
+          // Mock API responses for development
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            // Handle auth requests with mock responses
+            if (req.url === '/api/auth/me') {
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'Not authenticated' }));
+              return;
+            }
+            if (req.url === '/api/rides') {
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify([]));
+              return;
+            }
+            if (req.url === '/api/bookings') {
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify([]));
+              return;
+            }
+          });
+        }
+      }
+    }
   },
   resolve: {
     alias: {
