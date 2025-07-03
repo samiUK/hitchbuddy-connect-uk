@@ -58,21 +58,10 @@ export const BookRideModal = ({ ride, onClose, onBookingComplete }: BookRideModa
         const selectedDayNumbers = recurringData.selectedDays?.map((day: string) => dayNameToNumber[day.toLowerCase()]).filter((num: number | undefined) => num !== undefined) || [];
         
         // Get existing bookings for this ride to check seat availability
-        let existingBookings = [];
-        try {
-          const bookingsResponse = await fetch(`/api/bookings/ride/${ride.id}`, {
-            credentials: 'include'
-          });
-          existingBookings = bookingsResponse.ok ? await bookingsResponse.json() : [];
-        } catch (error) {
-          console.error('Error fetching bookings:', error);
-          existingBookings = [];
-        }
-        
-        // Ensure existingBookings is always an array
-        if (!Array.isArray(existingBookings)) {
-          existingBookings = [];
-        }
+        const bookingsResponse = await fetch(`/api/bookings/ride/${ride.id}`, {
+          credentials: 'include'
+        });
+        const existingBookings = bookingsResponse.ok ? await bookingsResponse.json() : [];
         
         for (let i = 1; i < 60; i++) { // Start from tomorrow (i=1)
           const date = new Date(today);

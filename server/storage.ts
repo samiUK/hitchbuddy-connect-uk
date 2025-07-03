@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { users, sessions, rides, rideRequests, bookings, messages, notifications, ratings, type User, type InsertUser, type Session, type Ride, type RideRequest, type Booking, type Message, type Notification, type Rating, type InsertRide, type InsertRideRequest, type InsertBooking, type InsertMessage, type InsertNotification, type InsertRating } from "@shared/schema";
-import { eq, or, desc, and, sql } from "drizzle-orm";
+import { eq, or, desc, and } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 
@@ -52,10 +52,6 @@ export interface IStorage {
   createRating(rating: InsertRating): Promise<Rating>;
   getRatingsByUser(userId: string): Promise<Rating[]>;
   getRatingForBooking(bookingId: string, raterId: string): Promise<Rating | undefined>;
-  // Admin functions
-  getAllUsers(): Promise<User[]>;
-  getAdminStats(): Promise<any>;
-  deleteUser(userId: string): Promise<void>;
 }
 
 export class PostgreSQLStorage implements IStorage {
@@ -449,51 +445,6 @@ export class PostgreSQLStorage implements IStorage {
     return rating || undefined;
   }
 
-  // Admin methods
-  async getAllUsers(): Promise<User[]> {
-    const result = await db.select().from(users);
-    return result;
-  }
-
-  async getAdminStats(): Promise<any> {
-    const totalUsers = await db.select({ count: sql<number>`count(*)` }).from(users);
-    const totalRiders = await db.select({ count: sql<number>`count(*)` }).from(users).where(eq(users.userType, 'rider'));
-    const totalDrivers = await db.select({ count: sql<number>`count(*)` }).from(users).where(eq(users.userType, 'driver'));
-    const totalRides = await db.select({ count: sql<number>`count(*)` }).from(rides);
-    const totalBookings = await db.select({ count: sql<number>`count(*)` }).from(bookings);
-    const totalMessages = await db.select({ count: sql<number>`count(*)` }).from(messages);
-
-    return {
-      totalUsers: totalUsers[0].count,
-      totalRiders: totalRiders[0].count,
-      totalDrivers: totalDrivers[0].count,
-      totalRides: totalRides[0].count,
-      totalBookings: totalBookings[0].count,
-      totalMessages: totalMessages[0].count,
-    };
-  }
-
-  async deleteUser(userId: string): Promise<void> {
-    // Delete related data first to maintain referential integrity
-    await db.delete(sessions).where(eq(sessions.userId, userId));
-    await db.delete(notifications).where(eq(notifications.userId, userId));
-    await db.delete(ratings).where(eq(ratings.raterId, userId));
-    await db.delete(ratings).where(eq(ratings.ratedUserId, userId));
-    
-    // Delete user's bookings
-    await db.delete(bookings).where(eq(bookings.riderId, userId));
-    await db.delete(bookings).where(eq(bookings.driverId, userId));
-    
-    // Delete user's messages
-    await db.delete(messages).where(eq(messages.senderId, userId));
-    
-    // Delete user's rides and ride requests
-    await db.delete(rides).where(eq(rides.driverId, userId));
-    await db.delete(rideRequests).where(eq(rideRequests.riderId, userId));
-    
-    // Finally delete the user
-    await db.delete(users).where(eq(users.id, userId));
-  }
 
 }
 
