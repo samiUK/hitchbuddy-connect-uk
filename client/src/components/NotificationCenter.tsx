@@ -174,23 +174,9 @@ export const NotificationCenter = ({ onNavigate }: NotificationCenterProps) => {
                             }`}>
                               {notification.title}
                             </p>
-                            <div className="flex items-center space-x-2">
-                              <span className="text-xs text-gray-500">
-                                {formatTime(notification.createdAt)}
-                              </span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0 hover:bg-gray-200"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  dismissNotification(notification.id);
-                                }}
-                                aria-label="Dismiss notification"
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
+                            <span className="text-xs text-gray-500">
+                              {formatTime(notification.createdAt)}
+                            </span>
                           </div>
                           <p className="text-sm text-gray-600 mt-1">
                             {notification.message}
