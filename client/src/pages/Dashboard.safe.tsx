@@ -473,7 +473,14 @@ function AdminPortalSimple() {
       });
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
-        setStats(statsData);
+        setStats(statsData || {
+          totalUsers: 0,
+          totalRiders: 0,
+          totalDrivers: 0,
+          totalRides: 0,
+          totalBookings: 0,
+          totalMessages: 0
+        });
       }
 
       // Load users
@@ -486,6 +493,16 @@ function AdminPortalSimple() {
       }
     } catch (error) {
       console.error('Error loading admin data:', error);
+      // Set safe defaults on error
+      setStats({
+        totalUsers: 0,
+        totalRiders: 0,
+        totalDrivers: 0,
+        totalRides: 0,
+        totalBookings: 0,
+        totalMessages: 0
+      });
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -522,7 +539,7 @@ function AdminPortalSimple() {
           borderRadius: '8px',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{stats.totalUsers}</div>
+          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{stats?.totalUsers || 0}</div>
           <div style={{ fontSize: '12px', opacity: 0.8 }}>Total Users</div>
         </div>
         <div style={{ 
@@ -531,7 +548,7 @@ function AdminPortalSimple() {
           borderRadius: '8px',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{stats.totalRides}</div>
+          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{stats?.totalRides || 0}</div>
           <div style={{ fontSize: '12px', opacity: 0.8 }}>Total Rides</div>
         </div>
         <div style={{ 
@@ -540,7 +557,7 @@ function AdminPortalSimple() {
           borderRadius: '8px',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{stats.totalBookings}</div>
+          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{stats?.totalBookings || 0}</div>
           <div style={{ fontSize: '12px', opacity: 0.8 }}>Total Bookings</div>
         </div>
       </div>
@@ -551,12 +568,12 @@ function AdminPortalSimple() {
         padding: '16px' 
       }}>
         <h4 style={{ margin: '0 0 12px 0' }}>User Management</h4>
-        {users.length === 0 ? (
+        {(!users || users.length === 0) ? (
           <p style={{ opacity: 0.8, fontSize: '14px' }}>No users found</p>
         ) : (
           <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-            {users.slice(0, 5).map(user => (
-              <div key={user.id} style={{
+            {(users || []).slice(0, 5).map((user, index) => (
+              <div key={user?.id || index} style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -565,14 +582,14 @@ function AdminPortalSimple() {
               }}>
                 <div>
                   <div style={{ fontWeight: '500' }}>
-                    {user.firstName} {user.lastName}
+                    {user?.firstName || 'Unknown'} {user?.lastName || ''}
                   </div>
                   <div style={{ fontSize: '12px', opacity: 0.8 }}>
-                    {user.email} ({user.userType})
+                    {user?.email || 'No email'} ({user?.userType || 'Unknown'})
                   </div>
                 </div>
                 <div style={{ fontSize: '12px', opacity: 0.8 }}>
-                  {new Date(user.createdAt).toLocaleDateString()}
+                  {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown date'}
                 </div>
               </div>
             ))}
