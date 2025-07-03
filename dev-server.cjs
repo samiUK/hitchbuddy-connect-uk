@@ -17,15 +17,16 @@ const startServer = () => {
   });
 
   serverProcess.on('error', (err) => {
-    console.error('Server error:', err);
-    console.log('Falling back to simplified server...');
-    fallbackServer();
+    console.error('❌ Original TypeScript server failed:', err);
+    console.log('❌ NO FALLBACK - Fix your original server configuration');
+    process.exit(1);
   });
 
   serverProcess.on('close', (code) => {
     if (code !== 0) {
-      console.log(`Server exited with code ${code}, falling back...`);
-      fallbackServer();
+      console.log(`❌ Original TypeScript server exited with code ${code}`);
+      console.log('❌ NO FALLBACK - Your original Dashboard.tsx needs to load properly');
+      process.exit(1);
     }
   });
 
@@ -35,11 +36,11 @@ const startServer = () => {
   });
 };
 
+// NO FALLBACK - FORCE ORIGINAL APPLICATION ONLY
 const fallbackServer = () => {
-  console.log('Starting fallback server with database connection...');
-  
-  const http = require('http');
-  const path = require('path');
+  console.log('❌ NO FALLBACK ALLOWED - Original Dashboard.tsx must load');
+  console.log('❌ Your actual React TypeScript components need to work');
+  process.exit(1);
   const fs = require('fs');
   
   const PORT = process.env.PORT || 5000;
