@@ -16,7 +16,6 @@ export const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [dismissedNotifications, setDismissedNotifications] = useState<Set<string>>(new Set());
 
   // Fetch notifications
   const fetchNotifications = useCallback(async () => {
@@ -61,15 +60,6 @@ export const useNotifications = () => {
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
-  };
-
-  // Dismiss notification (hide it from view)
-  const dismissNotification = (notificationId: string) => {
-    setDismissedNotifications(prev => {
-      const newSet = new Set(prev);
-      newSet.add(notificationId);
-      return newSet;
-    });
   };
 
   // Mark all notifications as read
@@ -156,17 +146,13 @@ export const useNotifications = () => {
     return () => clearInterval(interval);
   }, [user, fetchNotifications]);
 
-  // Filter out dismissed notifications for display
-  const visibleNotifications = notifications.filter(notif => !dismissedNotifications.has(notif.id));
-
   return {
-    notifications: visibleNotifications,
+    notifications,
     unreadCount,
     loading,
     fetchNotifications,
     markAsRead,
     markAllAsRead,
-    dismissNotification,
     addNotification,
     playNotificationSound,
     showBrowserNotification

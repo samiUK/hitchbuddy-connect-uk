@@ -18,8 +18,7 @@ export const NotificationCenter = ({ onNavigate }: NotificationCenterProps) => {
     unreadCount, 
     loading, 
     markAsRead, 
-    markAllAsRead,
-    dismissNotification
+    markAllAsRead 
   } = useNotifications();
   
   const [isOpen, setIsOpen] = useState(false);
@@ -49,13 +48,9 @@ export const NotificationCenter = ({ onNavigate }: NotificationCenterProps) => {
   };
 
   const handleNotificationClick = async (notification: any) => {
-    // Mark as read if not already read
     if (!notification.isRead) {
       await markAsRead(notification.id);
     }
-    
-    // Dismiss the notification (hide it from view)
-    dismissNotification(notification.id);
     
     // Close notification panel
     setIsOpen(false);
