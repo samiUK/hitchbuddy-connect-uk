@@ -4,7 +4,7 @@ const { spawn } = require('child_process');
 const path = require('path');
 
 // Start the reliable React development server
-const devServer = spawn('node', ['dev-server-final.cjs'], {
+const devServer = spawn('npx', ['tsx', 'server/index.ts'], {
   stdio: 'inherit',
   env: { 
     ...process.env, 

@@ -44,13 +44,14 @@ import { NotificationCenter } from "@/components/NotificationCenter";
 import { RatingModal } from "@/components/RatingModal";
 import { CounterOfferModal } from "@/components/CounterOfferModal";
 import { ModifyRideModal } from "@/components/ModifyRideModal";
+import { AdminPortal } from "@/components/AdminPortal";
 import { useToast } from "@/hooks/use-toast";
 import { formatDateToDDMMYYYY, formatDateWithRecurring } from "@/lib/dateUtils";
 
 const Dashboard = () => {
   const { user, signOut, updateProfile } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'overview' | 'post' | 'rides' | 'requests' | 'messages'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'post' | 'rides' | 'requests' | 'messages' | 'settings'>('overview');
   const [showRideRequestForm, setShowRideRequestForm] = useState(false);
   const [showPostRideForm, setShowPostRideForm] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -844,7 +845,8 @@ const Dashboard = () => {
             { id: 'overview', label: 'Overview', icon: Navigation },
             { id: 'rides', label: userType === 'driver' ? 'My Rides & Bookings' : 'My Rides & Bookings', icon: Car },
             { id: 'requests', label: userType === 'driver' ? 'Find Requests' : 'Available Rides', icon: userType === 'driver' ? Search : Search },
-            { id: 'messages', label: 'My Messages', icon: MessageCircle }
+            { id: 'messages', label: 'My Messages', icon: MessageCircle },
+            { id: 'settings', label: 'Settings', icon: Settings }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -2285,6 +2287,43 @@ const Dashboard = () => {
                   );
                 })}
               </div>
+            )}
+          </div>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === 'settings' && !showProfileEdit && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
+            </div>
+
+            {/* Profile Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Profile Settings</CardTitle>
+                <CardDescription>Manage your account and preferences</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button onClick={() => setShowProfileEdit(true)}>
+                  Edit Profile
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Admin Portal - Only visible to admin users */}
+            {user?.email === 'coolsami_uk@yahoo.com' && (
+              <Card className="border-purple-200 bg-purple-50">
+                <CardHeader>
+                  <CardTitle className="text-purple-800">Admin Portal</CardTitle>
+                  <CardDescription className="text-purple-600">
+                    System administration and user management
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <AdminPortal />
+                </CardContent>
+              </Card>
             )}
           </div>
         )}
