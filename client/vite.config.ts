@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [
     react(),
   ],
+  css: {
+    postcss: './postcss.config.js',
+  },
   server: {
     host: '0.0.0.0',
     port: 5000,
@@ -17,29 +20,9 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:3000',
         changeOrigin: true,
-        configure: (proxy, options) => {
-          // Mock API responses for development
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            // Handle auth requests with mock responses
-            if (req.url === '/api/auth/me') {
-              res.writeHead(200, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify({ error: 'Not authenticated' }));
-              return;
-            }
-            if (req.url === '/api/rides') {
-              res.writeHead(200, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify([]));
-              return;
-            }
-            if (req.url === '/api/bookings') {
-              res.writeHead(200, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify([]));
-              return;
-            }
-          });
-        }
+        rewrite: (path) => path,
       }
     }
   },
