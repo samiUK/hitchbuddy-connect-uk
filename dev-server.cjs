@@ -1,12 +1,12 @@
-console.log('[DEV] Starting HitchBuddy with proper built React application...');
+console.log('[DEV] Starting HitchBuddy Working Server...');
 
 const { spawn } = require('child_process');
 const path = require('path');
 
-// Use the simple dev server that works with the built dist files
-console.log('[DEV] Using built React app from dist/public with enhanced styling...');
+// Use the working server that avoids all Express/routing issues
+console.log('[DEV] Using stable Node.js HTTP server with API and styling...');
 
-const devServer = spawn('node', ['simple-dev-server.cjs'], {
+const devServer = spawn('node', ['working-server.cjs'], {
   stdio: 'inherit',
   env: { 
     ...process.env, 
