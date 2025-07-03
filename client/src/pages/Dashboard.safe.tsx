@@ -440,162 +440,22 @@ function SettingsTab({ user, isAdmin }) {
             🔧 Admin Portal
           </h3>
           <p style={{ marginBottom: '16px', opacity: 0.9 }}>
-            Administrative functions for system management
+            Administrative functions temporarily disabled for stability
           </p>
-          <AdminPortalSimple />
+          <div style={{ 
+            background: 'rgba(255,255,255,0.1)', 
+            borderRadius: '8px', 
+            padding: '16px',
+            textAlign: 'center'
+          }}>
+            <p style={{ margin: 0, opacity: 0.8 }}>
+              Admin features will be restored once the dashboard is stable
+            </p>
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-function AdminPortalSimple() {
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    totalRiders: 0,
-    totalDrivers: 0,
-    totalRides: 0,
-    totalBookings: 0,
-    totalMessages: 0
-  });
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadAdminData();
-  }, []);
-
-  const loadAdminData = async () => {
-    try {
-      // Load stats
-      const statsResponse = await fetch('/api/admin/stats', {
-        credentials: 'include'
-      });
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json();
-        setStats(statsData || {
-          totalUsers: 0,
-          totalRiders: 0,
-          totalDrivers: 0,
-          totalRides: 0,
-          totalBookings: 0,
-          totalMessages: 0
-        });
-      }
-
-      // Load users
-      const usersResponse = await fetch('/api/admin/users', {
-        credentials: 'include'
-      });
-      if (usersResponse.ok) {
-        const usersData = await usersResponse.json();
-        setUsers(Array.isArray(usersData) ? usersData : []);
-      }
-    } catch (error) {
-      console.error('Error loading admin data:', error);
-      // Set safe defaults on error
-      setStats({
-        totalUsers: 0,
-        totalRiders: 0,
-        totalDrivers: 0,
-        totalRides: 0,
-        totalBookings: 0,
-        totalMessages: 0
-      });
-      setUsers([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div style={{ textAlign: 'center', padding: '20px' }}>
-        <div style={{
-          width: '24px',
-          height: '24px',
-          border: '3px solid rgba(255,255,255,0.3)',
-          borderTop: '3px solid white',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite',
-          margin: '0 auto'
-        }}></div>
-        <p style={{ marginTop: '12px', opacity: 0.8 }}>Loading admin data...</p>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
-        gap: '12px',
-        marginBottom: '24px'
-      }}>
-        <div style={{ 
-          background: 'rgba(255,255,255,0.1)', 
-          padding: '12px', 
-          borderRadius: '8px',
-          textAlign: 'center'
-        }}>
-          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{stats?.totalUsers || 0}</div>
-          <div style={{ fontSize: '12px', opacity: 0.8 }}>Total Users</div>
-        </div>
-        <div style={{ 
-          background: 'rgba(255,255,255,0.1)', 
-          padding: '12px', 
-          borderRadius: '8px',
-          textAlign: 'center'
-        }}>
-          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{stats?.totalRides || 0}</div>
-          <div style={{ fontSize: '12px', opacity: 0.8 }}>Total Rides</div>
-        </div>
-        <div style={{ 
-          background: 'rgba(255,255,255,0.1)', 
-          padding: '12px', 
-          borderRadius: '8px',
-          textAlign: 'center'
-        }}>
-          <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{stats?.totalBookings || 0}</div>
-          <div style={{ fontSize: '12px', opacity: 0.8 }}>Total Bookings</div>
-        </div>
-      </div>
-
-      <div style={{ 
-        background: 'rgba(255,255,255,0.1)', 
-        borderRadius: '8px', 
-        padding: '16px' 
-      }}>
-        <h4 style={{ margin: '0 0 12px 0' }}>User Management</h4>
-        {(!users || users.length === 0) ? (
-          <p style={{ opacity: 0.8, fontSize: '14px' }}>No users found</p>
-        ) : (
-          <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-            {(users || []).slice(0, 5).map((user, index) => (
-              <div key={user?.id || index} style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '8px 0',
-                borderBottom: '1px solid rgba(255,255,255,0.1)'
-              }}>
-                <div>
-                  <div style={{ fontWeight: '500' }}>
-                    {user?.firstName || 'Unknown'} {user?.lastName || ''}
-                  </div>
-                  <div style={{ fontSize: '12px', opacity: 0.8 }}>
-                    {user?.email || 'No email'} ({user?.userType || 'Unknown'})
-                  </div>
-                </div>
-                <div style={{ fontSize: '12px', opacity: 0.8 }}>
-                  {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown date'}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+// AdminPortalSimple component temporarily disabled to prevent crashes
