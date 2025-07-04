@@ -75,6 +75,24 @@ const Dashboard = () => {
   const [messagesLoading, setMessagesLoading] = useState(false);
   
   const userType = user?.userType || 'rider';
+  
+  // Theme configuration based on user type
+  const theme = {
+    primary: userType === 'driver' ? 'green' : 'blue',
+    gradientFrom: userType === 'driver' ? 'from-green-500' : 'from-blue-500',
+    gradientTo: userType === 'driver' ? 'to-green-600' : 'to-blue-600',
+    bgLight: userType === 'driver' ? 'bg-green-50' : 'bg-blue-50',
+    bgMedium: userType === 'driver' ? 'bg-green-100' : 'bg-blue-100',
+    textPrimary: userType === 'driver' ? 'text-green-600' : 'text-blue-600',
+    textDark: userType === 'driver' ? 'text-green-800' : 'text-blue-800',
+    borderLight: userType === 'driver' ? 'border-green-200' : 'border-blue-200',
+    borderMedium: userType === 'driver' ? 'border-green-300' : 'border-blue-300',
+    hoverBg: userType === 'driver' ? 'hover:bg-green-50' : 'hover:bg-blue-50',
+    accentColor: userType === 'driver' ? 'green-500' : 'blue-500',
+    buttonPrimary: userType === 'driver' 
+      ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700' 
+      : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+  };
 
   // Navigation handler for notifications
   const handleNotificationNavigation = (section: string) => {
@@ -711,16 +729,16 @@ const Dashboard = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className={`min-h-screen bg-gradient-to-br ${theme.bgLight} via-white ${userType === 'driver' ? 'to-green-50' : 'to-blue-50'}`}>
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <div className="bg-gradient-to-r from-blue-600 to-green-600 p-2 rounded-lg">
+              <div className={`bg-gradient-to-r ${theme.gradientFrom} ${theme.gradientTo} p-2 rounded-lg`}>
                 <Car className="h-6 w-6 text-white" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+              <span className={`text-2xl font-bold bg-gradient-to-r ${theme.gradientFrom} ${theme.gradientTo} bg-clip-text text-transparent`}>
                 Hitchbuddy
               </span>
             </div>
@@ -863,7 +881,7 @@ const Dashboard = () => {
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-white text-blue-600 shadow-sm'
+                  ? `bg-white ${theme.textPrimary} shadow-sm`
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
