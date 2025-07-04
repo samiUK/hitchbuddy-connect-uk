@@ -48,41 +48,49 @@ export const NotificationCenter = ({ onNavigate }: NotificationCenterProps) => {
   };
 
   const handleNotificationClick = async (notification: any) => {
-    if (!notification.isRead) {
-      await markAsRead(notification.id);
-    }
-    
-    // Close notification panel
-    setIsOpen(false);
-    
-    // Navigate to relevant section based on notification type
-    if (onNavigate) {
-      switch (notification.type) {
-        case 'booking_request':
-          // Take drivers to "My Rides & Bookings" to see pending requests
-          onNavigate('rides');
-          break;
-        case 'counter_offer':
-          // Take riders to "My Trips & Bookings" to see counter offers
-          onNavigate('rides');
-          break;
-        case 'booking_confirmed':
-          // Take users to "My Trips & Bookings" to see confirmed bookings
-          onNavigate('rides');
-          break;
-        case 'message':
-          // Take users to "My Messages" tab to see conversations
-          onNavigate('messages');
-          break;
-        case 'trip_request':
-          // Take drivers to "Find Requests" to see new trip requests
-          onNavigate('requests');
-          break;
-        default:
-          // Default to overview
-          onNavigate('overview');
-          break;
+    try {
+      if (!notification.isRead) {
+        await markAsRead(notification.id);
       }
+      
+      // Close notification panel immediately
+      setIsOpen(false);
+      
+      // Small delay to ensure state updates
+      setTimeout(() => {
+        // Navigate to relevant section based on notification type
+        if (onNavigate) {
+          switch (notification.type) {
+            case 'booking_request':
+              // Take drivers to "My Rides & Bookings" to see pending requests
+              onNavigate('rides');
+              break;
+            case 'counter_offer':
+              // Take riders to "My Trips & Bookings" to see counter offers
+              onNavigate('rides');
+              break;
+            case 'booking_confirmed':
+              // Take users to "My Trips & Bookings" to see confirmed bookings
+              onNavigate('rides');
+              break;
+            case 'message':
+              // Take users to "My Messages" tab to see conversations
+              onNavigate('messages');
+              break;
+            case 'trip_request':
+              // Take drivers to "Find Requests" to see new trip requests
+              onNavigate('requests');
+              break;
+            default:
+              // Default to overview
+              onNavigate('overview');
+              break;
+          }
+        }
+      }, 100);
+    } catch (error) {
+      console.error('Error handling notification click:', error);
+      setIsOpen(false);
     }
   };
 
@@ -117,9 +125,13 @@ export const NotificationCenter = ({ onNavigate }: NotificationCenterProps) => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => {
-                      markAllAsRead();
-                      setIsOpen(false);
+                    onClick={async () => {
+                      try {
+                        await markAllAsRead();
+                        setIsOpen(false);
+                      } catch (error) {
+                        console.error('Error marking all as read:', error);
+                      }
                     }}
                     className="text-xs h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                   >

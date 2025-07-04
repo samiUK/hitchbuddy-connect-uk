@@ -742,8 +742,20 @@ const Dashboard = () => {
                   <span className="text-sm font-semibold text-gray-900">
                     {firstName} {lastName}
                   </span>
-                  <Badge variant={userType === 'driver' ? 'default' : 'secondary'} className="w-fit text-xs">
-                    {userType}
+                  <Badge 
+                    variant={userType === 'driver' ? 'default' : 'secondary'} 
+                    className={`w-fit text-xs inline-flex items-center space-x-1 ${
+                      userType === 'driver' 
+                        ? 'bg-green-100 text-green-800 border-green-200' 
+                        : 'bg-blue-100 text-blue-800 border-blue-200'
+                    }`}
+                  >
+                    {userType === 'driver' ? (
+                      <Car className="h-3 w-3" />
+                    ) : (
+                      <User className="h-3 w-3" />
+                    )}
+                    <span className="capitalize">{userType}</span>
                   </Badge>
                 </div>
               </div>
