@@ -106,8 +106,14 @@ function createProductionServer() {
         // Replace problematic imports with CDN equivalents
         content = content.replace(/import React.*from ['"]react['"];?/g, '');
         content = content.replace(/import.*from ['"]react-dom\/client['"];?/g, '');
+        content = content.replace(/import\s+.*from\s+['"]\.\/.*\.tsx?['"];?\s*/g, '');
+        content = content.replace(/import\s+['"]\.\/.*\.css['"];?\s*/g, '');
         content = content.replace(/createRoot/g, 'ReactDOM.createRoot');
-        content = 'const React = window.React; const ReactDOM = window.ReactDOM;\n' + content;
+        
+        // Only add React globals if not already present
+        if (!content.includes('const React = window.React')) {
+          content = 'const React = window.React; const ReactDOM = window.ReactDOM;\n' + content;
+        }
         
         // Transform TypeScript to JavaScript
         const result = await esbuild.transform(content, {

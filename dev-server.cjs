@@ -1,9 +1,9 @@
-console.log('🚗 Starting HitchBuddy with working configuration and CSS...');
+console.log('🚗 Starting HitchBuddy with original working configuration...');
 
 const { spawn } = require('child_process');
 
-// Use the original-dashboard-server.cjs that serves your actual React components
-const serverProcess = spawn('node', ['original-dashboard-server.cjs'], {
+// Use the deploy-server.cjs which has working TypeScript transformation
+const serverProcess = spawn('node', ['deploy-server.cjs'], {
   stdio: 'inherit',
   env: { 
     ...process.env,
@@ -12,7 +12,7 @@ const serverProcess = spawn('node', ['original-dashboard-server.cjs'], {
   }
 });
 
-console.log('HitchBuddy original server with CSS starting...');
+console.log('HitchBuddy original sophisticated components loading...');
 
 process.on('SIGINT', () => {
   console.log('\nShutting down server...');

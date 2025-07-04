@@ -14,12 +14,25 @@ app.use(cookieParser());
 const server = createServer(app);
 const PORT = parseInt(process.env.PORT || '5000', 10);
 
-// CRITICAL: Bind to port IMMEDIATELY to prevent connection refused
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`[express] serving on port ${PORT}`);
-});
+// Only start server if not running as Vite proxy backend
+if (process.env.IS_VITE_PROXY !== 'true') {
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`[express] serving on port ${PORT}`);
+  });
+}
 
 async function startServer() {
+  // If running as backend for Vite proxy, only setup routes and start on port 8080
+  if (process.env.IS_VITE_PROXY === 'true') {
+    console.log('[vite-proxy] Starting backend API server for Vite proxy...');
+    const apiServer = await registerRoutes(app);
+    const apiPort = parseInt(process.env.PORT || '8080', 10);
+    apiServer.listen(apiPort, "0.0.0.0", () => {
+      console.log(`[express] backend API serving on port ${apiPort}`);
+    });
+    return;
+  }
+  
   if (process.env.NODE_ENV === "production") {
     // Production: Skip Vite, just serve static files
     console.log('[production] Production mode - serving static files only');
