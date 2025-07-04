@@ -77,7 +77,10 @@ async function startServer() {
     // Serve static files from client directory
     app.use(express.static(path.join(process.cwd(), "client", "public")));
     
-    // Serve the React app for all routes
+    // Register API routes first
+    await registerRoutes(app);
+    
+    // Serve the React app for all routes (after API routes)
     app.get("*", (req, res, next) => {
       if (req.path.startsWith("/api")) return next();
       
@@ -89,7 +92,24 @@ async function startServer() {
       }
     });
     
-    await registerRoutes(app);
+    // Start the server in production mode
+    server.listen(PORT, "0.0.0.0", () => {
+      console.log(`[production] HitchBuddy serving on port ${PORT}`);
+    });
+    
+    // Apply graceful shutdown
+    setupGracefulShutdown(server);
+    
+    // Start the scheduler
+    try {
+      const { rideScheduler } = await import("./scheduler.js");
+      rideScheduler.start();
+      console.log('[scheduler] Started ride cancellation scheduler');
+      scheduler = rideScheduler;
+    } catch (error) {
+      console.error('[scheduler] Failed to start scheduler:', error);
+    }
+    
     return;
   }
   
