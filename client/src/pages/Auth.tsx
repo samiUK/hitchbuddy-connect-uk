@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Car, User, Mail, Lock, Phone, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuthNew";
 import { useToast } from "@/hooks/use-toast";
 
@@ -108,13 +109,8 @@ const Auth = () => {
             Back to Home
           </Button>
           
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="bg-gradient-to-r from-blue-600 to-green-600 p-2 rounded-lg">
-              <Car className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-              Hitchbuddy
-            </span>
+          <div className="flex justify-center mb-4">
+            <Logo size="lg" />
           </div>
         </div>
 
