@@ -1,154 +1,85 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const { spawn } = require('child_process');
+
+console.log('🚗 Starting HitchBuddy React Application...');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-console.log('Starting HitchBuddy React Application Server...');
-
-// Basic middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-// CORS headers
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
+// Start the backend API server first
+const backendProcess = spawn('npx', ['tsx', 'server/index.ts'], {
+  stdio: 'pipe',
+  env: {
+    ...process.env,
+    NODE_ENV: 'development',
+    PORT: '3001'
   }
-  next();
 });
 
-// API endpoints
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'react app server running',
-    app: 'HitchBuddy',
-    mode: 'development'
+backendProcess.stdout.on('data', (data) => {
+  console.log(`[backend] ${data.toString().trim()}`);
+});
+
+backendProcess.stderr.on('data', (data) => {
+  console.error(`[backend] ${data.toString().trim()}`);
+});
+
+// Serve the React app with CDN approach
+app.use(express.static(path.join(__dirname, 'client/public')));
+
+// API proxy
+app.use('/api', (req, res) => {
+  const proxyReq = require('http').request({
+    hostname: 'localhost',
+    port: 3001,
+    path: req.originalUrl,
+    method: req.method,
+    headers: req.headers
+  }, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    proxyRes.pipe(res);
   });
-});
-
-app.get('/api/auth/me', (req, res) => {
-  res.json({ error: 'Not authenticated' });
-});
-
-// Static files from client directory
-app.use('/src', express.static(path.join(__dirname, 'client/src')));
-app.use('/public', express.static(path.join(__dirname, 'client/public')));
-app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
-
-// Handle React routing - serve the actual index.html for all routes
-app.get('*', (req, res) => {
-  const indexPath = path.join(__dirname, 'client/index.html');
   
-  if (fs.existsSync(indexPath)) {
-    let indexContent = fs.readFileSync(indexPath, 'utf8');
-    
-    // Add base href and necessary scripts
-    const reactScripts = `
-      <title>HitchBuddy - Share Your Journey</title>
-      <base href="/">
-      <link rel="stylesheet" href="/src/index.css">
-      <script type="importmap">
-      {
-        "imports": {
-          "react": "/node_modules/react/index.js",
-          "react-dom": "/node_modules/react-dom/index.js",
-          "react-dom/client": "/node_modules/react-dom/client.js"
-        }
-      }
-      </script>
-    `;
-    
-    // Insert scripts before closing head
-    indexContent = indexContent.replace('</head>', `${reactScripts}</head>`);
-    
-    res.send(indexContent);
+  if (req.method === 'POST' || req.method === 'PUT') {
+    req.pipe(proxyReq);
   } else {
-    // If index.html doesn't exist, create one
-    res.send(`
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>HitchBuddy - Share Your Journey</title>
-          <base href="/">
-        </head>
-        <body>
-          <div id="root"></div>
-          <script type="module">
-            import React from '/node_modules/react/index.js';
-            import ReactDOM from '/node_modules/react-dom/client.js';
-            
-            // Simple React component to verify it's working
-            const App = () => {
-              return React.createElement('div', {
-                style: {
-                  fontFamily: 'system-ui',
-                  padding: '2rem',
-                  textAlign: 'center',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  minHeight: '100vh',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }
-              }, [
-                React.createElement('div', {
-                  key: 'container',
-                  style: {
-                    background: 'white',
-                    padding: '3rem',
-                    borderRadius: '1rem',
-                    boxShadow: '0 25px 50px rgba(0,0,0,0.15)'
-                  }
-                }, [
-                  React.createElement('h1', { 
-                    key: 'title',
-                    style: { 
-                      fontSize: '3rem', 
-                      marginBottom: '1rem',
-                      background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent'
-                    }
-                  }, '🚗 HitchBuddy'),
-                  React.createElement('p', { 
-                    key: 'subtitle',
-                    style: { fontSize: '1.2rem', color: '#666', marginBottom: '2rem' }
-                  }, 'Share Your Journey, Save the Planet'),
-                  React.createElement('div', {
-                    key: 'status',
-                    style: { 
-                      background: '#dcfce7', 
-                      padding: '1rem', 
-                      borderRadius: '0.5rem',
-                      marginBottom: '2rem'
-                    }
-                  }, 'React Application Loading...'),
-                  React.createElement('p', {
-                    key: 'note',
-                    style: { color: '#666', fontSize: '0.9rem' }
-                  }, 'Your full HitchBuddy React application with authentication, dashboard, and ride management will load here.')
-                ])
-              ]);
-            };
-            
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(React.createElement(App));
-          </script>
-        </body>
-      </html>
-    `);
+    proxyReq.end();
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`HitchBuddy React App Server running on port ${PORT}`);
-  console.log('Serving actual React application');
-  console.log('All routes handled by React Router');
+// Serve the main HTML file
+app.get('*', (req, res) => {
+  // Use the React CDN approach with working app.js
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>HitchBuddy - Share Your Journey, Save the Planet</title>
+    <meta name="description" content="Connect with eco-friendly travelers on HitchBuddy. Share rides, reduce costs, and help save the planet with our smart ride-sharing platform." />
+    <link rel="icon" href="/favicon.ico" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  </head>
+  <body>
+    <div id="root">
+      <noscript>You need to enable JavaScript to run this app.</noscript>
+    </div>
+    <script src="/app-sophisticated.js"></script>
+  </body>
+</html>`;
+  
+  res.setHeader('Content-Type', 'text/html');
+  res.send(html);
 });
+
+app.listen(5000, '0.0.0.0', () => {
+  console.log('✅ HitchBuddy React app running on port 5000');
+  console.log('✅ Backend API server on port 3001');
+  console.log('✅ Using React CDN with working app.js');
+});
+
+console.log('✅ Starting backend API server on port 3001...');
