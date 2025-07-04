@@ -29,8 +29,9 @@ async function startServer() {
     return;
   }
   
-  // Development mode: Just API routes, no Vite
-  console.log('[development] API-only mode');
+  // Development mode: Setup Vite and API routes
+  console.log('[development] Full stack mode with Vite');
+  await setupVite(app, server);
   await registerRoutes(app);
   
   try {
