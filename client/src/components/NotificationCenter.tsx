@@ -107,18 +107,21 @@ export const NotificationCenter = ({ onNavigate }: NotificationCenterProps) => {
         </Button>
       </PopoverTrigger>
       
-      <PopoverContent className="w-80 p-0" align="end">
-        <Card className="border-0 shadow-none">
-          <CardHeader className="pb-3">
+      <PopoverContent className="w-80 p-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg" align="end">
+        <div className="bg-white dark:bg-gray-900 rounded-lg">
+          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Notifications</CardTitle>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Notifications</h3>
               <div className="flex items-center space-x-2">
                 {unreadCount > 0 && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={markAllAsRead}
-                    className="text-xs h-8"
+                    onClick={() => {
+                      markAllAsRead();
+                      setIsOpen(false);
+                    }}
+                    className="text-xs h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                   >
                     <Check className="h-3 w-3 mr-1" />
                     Mark all read
@@ -128,71 +131,69 @@ export const NotificationCenter = ({ onNavigate }: NotificationCenterProps) => {
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsOpen(false)}
-                  className="h-8 w-8 p-0"
+                  className="h-8 w-8 p-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-          </CardHeader>
+          </div>
           
-          <Separator />
-          
-          <CardContent className="p-0">
-            <ScrollArea className="h-80">
-              {loading ? (
-                <div className="p-4 text-center text-sm text-gray-500">
-                  Loading notifications...
-                </div>
-              ) : notifications.length === 0 ? (
-                <div className="p-4 text-center text-sm text-gray-500">
-                  No notifications yet
-                </div>
-              ) : (
-                <div className="space-y-1">
-                  {notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className={`p-3 cursor-pointer hover:bg-gray-50 transition-colors ${
-                        !notification.isRead ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
-                      }`}
-                      onClick={() => handleNotificationClick(notification)}
-                    >
-                      <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 mt-0.5">
-                          {getNotificationIcon(notification.type)}
+          <div className="max-h-80 overflow-y-auto">
+            {loading ? (
+              <div className="p-4 text-center text-sm text-gray-500">
+                Loading notifications...
+              </div>
+            ) : notifications.length === 0 ? (
+              <div className="p-4 text-center text-sm text-gray-500">
+                No notifications yet
+              </div>
+            ) : (
+              <div>
+                {notifications.map((notification, index) => (
+                  <div
+                    key={notification.id}
+                    className={`p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
+                      !notification.isRead 
+                        ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500' 
+                        : 'bg-white dark:bg-gray-900'
+                    }`}
+                    onClick={() => handleNotificationClick(notification)}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 mt-0.5">
+                        {getNotificationIcon(notification.type)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <p className={`text-sm font-medium text-gray-900 dark:text-white ${
+                            !notification.isRead ? 'font-semibold' : ''
+                          }`}>
+                            {notification.title}
+                          </p>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {formatTime(notification.createdAt)}
+                          </span>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <p className={`text-sm font-medium text-gray-900 ${
-                              !notification.isRead ? 'font-semibold' : ''
-                            }`}>
-                              {notification.title}
-                            </p>
-                            <span className="text-xs text-gray-500">
-                              {formatTime(notification.createdAt)}
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                          {notification.message}
+                        </p>
+                        {!notification.isRead && (
+                          <div className="flex items-center mt-2">
+                            <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
+                            <span className="ml-2 text-xs text-blue-600 dark:text-blue-400 font-medium">
+                              New
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 mt-1">
-                            {notification.message}
-                          </p>
-                          {!notification.isRead && (
-                            <div className="flex items-center mt-2">
-                              <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
-                              <span className="ml-2 text-xs text-blue-600 font-medium">
-                                New
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </ScrollArea>
-          </CardContent>
-        </Card>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </PopoverContent>
     </Popover>
   );

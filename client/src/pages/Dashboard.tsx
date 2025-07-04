@@ -725,24 +725,24 @@ const Dashboard = () => {
               </span>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-4">
-                {/* User Profile Info */}
-                <div className="flex items-center space-x-2">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage 
-                      src={user?.avatarUrl || undefined} 
-                      alt={`${firstName} ${lastName}`}
-                      onError={() => {}}
-                      onLoad={() => {}}
-                    />
-                    <AvatarFallback className="bg-gradient-to-r from-blue-500 to-green-500 text-white text-xs">
-                      {firstName.charAt(0)}{lastName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm font-medium text-gray-700">
+              {/* User Profile Info */}
+              <div className="flex items-center space-x-3">
+                <Avatar className="w-9 h-9 ring-2 ring-gray-200">
+                  <AvatarImage 
+                    src={user?.avatarUrl || undefined} 
+                    alt={`${firstName} ${lastName}`}
+                    onError={() => {}}
+                    onLoad={() => {}}
+                  />
+                  <AvatarFallback className="bg-gradient-to-r from-blue-500 to-green-500 text-white text-sm font-medium">
+                    {firstName.charAt(0)}{lastName.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-gray-900">
                     {firstName} {lastName}
                   </span>
-                  <Badge variant={userType === 'driver' ? 'default' : 'secondary'}>
+                  <Badge variant={userType === 'driver' ? 'default' : 'secondary'} className="w-fit text-xs">
                     {userType}
                   </Badge>
                 </div>
