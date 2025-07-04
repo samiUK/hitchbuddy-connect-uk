@@ -41,15 +41,60 @@ async function startDevServer() {
       });
     });
 
-    // API routes (mock for development)
-    app.get('/api/auth/me', (req, res) => {
-      res.json({ error: 'Not authenticated' });
+    // Start the backend API server for real database connectivity
+    const backendProcess = exec('npx tsx server/index.ts', {
+      env: { 
+        ...process.env,
+        IS_VITE_PROXY: 'true',
+        PORT: '8080',
+        NODE_ENV: 'development'
+      }
+    });
+
+    backendProcess.stdout.on('data', (data) => {
+      console.log(`[Backend] ${data}`);
+    });
+
+    backendProcess.stderr.on('data', (data) => {
+      console.log(`[Backend] ${data}`);
+    });
+
+    // Give backend a moment to start
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Proxy API requests to backend server
+    app.use('/api/*', (req, res) => {
+      const url = `http://localhost:8080${req.originalUrl}`;
+      console.log(`API Proxying: ${req.originalUrl} -> ${url}`);
+      
+      // Forward the request to backend
+      const options = {
+        hostname: 'localhost',
+        port: 8080,
+        path: req.originalUrl,
+        method: req.method,
+        headers: req.headers
+      };
+
+      const http = require('http');
+      const proxyReq = http.request(options, (proxyRes) => {
+        res.status(proxyRes.statusCode);
+        Object.keys(proxyRes.headers).forEach(key => {
+          res.setHeader(key, proxyRes.headers[key]);
+        });
+        proxyRes.pipe(res);
+      });
+
+      if (req.body) {
+        proxyReq.write(JSON.stringify(req.body));
+      }
+      proxyReq.end();
     });
 
     // Proxy all other requests to Vite
     app.use('*', (req, res) => {
       const url = `http://localhost:3000${req.originalUrl}`;
-      console.log(`Proxying: ${req.originalUrl} -> ${url}`);
+      console.log(`Frontend Proxying: ${req.originalUrl} -> ${url}`);
       
       // Simple redirect to Vite dev server
       res.redirect(url);
