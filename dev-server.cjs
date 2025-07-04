@@ -2,13 +2,14 @@ const { spawn } = require('child_process');
 
 console.log('🚗 Starting HitchBuddy with working configuration...');
 
-// Use TypeScript-capable server
-const serverProcess = spawn('node', ['working-tsx-server.js'], {
+// Use original tsx approach that was working
+const serverProcess = spawn('npx', ['tsx', 'server/index.ts'], {
   stdio: 'inherit',
   env: { 
     ...process.env,
     NODE_ENV: 'development',
-    PORT: '5000'
+    PORT: '5000',
+    NODE_OPTIONS: '--experimental-modules'
   }
 });
 
