@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, Users } from "lucide-react";
+import { MapPin, Clock, Users, MessageCircle } from "lucide-react";
 
 interface LandingHeroProps {
   onGetStarted: () => void;
@@ -36,8 +36,12 @@ export const LandingHero = ({ onGetStarted }: LandingHeroProps) => {
           <div className="flex flex-wrap justify-center gap-6 mb-8">
             
             <div className="flex items-center space-x-2 text-gray-600">
-              <Clock className="h-5 w-5 text-green-600" />
-              <span>Last-mile transport</span>
+              <MapPin className="h-5 w-5 text-green-600" />
+              <span>Matched Journies</span>
+            </div>
+            <div className="flex items-center space-x-2 text-gray-600">
+              <MessageCircle className="h-5 w-5 text-blue-600" />
+              <span>Direct communication</span>
             </div>
             <div className="flex items-center space-x-2 text-gray-600">
               <Users className="h-5 w-5 text-purple-600" />
