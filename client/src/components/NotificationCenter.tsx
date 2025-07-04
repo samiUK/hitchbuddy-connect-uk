@@ -156,13 +156,13 @@ export const NotificationCenter = ({ onNavigate }: NotificationCenterProps) => {
               <div className="p-4 text-center text-sm text-gray-500">
                 Loading notifications...
               </div>
-            ) : notifications.length === 0 ? (
+            ) : notifications.filter(notification => !notification.isRead).length === 0 ? (
               <div className="p-4 text-center text-sm text-gray-500">
-                No notifications yet
+                No new notifications
               </div>
             ) : (
               <div>
-                {notifications.map((notification, index) => (
+                {notifications.filter(notification => !notification.isRead).map((notification, index) => (
                   <div
                     key={notification.id}
                     className={`p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${

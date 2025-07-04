@@ -48,6 +48,7 @@ export const useNotifications = () => {
       });
       
       if (response.ok) {
+        // Update local state immediately
         setNotifications(prev => 
           prev.map(notif => 
             notif.id === notificationId 
@@ -56,6 +57,11 @@ export const useNotifications = () => {
           )
         );
         setUnreadCount(prev => Math.max(0, prev - 1));
+        
+        // Refresh from server to ensure consistency
+        setTimeout(() => {
+          fetchNotifications();
+        }, 500);
       }
     } catch (error) {
       console.error('Error marking notification as read:', error);
@@ -71,10 +77,16 @@ export const useNotifications = () => {
       });
       
       if (response.ok) {
+        // Update local state immediately
         setNotifications(prev => 
           prev.map(notif => ({ ...notif, isRead: true }))
         );
         setUnreadCount(0);
+        
+        // Refresh from server to ensure consistency
+        setTimeout(() => {
+          fetchNotifications();
+        }, 500);
       }
     } catch (error) {
       console.error('Error marking all notifications as read:', error);

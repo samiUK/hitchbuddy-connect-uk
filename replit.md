@@ -11,6 +11,9 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - **Deployment**: Replit-native deployment
 
 ## Recent Changes
+- ✅ NOTIFICATION DISMISSING FIXED: Notifications now properly disappear after clicking - only unread notifications are displayed
+- ✅ USER TYPE BADGES ENHANCED: Driver/Rider tags now feature colored icons (green car for drivers, blue user for riders) with improved styling
+- ✅ NOTIFICATION IMPROVEMENTS: Enhanced error handling, automatic panel closure, and proper state refreshing for better UX
 - ✅ FULLY RESTORED: Complete HitchBuddy application with all functionality working
 - ✅ API ROUTING FIXED: Resolved Vite middleware conflicts - authentication endpoints now return proper JSON responses
 - ✅ NOTIFICATION STYLING IMPROVED: Enhanced notification center with proper background opacity, better visual hierarchy, and professional styling
