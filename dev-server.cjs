@@ -3,8 +3,8 @@ console.log('🚗 Starting HitchBuddy with dual server setup...');
 const { spawn } = require('child_process');
 const path = require('path');
 
-// Use working deploy server on port 3000
-const backendProcess = spawn('node', ['deploy-server.cjs'], {
+// Start backend on port 3000
+const backendProcess = spawn('npx', ['tsx', 'server/index.ts'], {
   stdio: 'inherit',
   env: { 
     ...process.env,
