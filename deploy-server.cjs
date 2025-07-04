@@ -2,10 +2,10 @@ const { spawn } = require('child_process');
 
 console.log('🚗 Starting HitchBuddy Production Server...');
 
-// For production deployment, we run the same TypeScript server but with production environment
+// For production deployment, we run the development server but with production optimizations
 process.env.NODE_ENV = 'production';
 
-// Start the server using tsx (production mode will handle optimizations)
+// Start the server using tsx - this gives us the full React application with Vite
 const server = spawn('npx', ['tsx', 'server/index.ts'], {
   stdio: 'inherit',
   shell: false,
