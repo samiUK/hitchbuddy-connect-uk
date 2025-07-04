@@ -27,10 +27,28 @@ import fs from "fs";
 import * as esbuild from "esbuild";
 import { registerRoutes } from "./routes.js";
 import { setupVite } from "./vite.js";
+import { 
+  applyMemoryOptimizations, 
+  applyRequestOptimizations, 
+  applyCompressionOptimizations,
+  setupHealthCheck,
+  setupGracefulShutdown,
+  renderFreeConfig 
+} from "./optimization.js";
 // Scheduler imported dynamically after server startup
 let scheduler: any = null;
 
 const app = express();
+
+// Apply Render free tier optimizations
+if (process.env.NODE_ENV === 'production') {
+  console.log('[optimization] Applying Render free tier optimizations...');
+  applyMemoryOptimizations(app);
+  applyRequestOptimizations(app, renderFreeConfig);
+  applyCompressionOptimizations(app);
+  setupHealthCheck(app);
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -89,11 +107,17 @@ async function startServer() {
     console.log(`[express] serving on port ${PORT}`);
   });
   
+  // Apply graceful shutdown for production
+  if (process.env.NODE_ENV === 'production') {
+    setupGracefulShutdown(server);
+  }
+  
   // Start the scheduler after server setup
   try {
     const { rideScheduler } = await import("./scheduler.js");
     rideScheduler.start();
     console.log('[scheduler] Started ride cancellation scheduler');
+    scheduler = rideScheduler; // Store for graceful shutdown
   } catch (error) {
     console.error('[scheduler] Failed to start:', error);
   }
