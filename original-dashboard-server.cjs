@@ -286,8 +286,57 @@ app.get('/', (req, res) => {
   }
 });
 
+// Transform and serve TypeScript files
+const esbuild = require('esbuild');
+
+app.get('/src/*', async (req, res) => {
+  const filePath = path.join(__dirname, 'client', req.path);
+  
+  try {
+    if (req.path.endsWith('.tsx') || req.path.endsWith('.ts')) {
+      let content = fs.readFileSync(filePath, 'utf8');
+      
+      // Handle React imports for CDN
+      content = content.replace(/import\s+React.*from\s+['"]react['"];?\s*/g, '');
+      content = content.replace(/import\s*{[^}]*}\s*from\s*['"]react['"];?\s*/g, (match) => {
+        const imports = match.match(/\{([^}]+)\}/);
+        if (imports) {
+          const hooks = imports[1].split(',').map(h => h.trim());
+          return `const { ${hooks.join(', ')} } = React;\n`;
+        }
+        return '';
+      });
+      content = content.replace(/import.*from\s*['"]react-dom\/client['"];?\s*/g, '');
+      content = content.replace(/import\s*['"][^'"]*\.css['"];?\s*/g, '');
+      content = content.replace(/createRoot/g, 'ReactDOM.createRoot');
+      
+      // Add React globals
+      content = 'const React = window.React; const ReactDOM = window.ReactDOM;\n' + content;
+      
+      const result = await esbuild.transform(content, {
+        loader: req.path.endsWith('.tsx') ? 'tsx' : 'ts',
+        target: 'es2020',
+        format: 'esm',
+        jsx: 'transform',
+        jsxFactory: 'React.createElement',
+        jsxFragment: 'React.Fragment'
+      });
+      
+      res.setHeader('Content-Type', 'application/javascript');
+      res.send(result.code);
+    } else if (req.path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+      res.sendFile(filePath);
+    } else {
+      res.sendFile(filePath);
+    }
+  } catch (error) {
+    console.error('Error transforming file:', error);
+    res.status(500).send('Error transforming file');
+  }
+});
+
 // Serve static files from your original client directory
-app.use('/src', express.static(path.join(__dirname, 'client/src')));
 app.use('/assets', express.static(path.join(__dirname, 'client/assets')));
 app.use(express.static(path.join(__dirname, 'client')));
 

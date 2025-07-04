@@ -99,7 +99,7 @@ function createProductionServer() {
     const filePath = path.join(__dirname, 'client', req.path);
     
     try {
-      if (req.path.endsWith('.tsx') || req.path.endsWith('.ts')) {
+      if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx') || req.path.endsWith('.js')) {
         // Read and transform the file content
         let content = fs.readFileSync(filePath, 'utf8');
         
@@ -111,7 +111,7 @@ function createProductionServer() {
         
         // Transform TypeScript to JavaScript
         const result = await esbuild.transform(content, {
-          loader: req.path.endsWith('.tsx') ? 'tsx' : 'ts',
+          loader: req.path.endsWith('.tsx') ? 'tsx' : req.path.endsWith('.ts') ? 'ts' : req.path.endsWith('.jsx') ? 'jsx' : 'js',
           target: 'es2020',
           format: 'esm',
           jsx: 'transform',
