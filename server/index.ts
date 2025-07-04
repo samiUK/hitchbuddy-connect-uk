@@ -38,12 +38,7 @@ app.use(cookieParser());
 const server = createServer(app);
 const PORT = parseInt(process.env.PORT || '5000', 10);
 
-// Only start server if not running as Vite proxy backend
-if (process.env.IS_VITE_PROXY !== 'true') {
-  server.listen(PORT, "0.0.0.0", () => {
-    console.log(`[express] serving on port ${PORT}`);
-  });
-}
+// Server will be started by startServer() function
 
 async function startServer() {
   // If running as backend for Vite proxy, only setup routes and start on port 8080
@@ -88,6 +83,11 @@ async function startServer() {
   
   const { setupVite } = await import("./vite.js");
   await setupVite(app, server);
+  
+  // Start the server
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`[express] serving on port ${PORT}`);
+  });
   
   // Start the scheduler after server setup
   try {
