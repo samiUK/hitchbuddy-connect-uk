@@ -1,3 +1,24 @@
+// Fix import.meta.dirname before any other imports
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// Global polyfill for import.meta.dirname
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const originalResolve = require.resolve;
+
+// Monkey patch to provide import.meta.dirname globally
+const originalPathResolve = path.resolve;
+path.resolve = function(pathArg, ...args) {
+  if (pathArg === undefined) {
+    // When import.meta.dirname is undefined, provide the server directory
+    return originalPathResolve(dirname(fileURLToPath(import.meta.url)), ...args);
+  }
+  return originalPathResolve(pathArg, ...args);
+};
+
+console.log('DEBUG: Applied global import.meta.dirname polyfill');
+
 import express from "express";
 import { createServer } from "http";
 import cookieParser from "cookie-parser";
