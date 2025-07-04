@@ -29,19 +29,75 @@ async function startServer() {
     return;
   }
   
-  // Development mode: Skip Vite setup to avoid import.meta.dirname issues
-  console.log('[development] Static file serving mode');
+  // Development mode: Use static file serving to load actual React components
+  console.log('[development] Setting up TypeScript React application');
   
-  // Serve static files directly without Vite
+  // Import required modules  
   const path = require("path");
   const fs = require("fs");
+  const esbuild = require("esbuild");
   
-  // Serve static files from client directory
-  app.use(express.static(path.join(process.cwd(), "client")));
+  // Serve static files from client/public
+  app.use(express.static(path.join(process.cwd(), "client", "public")));
+  
+  // Transform and serve TypeScript files
+  app.get('/src/*', async (req, res) => {
+    const filePath = path.join(process.cwd(), "client", req.path);
+    
+    try {
+      if (req.path.endsWith('.tsx') || req.path.endsWith('.ts')) {
+        let content = fs.readFileSync(filePath, 'utf8');
+        
+        // Replace React imports with CDN globals
+        content = content.replace(/import React.*from ['"]react['"];?/g, '');
+        content = content.replace(/import.*from ['"]react-dom\/client['"];?/g, '');
+        content = content.replace(/import.*\{.*\}.*from ['"]react['"];?/g, (match) => {
+          // Extract hooks and other imports from React
+          const imports = match.match(/\{([^}]+)\}/);
+          if (imports) {
+            const hooks = imports[1].split(',').map(h => h.trim());
+            return `const { ${hooks.join(', ')} } = React;`;
+          }
+          return '';
+        });
+        
+        // Remove CSS imports (they should be loaded separately)
+        content = content.replace(/import\s+['"][^'"]*\.css['"];?/g, '');
+        
+        content = content.replace(/createRoot/g, 'ReactDOM.createRoot');
+        
+        // Add React globals at the top
+        content = 'const React = window.React; const ReactDOM = window.ReactDOM;\n' + content;
+        
+        const result = await esbuild.transform(content, {
+          loader: req.path.endsWith('.tsx') ? 'tsx' : 'ts',
+          target: 'es2020',
+          format: 'esm',
+          jsx: 'transform',
+          jsxFactory: 'React.createElement',
+          jsxFragment: 'React.Fragment'
+        });
+        
+        res.setHeader('Content-Type', 'application/javascript');
+        res.send(result.code);
+      } else if (req.path.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css');
+        res.sendFile(filePath);
+      } else {
+        res.sendFile(filePath);
+      }
+    } catch (error) {
+      console.error('Error transforming TypeScript:', error);
+      res.status(500).send('TypeScript transformation error');
+    }
+  });
+  
+  // Serve node_modules for React dependencies
+  app.use('/node_modules', express.static(path.join(process.cwd(), 'node_modules')));
   
   // Serve React app for all non-API routes
   app.get("*", (req, res, next) => {
-    if (req.path.startsWith("/api")) return next();
+    if (req.path.startsWith("/api") || req.path.startsWith("/src") || req.path.startsWith("/node_modules")) return next();
     
     const indexPath = path.join(process.cwd(), "client", "index.html");
     if (fs.existsSync(indexPath)) {

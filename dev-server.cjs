@@ -2,8 +2,8 @@ console.log('🚗 Starting HitchBuddy with working configuration and CSS...');
 
 const { spawn } = require('child_process');
 
-// Use the original dashboard server that was working
-const serverProcess = spawn('node', ['original-dashboard-server.cjs'], {
+// Use the working deploy-server.cjs that has proper configuration
+const serverProcess = spawn('node', ['deploy-server.cjs'], {
   stdio: 'inherit',
   env: { 
     ...process.env,
