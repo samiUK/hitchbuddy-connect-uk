@@ -4,7 +4,7 @@ services:
     env: node
     plan: free
     buildCommand: npm install
-    startCommand: node dev-server.cjs
+    startCommand: node deploy-server.cjs
     envVars:
       - key: NODE_ENV
         value: development
