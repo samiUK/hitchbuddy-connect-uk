@@ -37,10 +37,24 @@ async function startServer() {
   }
   
   if (process.env.NODE_ENV === "production") {
-    // Production: Skip Vite, just serve static files
-    console.log('[production] Production mode - serving static files only');
-    const { serveStatic } = await import("./vite.js");
-    serveStatic(app);
+    // Production: Serve built React app directly
+    console.log('[production] Production mode - serving React application');
+    
+    // Serve static files from client directory
+    app.use(express.static(path.join(process.cwd(), "client", "public")));
+    
+    // Serve the React app for all routes
+    app.get("*", (req, res, next) => {
+      if (req.path.startsWith("/api")) return next();
+      
+      const indexPath = path.join(process.cwd(), "client", "index.html");
+      if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+      } else {
+        res.status(404).send("Application not found");
+      }
+    });
+    
     await registerRoutes(app);
     return;
   }
