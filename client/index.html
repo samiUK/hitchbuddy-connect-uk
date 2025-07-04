@@ -2,49 +2,20 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <title>HitchBuddy - Share Your Journey, Save the Planet</title>
     <meta name="description" content="Connect with eco-friendly travelers on HitchBuddy. Share rides, reduce costs, and help save the planet with our smart ride-sharing platform." />
     <link rel="icon" href="/favicon.ico" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/src/index.css">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   </head>
   <body>
     <div id="root">
       <noscript>You need to enable JavaScript to run this app.</noscript>
     </div>
-    <script>
-      // Load React CDN and wait for completion
-      function loadScript(src) {
-        return new Promise((resolve, reject) => {
-          const script = document.createElement('script');
-          script.src = src;
-          script.crossOrigin = 'anonymous';
-          script.onload = resolve;
-          script.onerror = reject;
-          document.head.appendChild(script);
-        });
-      }
-
-      // Load React libraries sequentially
-      Promise.all([
-        loadScript('https://unpkg.com/react@18/umd/react.development.js'),
-        loadScript('https://unpkg.com/react-dom@18/umd/react-dom.development.js')
-      ])
-      .then(() => {
-        console.log('✅ React CDN loaded successfully');
-        console.log('React available:', !!window.React);
-        console.log('ReactDOM available:', !!window.ReactDOM);
-        
-        // Now load the sophisticated application
-        const appScript = document.createElement('script');
-        appScript.src = '/app.js';
-        document.body.appendChild(appScript);
-      })
-      .catch(error => {
-        console.error('Failed to load React CDN:', error);
-        document.getElementById('root').innerHTML = '<div style="padding: 20px; color: red;">Failed to load React CDN</div>';
-      });
-    </script>
+    <script src="/app.js"></script>
+    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
+    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
   </body>
 </html>
