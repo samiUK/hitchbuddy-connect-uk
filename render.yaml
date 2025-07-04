@@ -3,11 +3,11 @@ services:
     name: hitchbuddy
     env: node
     plan: free
-    buildCommand: bash render-build.sh
-    startCommand: node deploy-server.cjs
+    buildCommand: npm install
+    startCommand: node dev-server.cjs
     envVars:
       - key: NODE_ENV
-        value: production
+        value: development
       - key: PORT
         fromService:
           type: web
