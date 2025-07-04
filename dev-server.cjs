@@ -1,29 +1,31 @@
 const { spawn } = require('child_process');
 
-console.log('🚗 Starting HitchBuddy with working configuration...');
+console.log('🚗 Starting HitchBuddy Development Server...');
 
-// Use tsx directly
-const serverProcess = spawn('npx', ['tsx', 'server/index.ts'], {
+// Start the development server using tsx
+const server = spawn('npx', ['tsx', 'server/index.ts'], {
   stdio: 'inherit',
-  env: { 
-    ...process.env,
-    NODE_ENV: 'development',
-    PORT: '5000'
+  shell: true
+});
+
+server.on('error', (err) => {
+  console.error('Failed to start server:', err);
+});
+
+server.on('close', (code) => {
+  if (code !== 0) {
+    console.log(`Server exited with code ${code}`);
   }
 });
 
-console.log('✅ Loading complete HitchBuddy application...');
-
+// Handle process termination
 process.on('SIGINT', () => {
-  serverProcess.kill('SIGINT');
+  console.log('\n🛑 Shutting down development server...');
+  server.kill('SIGINT');
   process.exit(0);
 });
 
-process.on('close', (code) => {
-  process.exit(code);
-});
-
-process.on('error', (err) => {
-  console.error('Failed to start:', err);
-  process.exit(1);
+process.on('SIGTERM', () => {
+  server.kill('SIGTERM');
+  process.exit(0);
 });
