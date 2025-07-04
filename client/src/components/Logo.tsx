@@ -8,21 +8,21 @@ interface LogoProps {
 
 export const Logo = ({ className = '', size = 'md', showText = true }: LogoProps) => {
   const sizeClasses = {
-    sm: 'w-20 h-6',
-    md: 'w-28 h-8', 
-    lg: 'w-36 h-10'
+    sm: 'w-24 h-7',
+    md: 'w-34 h-10', 
+    lg: 'w-44 h-12'
   };
 
   const iconSizes = {
-    sm: { width: 16, height: 16, fontSize: 8 },
-    md: { width: 20, height: 20, fontSize: 10 },
-    lg: { width: 24, height: 24, fontSize: 12 }
+    sm: { width: 19, height: 19, fontSize: 10 },
+    md: { width: 24, height: 24, fontSize: 12 },
+    lg: { width: 29, height: 29, fontSize: 14 }
   };
 
   const textSizes = {
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg'
+    sm: 'text-base',
+    md: 'text-lg',
+    lg: 'text-xl'
   };
 
   const iconSize = iconSizes[size];
