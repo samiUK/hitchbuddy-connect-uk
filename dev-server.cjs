@@ -2,8 +2,8 @@ console.log('🚗 Starting HitchBuddy with working configuration and CSS...');
 
 const { spawn } = require('child_process');
 
-// Use the TypeScript server with static file serving
-const serverProcess = spawn('npx', ['tsx', 'server/index.ts'], {
+// Use the working original dashboard server configuration
+const serverProcess = spawn('node', ['original-dashboard-server.cjs'], {
   stdio: 'inherit',
   env: { 
     ...process.env,

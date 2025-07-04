@@ -29,21 +29,12 @@ async function startServer() {
     return;
   }
   
-  // Development mode: Try Vite but with fallback
-  console.log('[development] Attempting Vite setup with fallback');
+  // Development mode: Use basic static file serving to avoid import.meta.dirname issues
+  console.log('[development] Using static file serving mode');
   
-  try {
-    // Import path dynamically to avoid dirname issues
-    const { setupVite } = await import("./vite.js");
-    await setupVite(app, server);
-    console.log('[development] Vite setup successful');
-  } catch (error) {
-    console.log('[development] Vite failed, using basic static serving');
-    
-    // Basic static file serving as fallback
-    const { serveStatic } = await import("./vite.js");
-    serveStatic(app);
-  }
+  // Basic static file serving
+  const { serveStatic } = await import("./vite.js");
+  serveStatic(app);
   
   await registerRoutes(app);
   
