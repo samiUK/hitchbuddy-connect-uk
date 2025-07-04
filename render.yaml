@@ -7,7 +7,7 @@ services:
     startCommand: node deploy-server.cjs
     envVars:
       - key: NODE_ENV
-        value: production
+        value: development
       - key: PORT
         fromService:
           type: web
