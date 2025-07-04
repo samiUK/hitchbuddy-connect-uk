@@ -83,9 +83,11 @@ async function startServer() {
   // Development mode: Use Vite for proper React TypeScript support
   console.log('[development] Setting up TypeScript React application');
   
+  // Register API routes directly before Vite middleware
+  await registerRoutes(app);
+  
   const { setupVite } = await import("./vite.js");
   await setupVite(app, server);
-  await registerRoutes(app);
   
   // Start the scheduler after server setup
   try {
