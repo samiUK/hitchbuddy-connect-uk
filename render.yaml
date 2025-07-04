@@ -3,7 +3,7 @@ services:
     name: hitchbuddy
     env: node
     plan: free
-    buildCommand: echo "No build needed - using existing files"
+    buildCommand: bash render-build.sh
     startCommand: node deploy-server.cjs
     envVars:
       - key: NODE_ENV
