@@ -1,8 +1,9 @@
-import type { Config } from "tailwindcss";
-
 export default {
-  darkMode: ["class"],
-  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+  content: [
+    "./index.html", 
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./src/**/*.{html,js,ts,jsx,tsx}"
+  ],
   theme: {
     extend: {
       borderRadius: {
@@ -87,4 +88,4 @@ export default {
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
-} satisfies Config;
+};
