@@ -2,7 +2,7 @@ console.log('🚗 Starting HitchBuddy with original working configuration...');
 
 const { spawn } = require('child_process');
 
-// Use the deploy-server.cjs which has working TypeScript transformation
+// Use the working deploy-server.cjs which has proper React CDN handling
 const serverProcess = spawn('node', ['deploy-server.cjs'], {
   stdio: 'inherit',
   env: { 

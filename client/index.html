@@ -38,8 +38,7 @@
         
         // Now load the main application
         const appScript = document.createElement('script');
-        appScript.type = 'module';
-        appScript.src = '/src/main.tsx';
+        appScript.src = '/app.js';
         document.body.appendChild(appScript);
       })
       .catch(error => {
