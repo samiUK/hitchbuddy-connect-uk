@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './hooks/useAuthNew';
 import { Toaster } from './components/ui/toaster';
 import { ProtectedRoute } from './components/ProtectedRoute';
-import { LocalStorageStatus } from './components/LocalStorageStatus';
+
 import Index from './pages/Index';
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
@@ -32,7 +32,6 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Toaster />
-            <LocalStorageStatus />
           </div>
         </Router>
       </AuthProvider>
