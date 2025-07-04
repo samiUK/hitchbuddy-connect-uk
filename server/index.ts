@@ -17,7 +17,7 @@ path.resolve = function(pathArg, ...args) {
   return originalPathResolve(pathArg, ...args);
 };
 
-console.log('DEBUG: Applied global import.meta.dirname polyfill');
+// Global polyfill applied for import.meta.dirname support
 
 import express from "express";
 import { createServer } from "http";
