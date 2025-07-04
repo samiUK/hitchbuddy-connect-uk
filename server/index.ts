@@ -70,7 +70,7 @@ async function startServer() {
     return;
   }
   
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production" && !process.env.FORCE_DEV_MODE) {
     // Production: Serve built React app directly
     console.log('[production] Production mode - serving React application');
     
