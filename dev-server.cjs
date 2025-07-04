@@ -1,17 +1,18 @@
-console.log('🚗 Starting HitchBuddy from working yesterday configuration...');
+console.log('🚗 Starting HitchBuddy with working configuration and CSS...');
 
 const { spawn } = require('child_process');
 
-// Use the working server from yesterday
-const serverProcess = spawn('node', ['original-dashboard-server.cjs'], {
+// Use the TypeScript server with static file serving
+const serverProcess = spawn('npx', ['tsx', 'server/index.ts'], {
   stdio: 'inherit',
   env: { 
     ...process.env,
-    NODE_ENV: 'development'
+    NODE_ENV: 'development',
+    PORT: '5000'
   }
 });
 
-console.log('HitchBuddy working server starting...');
+console.log('HitchBuddy original server with CSS starting...');
 
 process.on('SIGINT', () => {
   console.log('\nShutting down server...');

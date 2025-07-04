@@ -29,9 +29,22 @@ async function startServer() {
     return;
   }
   
-  // Development mode: Setup Vite and API routes
-  console.log('[development] Full stack mode with Vite');
-  await setupVite(app, server);
+  // Development mode: Try Vite but with fallback
+  console.log('[development] Attempting Vite setup with fallback');
+  
+  try {
+    // Import path dynamically to avoid dirname issues
+    const { setupVite } = await import("./vite.js");
+    await setupVite(app, server);
+    console.log('[development] Vite setup successful');
+  } catch (error) {
+    console.log('[development] Vite failed, using basic static serving');
+    
+    // Basic static file serving as fallback
+    const { serveStatic } = await import("./vite.js");
+    serveStatic(app);
+  }
+  
   await registerRoutes(app);
   
   try {
