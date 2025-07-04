@@ -1,4 +1,4 @@
-// Production server for HitchBuddy - Use your actual development server
+// Production server for HitchBuddy - Direct TypeScript execution
 const { spawn } = require('child_process');
 const path = require('path');
 
@@ -8,11 +8,17 @@ console.log('🚀 Starting HitchBuddy production server...');
 console.log(`🌍 Environment: ${process.env.NODE_ENV || 'production'}`);
 console.log(`📊 Server will run on port ${PORT}`);
 
-// Start the actual development server for production
-const serverProcess = spawn('node', ['dev-server.cjs'], {
+// Start the TypeScript server directly without shell
+const serverProcess = spawn('npx', ['tsx', 'server/index.ts'], {
   env: { ...process.env, PORT },
   stdio: 'inherit',
-  cwd: __dirname
+  cwd: __dirname,
+  shell: false // Disable shell to avoid deprecation warning
+});
+
+serverProcess.on('error', (err) => {
+  console.error('Failed to start production server:', err);
+  process.exit(1);
 });
 
 serverProcess.on('close', (code) => {

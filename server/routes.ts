@@ -25,6 +25,11 @@ const resetPasswordSchema = z.object({
 export async function registerRoutes(app: Express): Promise<Server> {
   console.log('[routes] Registering API routes...');
   
+  // Health check endpoint for deployment verification
+  app.get("/health", async (req, res) => {
+    res.json({ status: "healthy", timestamp: new Date().toISOString() });
+  });
+  
   // Authentication routes
   app.post("/api/auth/signup", async (req, res) => {
     try {

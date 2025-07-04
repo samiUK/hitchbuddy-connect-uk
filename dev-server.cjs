@@ -5,7 +5,7 @@ console.log('🚗 Starting HitchBuddy Development Server...');
 // Start the development server using tsx
 const server = spawn('npx', ['tsx', 'server/index.ts'], {
   stdio: 'inherit',
-  shell: true
+  shell: false
 });
 
 server.on('error', (err) => {
