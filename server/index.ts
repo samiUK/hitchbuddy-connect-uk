@@ -29,12 +29,27 @@ async function startServer() {
     return;
   }
   
-  // Development mode: Use basic static file serving to avoid import.meta.dirname issues
-  console.log('[development] Using static file serving mode');
+  // Development mode: Skip Vite setup to avoid import.meta.dirname issues
+  console.log('[development] Static file serving mode');
   
-  // Basic static file serving
-  const { serveStatic } = await import("./vite.js");
-  serveStatic(app);
+  // Serve static files directly without Vite
+  const path = require("path");
+  const fs = require("fs");
+  
+  // Serve static files from client directory
+  app.use(express.static(path.join(process.cwd(), "client")));
+  
+  // Serve React app for all non-API routes
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api")) return next();
+    
+    const indexPath = path.join(process.cwd(), "client", "index.html");
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      res.status(404).send("Application not found");
+    }
+  });
   
   await registerRoutes(app);
   
