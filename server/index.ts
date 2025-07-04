@@ -29,8 +29,8 @@ async function startServer() {
     return;
   }
   
-  // Development mode: Just API routes, no Vite (frontend served separately)
-  console.log('[development] API-only mode - frontend served by separate Vite process');
+  // Development mode: Just API routes, no Vite
+  console.log('[development] API-only mode');
   await registerRoutes(app);
   
   try {

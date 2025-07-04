@@ -9,8 +9,13 @@ const signInSchema = z.object({
   password: z.string().min(1),
 });
 
-const signUpSchema = insertUserSchema.extend({
+const signUpSchema = z.object({
+  email: z.string().email(),
   password: z.string().min(6),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  userType: z.enum(['rider', 'driver']),
+  phone: z.string().optional(),
 });
 
 const resetPasswordSchema = z.object({
