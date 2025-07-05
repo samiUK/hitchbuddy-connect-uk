@@ -188,9 +188,18 @@ app.get('/health', (req, res) => {
 });
 
 // Authentication endpoints
-app.post('/api/auth/signup', async (req, res) => {
-  try {
-    const { email, password, firstName, lastName, userType, phone } = req.body;
+// Import and register all API routes from the development server
+try {
+  const { registerRoutes } = require('./server/routes.ts');
+  registerRoutes(app);
+  console.log('✅ All API routes registered from development server');
+} catch (error) {
+  console.log('⚠️ Could not load TypeScript routes, using fallback authentication');
+  
+  // Fallback authentication endpoints
+  app.post('/api/auth/signup', async (req, res) => {
+    try {
+      const { email, password, firstName, lastName, userType, phone } = req.body;
     
     // Check if user already exists
     const existingUser = await storage.getUserByEmail(email);
