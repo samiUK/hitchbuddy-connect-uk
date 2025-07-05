@@ -1,6 +1,6 @@
 const path = require('path');
 
 // This is a redirect file to resolve Render's cached configuration
-// Redirect to the actual working production server
-console.log('🔄 Redirecting to final production server...');
-require(path.join(__dirname, '../final-production-server.cjs'));
+// Redirect to the working deployment server
+console.log('🔄 Redirecting to working development server...');
+require(path.join(__dirname, '../deploy-server.cjs'));
