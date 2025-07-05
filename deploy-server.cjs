@@ -7,6 +7,14 @@ process.env.NODE_ENV = 'development';
 process.env.FORCE_DEV_MODE = 'true';
 process.env.SERVER_DIRNAME = __dirname;
 
+// Fix import.meta.dirname compatibility for production environment
+if (typeof globalThis.__dirname === 'undefined') {
+  globalThis.__dirname = __dirname;
+}
+if (typeof globalThis.__filename === 'undefined') {
+  globalThis.__filename = __filename;
+}
+
 // Start the server using tsx - this gives us the full React application with Vite
 const server = spawn('npx', ['tsx', 'server/index.ts'], {
   stdio: 'inherit',
@@ -15,6 +23,7 @@ const server = spawn('npx', ['tsx', 'server/index.ts'], {
     ...process.env,
     NODE_ENV: 'development',
     FORCE_DEV_MODE: 'true',
+    SERVER_DIRNAME: __dirname,
     PORT: process.env.PORT || '10000'
   }
 });
