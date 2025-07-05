@@ -5,6 +5,12 @@
 
 echo "🚗 Building HitchBuddy Client..."
 
+# Copy client src files to root src directory for Vite compatibility
+echo "📁 Setting up Vite file structure..."
+mkdir -p src
+cp -r client/src/* src/ 2>/dev/null
+echo "✅ Copied client files to src/ for Vite compatibility"
+
 # For deployment platforms, we use the development server 
 # which handles TypeScript compilation automatically
 echo "📋 Deployment Configuration:"
@@ -12,6 +18,7 @@ echo "  - Using development server with Vite TypeScript compilation"
 echo "  - Production server: deploy-server.cjs"
 echo "  - Environment: NODE_ENV=development for TypeScript support"
 echo "  - Build approach: Runtime compilation (no pre-build required)"
+echo "  - File structure: src/ directory available for Vite"
 
 # Create client/dist directory for compatibility
 mkdir -p client/dist
