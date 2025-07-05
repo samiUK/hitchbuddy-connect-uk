@@ -202,46 +202,10 @@ const STATIC_DIR = path.join(__dirname, 'dist', 'public');
 console.log('📁 Serving static files from:', STATIC_DIR);
 
 // Check if static build exists
-const hasStaticBuild = fs.existsSync(STATIC_DIR);
-if (hasStaticBuild) {
-  console.log('✅ Static build found, serving compiled React app');
-} else {
-  console.log('⚠️ Static build not found, API-only mode enabled');
-  // Create basic index.html as fallback
-  fs.mkdirSync(STATIC_DIR, { recursive: true });
-  fs.writeFileSync(path.join(STATIC_DIR, 'index.html'), `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HitchBuddy API Server</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 2rem; }
-    .container { max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    .logo { color: #3b82f6; font-size: 2rem; font-weight: bold; margin-bottom: 1rem; }
-    .status { background: #f0f9ff; padding: 1rem; border-radius: 4px; margin: 1rem 0; }
-    .endpoint { background: #f8fafc; padding: 0.5rem; margin: 0.5rem 0; border-left: 3px solid #3b82f6; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="logo">🚗 HitchBuddy</div>
-    <h2>API Server Running</h2>
-    <div class="status">
-      ✅ Server is operational<br>
-      ✅ Database connected<br>
-      ✅ API endpoints active
-    </div>
-    <h3>Available Endpoints:</h3>
-    <div class="endpoint">/api/health - Health check</div>
-    <div class="endpoint">/api/auth/* - Authentication</div>
-    <div class="endpoint">/api/rides/* - Ride management</div>
-    <div class="endpoint">/api/bookings/* - Booking system</div>
-  </div>
-</body>
-</html>`);
-  console.log('✅ Created fallback index.html');
+if (!fs.existsSync(STATIC_DIR)) {
+  console.error('❌ Static build directory not found:', STATIC_DIR);
+  console.error('Please build the client application first');
+  process.exit(1);
 }
 
 // Security middleware

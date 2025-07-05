@@ -1,16 +1,17 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
-console.log('🚀 Starting HitchBuddy Production Server with Full Functionality...');
+console.log('🚀 Starting HitchBuddy Professional Application Server...');
 
-// Start the production server that includes all development features
-const server = spawn('node', ['final-production-server.cjs'], {
+// Start the development server that serves the full professional React application
+const server = spawn('node', ['dev-server.cjs'], {
   stdio: 'inherit',
   shell: false,
   cwd: __dirname,
   env: {
     ...process.env,
-    NODE_ENV: 'production',
+    NODE_ENV: 'development',
+    FORCE_DEV_MODE: 'true',
     PORT: process.env.PORT || '10000'
   }
 });
