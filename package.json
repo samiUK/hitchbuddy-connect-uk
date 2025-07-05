@@ -4,9 +4,8 @@
   "type": "commonjs",
   "license": "MIT",
   "scripts": {
-    "build": "echo 'No build required - using standalone server'",
-    "start": "node deploy-server.cjs",
-    "dev": "node dev-server.cjs"
+    "build": "chmod +x build-client.sh && ./build-client.sh", 
+    "start": "npm run build && node deploy-server.cjs",
   },
   "engines": {
     "node": ">=18.0.0"
