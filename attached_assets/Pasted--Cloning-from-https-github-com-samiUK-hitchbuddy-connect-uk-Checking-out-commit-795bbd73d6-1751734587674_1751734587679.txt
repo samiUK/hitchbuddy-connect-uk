@@ -1,0 +1,290 @@
+==> Cloning from https://github.com/samiUK/hitchbuddy-connect-uk
+==> Checking out commit 795bbd73d67eec9593a678dc76d8f5136604f672 in branch main
+==> Requesting Node.js version >=18.0.0
+==> Using Node.js version 24.3.0 via /opt/render/project/src/package.json
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Using Bun version 1.1.0 (default)
+==> Docs on specifying a Bun version: https://render.com/docs/bun-version
+==> Running build command 'npm install; npm run build'...
+added 371 packages, and audited 372 packages in 5s
+50 packages are looking for funding
+  run `npm fund` for details
+6 vulnerabilities (3 low, 3 high)
+To address all issues, run:
+  npm audit fix
+Run `npm audit` for details.
+> hitchbuddy@1.0.0 build
+> chmod +x build-client.sh && ./build-client.sh
+🚀 Starting HitchBuddy client build process...
+📁 Creating build directories...
+🔨 Building client application...
+⚡ Using Vite build configuration...
+vite v6.3.5 building for production...
+✓ 0 modules transformed.
+✗ Build failed in 10ms
+error during build:
+Could not resolve entry module "index.html".
+    at getRollupError (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at ModuleLoader.loadEntryModule (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/node-entry.js:21448:20)
+    at async Promise.all (index 0)
+🔧 Using alternative build method...
+📋 Copying static assets...
+🔍 Verifying build output...
+✅ Build completed successfully!
+📊 Build summary:
+   - HTML: 4.0K
+   - CSS: 4.0K
+   - JS: 4.0K
+🚀 Build ready for deployment!
+🔐 Setting proper permissions...
+🎉 Client build process completed successfully!
+==> Uploading build...
+==> Uploaded in 4.5s. Compression took 2.6s
+==> Build successful 🎉
+==> Deploying...
+==> Running 'npm run start'
+> hitchbuddy@1.0.0 start
+> npm run build && node deploy-server.cjs
+> hitchbuddy@1.0.0 build
+> chmod +x build-client.sh && ./build-client.sh
+🚀 Starting HitchBuddy client build process...
+📁 Creating build directories...
+🔨 Building client application...
+⚡ Using Vite build configuration...
+vite v6.3.5 building for production...
+✓ 0 modules transformed.
+✗ Build failed in 204ms
+error during build:
+Could not resolve entry module "index.html".
+    at getRollupError (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at ModuleLoader.loadEntryModule (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/node-entry.js:21448:20)
+    at async Promise.all (index 0)
+🔧 Using alternative build method...
+📋 Copying static assets...
+🔍 Verifying build output...
+✅ Build completed successfully!
+📊 Build summary:
+   - HTML: 4.0K
+   - CSS: 4.0K
+   - JS: 4.0K
+🚀 Build ready for deployment!
+🔐 Setting proper permissions...
+🎉 Client build process completed successfully!
+🚀 Starting HitchBuddy Production Server...
+✅ Production polyfill activated - server directory: /opt/render/project/src/server
+[optimization] Applying Render free tier optimizations...
+Compression optimization skipped - package not available
+[port] Platform: Cloud Run/Render, Port: 10000
+[development] Setting up TypeScript React application
+[routes] Registering API routes...
+==> Your service is live 🎉
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Available at your primary URL https://hitchbuddy-connect-uk.onrender.com
+==> 
+==> ///////////////////////////////////////////////////////////
+[express] serving on port 10000
+[scheduler] Started ride cancellation scheduler
+[scheduler] Started ride cancellation scheduler
+Error: The following dependencies are imported but could not be resolved:
+  @/hooks/use-toast (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/toast (imported by /opt/render/project/src/src/components/ui/toaster.tsx)
+  @/hooks/useAuthNew (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/button (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/input (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/card (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/label (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/tabs (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/LandingHero (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/UserTypeSelection (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/AuthModal (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/Logo (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/badge (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/dropdown-menu (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/avatar (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NewRideRequestForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/PostNewRideForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ProfileEditForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/BookRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ChatPopup (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NotificationCenter (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/CounterOfferModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ModifyRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/lib/dateUtils (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+Are they installed?
+    at optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+Production server process exited with code 1
+==> Running 'npm run start'
+> hitchbuddy@1.0.0 start
+> npm run build && node deploy-server.cjs
+> hitchbuddy@1.0.0 build
+> chmod +x build-client.sh && ./build-client.sh
+🚀 Starting HitchBuddy client build process...
+📁 Creating build directories...
+🔨 Building client application...
+⚡ Using Vite build configuration...
+vite v6.3.5 building for production...
+✓ 0 modules transformed.
+✗ Build failed in 201ms
+error during build:
+Could not resolve entry module "index.html".
+    at getRollupError (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at ModuleLoader.loadEntryModule (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/node-entry.js:21448:20)
+    at async Promise.all (index 0)
+🔧 Using alternative build method...
+📋 Copying static assets...
+🔍 Verifying build output...
+✅ Build completed successfully!
+📊 Build summary:
+   - HTML: 4.0K
+   - CSS: 4.0K
+   - JS: 4.0K
+🚀 Build ready for deployment!
+🔐 Setting proper permissions...
+🎉 Client build process completed successfully!
+🚀 Starting HitchBuddy Production Server...
+✅ Production polyfill activated - server directory: /opt/render/project/src/server
+[optimization] Applying Render free tier optimizations...
+Compression optimization skipped - package not available
+[port] Platform: Cloud Run/Render, Port: 10000
+[development] Setting up TypeScript React application
+[routes] Registering API routes...
+[express] serving on port 10000
+[scheduler] Started ride cancellation scheduler
+[scheduler] Started ride cancellation scheduler
+Error: The following dependencies are imported but could not be resolved:
+  @/hooks/use-toast (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/toast (imported by /opt/render/project/src/src/components/ui/toaster.tsx)
+  @/hooks/useAuthNew (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/button (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/card (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/input (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/label (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/LandingHero (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/tabs (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/UserTypeSelection (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/AuthModal (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/Logo (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/badge (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/dropdown-menu (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/avatar (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NewRideRequestForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/PostNewRideForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ProfileEditForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/BookRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ChatPopup (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NotificationCenter (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/CounterOfferModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ModifyRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/lib/dateUtils (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+Are they installed?
+    at optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+Production server process exited with code 1
+==> Running 'npm run start'
+> hitchbuddy@1.0.0 start
+> npm run build && node deploy-server.cjs
+> hitchbuddy@1.0.0 build
+> chmod +x build-client.sh && ./build-client.sh
+🚀 Starting HitchBuddy client build process...
+📁 Creating build directories...
+🔨 Building client application...
+⚡ Using Vite build configuration...
+vite v6.3.5 building for production...
+✓ 0 modules transformed.
+✗ Build failed in 203ms
+error during build:
+Could not resolve entry module "index.html".
+    at getRollupError (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at ModuleLoader.loadEntryModule (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/node-entry.js:21448:20)
+    at async Promise.all (index 0)
+🔧 Using alternative build method...
+📋 Copying static assets...
+🔍 Verifying build output...
+✅ Build completed successfully!
+📊 Build summary:
+   - HTML: 4.0K
+   - CSS: 4.0K
+   - JS: 4.0K
+🚀 Build ready for deployment!
+🔐 Setting proper permissions...
+🎉 Client build process completed successfully!
+🚀 Starting HitchBuddy Production Server...
+✅ Production polyfill activated - server directory: /opt/render/project/src/server
+[optimization] Applying Render free tier optimizations...
+Compression optimization skipped - package not available
+[port] Platform: Cloud Run/Render, Port: 10000
+[development] Setting up TypeScript React application
+[routes] Registering API routes...
+[express] serving on port 10000
+[scheduler] Started ride cancellation scheduler
+[scheduler] Started ride cancellation scheduler
+Error: The following dependencies are imported but could not be resolved:
+  @/hooks/use-toast (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/hooks/useAuthNew (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/toast (imported by /opt/render/project/src/src/components/ui/toaster.tsx)
+  @/components/ui/button (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/card (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/input (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/label (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/LandingHero (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/tabs (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/UserTypeSelection (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/badge (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/AuthModal (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/Logo (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/dropdown-menu (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/avatar (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NewRideRequestForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/PostNewRideForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ProfileEditForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/BookRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ChatPopup (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NotificationCenter (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/CounterOfferModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ModifyRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/lib/dateUtils (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+Are they installed?
+    at optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+Production server process exited with code 1
+==> Running 'npm run start'
+> hitchbuddy@1.0.0 start
+> npm run build && node deploy-server.cjs
+> hitchbuddy@1.0.0 build
+> chmod +x build-client.sh && ./build-client.sh
+🚀 Starting HitchBuddy client build process...
+📁 Creating build directories...
+🔨 Building client application...
+⚡ Using Vite build configuration...
+vite v6.3.5 building for production...
+✓ 0 modules transformed.
+✗ Build failed in 292ms
+error during build:
+Could not resolve entry module "index.html".
+    at getRollupError (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at ModuleLoader.loadEntryModule (file:///opt/render/project/src/node_modules/rollup/dist/es/shared/node-entry.js:21448:20)
+    at async Promise.all (index 0)
+🔧 Using alternative build method...
+📋 Copying static assets...
+🔍 Verifying build output...
+✅ Build completed successfully!
+📊 Build summary:
+   - HTML: 4.0K
+   - CSS: 4.0K
+   - JS: 4.0K
+🚀 Build ready for deployment!
+🔐 Setting proper permissions...
+🎉 Client build process completed successfully!
+🚀 Starting HitchBuddy Production Server...
+✅ Production polyfill activated - server directory: /opt/render/project/src/server

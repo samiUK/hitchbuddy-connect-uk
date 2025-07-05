@@ -1,25 +1,16 @@
 const { spawn } = require('child_process');
+const path = require('path');
 
-console.log('🚀 Starting HitchBuddy Production Server...');
+console.log('🚀 Starting HitchBuddy Production Server (via final-production-server.cjs)...');
 
-// Load and activate production polyfill to fix import.meta.dirname issues
-try {
-  const { setupPolyfill } = require('./server/polyfill.js');
-  setupPolyfill();
-} catch (err) {
-  console.log('Note: Polyfill not needed in production:', err.message);
-}
-
-// Start the production server using tsx with Node.js loader
-const server = spawn('npx', ['tsx', 'server/index.ts'], {
+// Start the final production server directly
+const server = spawn('node', ['final-production-server.cjs'], {
   stdio: 'inherit',
   shell: false,
   cwd: __dirname,
   env: {
     ...process.env,
-    NODE_ENV: 'development',  // Use development mode for Vite processing
-    FORCE_DEV_MODE: 'true',   // Force dev mode to enable Vite TypeScript compilation
-    IS_PRODUCTION_DEPLOYMENT: 'true',
+    NODE_ENV: 'production',
     PORT: process.env.PORT || '10000'
   }
 });

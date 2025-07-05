@@ -16,6 +16,13 @@ export default defineConfig({
     },
   },
   root: __dirname,
+  build: {
+    outDir: 'dist/public',
+    emptyOutDir: true,
+    rollupOptions: {
+      input: path.resolve(__dirname, 'index.html')
+    }
+  },
   server: {
     host: '0.0.0.0',
     port: 5173,
