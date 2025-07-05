@@ -8,6 +8,7 @@ services:
       chmod +x build-client.sh
       chmod +x deploy-server.cjs
       chmod +x start-production.sh
+      ./build-client.sh
     startCommand: node deploy-server.cjs
     envVars:
       - key: NODE_ENV

@@ -4,28 +4,52 @@ const path = require('path');
 
 console.log('🚗 Starting HitchBuddy Production Server...');
 
-// Set up permissions and basic structure without causing crash loops
+// CRITICAL: Ensure build script runs and has permissions
+console.log('🔧 Setting up deployment environment...');
 try {
-  // Ensure build script has execute permissions
+  // Step 1: Force set permissions on build script
   console.log('🔧 Setting build script permissions...');
   execSync('chmod +x build-client.sh', { cwd: __dirname, stdio: 'pipe' });
   
-  // Check if we need to create src directory (avoid repeated reorganization)
+  // Step 2: Always run the build script to ensure file structure is correct
+  console.log('📦 Running build script to set up file structure...');
+  execSync('./build-client.sh', { 
+    cwd: __dirname, 
+    stdio: 'inherit',
+    encoding: 'utf-8'
+  });
+  console.log('✅ Build script executed successfully');
+  
+  // Step 3: Verify the file structure was created
   const srcExists = fs.existsSync(path.join(__dirname, 'src'));
-  if (!srcExists) {
-    console.log('📁 Creating src directory structure...');
-    execSync('./build-client.sh', { 
-      cwd: __dirname, 
-      stdio: 'inherit',
-      encoding: 'utf-8'
-    });
-    console.log('✅ File structure created successfully');
+  if (srcExists) {
+    console.log('✅ File structure verified - src directory exists');
   } else {
-    console.log('✅ File structure already exists - skipping build step');
+    console.log('⚠️  Warning: src directory not created, this may cause Vite resolution issues');
   }
+  
 } catch (error) {
-  console.log('⚠️  Build step failed, continuing with existing structure:', error.message);
-  // Continue rather than exit - don't crash the deployment
+  console.error('❌ CRITICAL: Build script failed to execute:', error.message);
+  console.log('🔄 Attempting manual file structure setup...');
+  
+  // Fallback: Try to create basic structure manually
+  try {
+    const srcPath = path.join(__dirname, 'src');
+    const clientSrcPath = path.join(__dirname, 'client', 'src');
+    
+    if (fs.existsSync(clientSrcPath) && !fs.existsSync(srcPath)) {
+      console.log('📁 Creating src directory manually...');
+      fs.mkdirSync(srcPath, { recursive: true });
+      
+      // Copy files manually
+      const { spawn } = require('child_process');
+      execSync(`cp -r ${clientSrcPath}/* ${srcPath}/`, { stdio: 'inherit' });
+      console.log('✅ Manual file structure setup completed');
+    }
+  } catch (fallbackError) {
+    console.error('❌ Manual setup also failed:', fallbackError.message);
+    console.log('⚠️  Proceeding with existing structure - expect potential issues');
+  }
 }
 
 // Force development mode to ensure Vite processes TypeScript modules
