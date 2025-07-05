@@ -5,11 +5,8 @@ services:
     plan: free
     buildCommand: |
       npm install
-      chmod +x build-client.sh
-      chmod +x deploy-server.cjs
-      chmod +x start-production.sh
-      ./build-client.sh
-    startCommand: node deploy-server.cjs
+      echo "Using existing compiled build - no build process needed"
+    startCommand: node final-production-server.cjs
     envVars:
       - key: NODE_ENV
         value: production
