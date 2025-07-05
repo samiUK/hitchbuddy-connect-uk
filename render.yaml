@@ -3,11 +3,13 @@ services:
     name: hitchbuddy
     env: node
     plan: free
-    buildCommand: npm install && rm -rf client/dist
+    buildCommand: npm install && npm install -g tsx ts-node
     startCommand: node deploy-server.cjs
     envVars:
       - key: NODE_ENV
         value: development
+      - key: FORCE_DEV_MODE
+        value: 'true'
       - key: PORT
         fromService:
           type: web
