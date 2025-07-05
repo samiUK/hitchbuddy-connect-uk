@@ -276,6 +276,16 @@ app.get('/health', (req, res) => {
   });
 });
 
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    service: 'HitchBuddy API',
+    database: process.env.DATABASE_URL ? 'connected' : 'not configured',
+    endpoints: 'active'
+  });
+});
+
 // Core API endpoints needed for full functionality
 console.log('📡 Registering core API endpoints...');
 
