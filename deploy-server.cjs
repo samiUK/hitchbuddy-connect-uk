@@ -12,6 +12,7 @@ const server = spawn('node', ['dev-server.cjs'], {
     ...process.env,
     NODE_ENV: 'development',
     FORCE_DEV_MODE: 'true',
+    IS_PRODUCTION_DEPLOYMENT: 'true',
     PORT: process.env.PORT || '10000'
   }
 });
