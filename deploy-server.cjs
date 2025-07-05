@@ -1,17 +1,16 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
-console.log('🚀 Starting HitchBuddy Development Server in Production Mode...');
+console.log('🚀 Starting HitchBuddy Production Server (via final-production-server.cjs)...');
 
-// Start the development server with production environment
-const server = spawn('node', ['dev-server.cjs'], {
+// Start the final production server directly
+const server = spawn('node', ['final-production-server.cjs'], {
   stdio: 'inherit',
   shell: false,
   cwd: __dirname,
   env: {
     ...process.env,
-    NODE_ENV: 'development',
-    FORCE_DEV_MODE: 'true',
+    NODE_ENV: 'production',
     PORT: process.env.PORT || '10000'
   }
 });

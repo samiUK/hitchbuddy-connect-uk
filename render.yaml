@@ -3,12 +3,8 @@ services:
     name: hitchbuddy
     env: node
     plan: free
-    buildCommand: |
-      npm install
-      mkdir -p dist/public
-      chmod +x build-client.sh deploy-server.cjs 2>/dev/null || true
-      echo "Build directories created and permissions set"
-    startCommand: npm start
+    buildCommand: npm install
+    startCommand: node deploy-server.cjs
     envVars:
       - key: NODE_ENV
         value: production
