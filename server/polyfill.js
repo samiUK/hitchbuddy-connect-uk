@@ -69,13 +69,29 @@ module.exports = {
     globalThis.import.meta.dirname = serverDir;
     
     // Override the specific path resolution that's failing
-    const originalResolve = require('path').resolve;
-    require('path').resolve = function(...args) {
+    const path = require('path');
+    const originalResolve = path.resolve;
+    path.resolve = function(...args) {
       // If the first argument is undefined (import.meta.dirname), use serverDir
       if (args[0] === undefined) {
         args[0] = serverDir;
       }
       return originalResolve.apply(this, args);
+    };
+    
+    // Also patch require('path').resolve for modules that import path
+    const Module = require('module');
+    const originalRequirePath = Module._resolveFilename;
+    Module._resolveFilename = function(request, parent, isMain) {
+      if (request === 'path') {
+        const pathModule = originalRequirePath.apply(this, arguments);
+        const resolvedPath = require.cache[pathModule] ? require.cache[pathModule].exports : require(pathModule);
+        if (resolvedPath && resolvedPath.resolve && resolvedPath.resolve !== path.resolve) {
+          resolvedPath.resolve = path.resolve; // Use our patched version
+        }
+        return pathModule;
+      }
+      return originalRequirePath.apply(this, arguments);
     };
     
     // Module-level polyfill for direct import.meta access
