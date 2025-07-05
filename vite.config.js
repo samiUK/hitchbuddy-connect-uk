@@ -6,25 +6,38 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Handle production deployment path resolution
+const isRenderProduction = process.env.RENDER || process.env.FORCE_DEV_MODE;
+const workingDir = process.cwd();
+const projectRoot = isRenderProduction && workingDir.endsWith('/src') ? workingDir : __dirname;
+
+// Debug logging for production path resolution
+if (isRenderProduction) {
+  console.log('🔧 Vite Production Path Resolution:');
+  console.log(`   Working Directory: ${workingDir}`);
+  console.log(`   Project Root: ${projectRoot}`);
+  console.log(`   @ Alias: ${path.resolve(projectRoot, "src")}`);
+}
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"),
-      "@shared": path.resolve(__dirname, "shared"),
-      "@assets": path.resolve(__dirname, "attached_assets"),
+      "@": path.resolve(projectRoot, "src"),
+      "@shared": path.resolve(projectRoot, "shared"),
+      "@assets": path.resolve(projectRoot, "attached_assets"),
     },
     // Enhanced resolution for production deployment
     conditions: ['import', 'module', 'browser', 'default'],
     mainFields: ['browser', 'module', 'main'],
     extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']
   },
-  root: __dirname,
+  root: projectRoot,
   build: {
     outDir: 'dist/public',
     emptyOutDir: true,
     rollupOptions: {
-      input: path.resolve(__dirname, 'index.html')
+      input: path.resolve(projectRoot, 'index.html')
     }
   },
   server: {
@@ -32,7 +45,7 @@ export default defineConfig({
     port: 5173,
   },
   css: {
-    postcss: path.resolve(__dirname, "client/postcss.config.js"),
+    postcss: path.resolve(projectRoot, "client/postcss.config.js"),
   },
   optimizeDeps: {
     include: [
