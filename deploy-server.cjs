@@ -1,6 +1,26 @@
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 console.log('🚗 Starting HitchBuddy Production Server...');
+
+// Check if we need to reorganize file structure for deployment
+const srcExists = fs.existsSync(path.join(__dirname, 'src'));
+if (!srcExists) {
+  console.log('📁 Reorganizing file structure for deployment...');
+  try {
+    // Run the build script synchronously before starting the server
+    execSync('./build-client.sh', { 
+      cwd: __dirname, 
+      stdio: 'inherit',
+      encoding: 'utf-8'
+    });
+    console.log('✅ File structure reorganized successfully');
+  } catch (error) {
+    console.error('❌ Failed to reorganize file structure:', error.message);
+    process.exit(1);
+  }
+}
 
 // Force development mode to ensure Vite processes TypeScript modules
 process.env.NODE_ENV = 'development';
