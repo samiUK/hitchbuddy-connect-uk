@@ -3,7 +3,10 @@ services:
     name: hitchbuddy
     env: node
     plan: free
-    buildCommand: npm install && chmod +x build-client.sh
+    buildCommand: |
+      npm install
+      chmod +x build-client.sh
+      bash build-client.sh
     startCommand: node deploy-server.cjs
     envVars:
       - key: NODE_ENV
