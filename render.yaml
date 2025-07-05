@@ -4,12 +4,12 @@ services:
     env: node
     plan: free
     buildCommand: npm install
-    startCommand: node deploy-server.cjs
+    startCommand: node api/index.js
     envVars:
       - key: NODE_ENV
-        value: production
+        value: development
       - key: FORCE_DEV_MODE
-        value: 'false'
+        value: 'true'
       - key: PORT
         value: '10000'
     healthCheckPath: /health
