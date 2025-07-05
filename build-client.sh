@@ -11,6 +11,20 @@ mkdir -p src
 cp -r client/src/* src/ 2>/dev/null
 echo "✅ Copied client files to src/ for Vite compatibility"
 
+# Set up deployment-specific configurations
+echo "📁 Setting up deployment-specific configurations..."
+if [ -f "tsconfig.deployment.json" ]; then
+    cp tsconfig.json tsconfig.original.backup 2>/dev/null
+    cp tsconfig.deployment.json tsconfig.json
+    echo "✅ Applied deployment-specific tsconfig.json"
+fi
+
+if [ -f "vite.config.deployment.js" ]; then
+    cp vite.config.js vite.config.original.backup 2>/dev/null
+    cp vite.config.deployment.js vite.config.js
+    echo "✅ Applied deployment-specific vite.config.js"
+fi
+
 # For deployment platforms, we use the development server 
 # which handles TypeScript compilation automatically
 echo "📋 Deployment Configuration:"
