@@ -54,11 +54,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 const server = createServer(app);
-const PORT = parseInt(process.env.PORT || '5000', 10);
 
 // Server will be started by startServer() function
 
 async function startServer() {
+  const PORT = parseInt(process.env.PORT || '5000', 10);
   // If running as backend for Vite proxy, only setup routes and start on port 8080
   if (process.env.IS_VITE_PROXY === 'true') {
     console.log('[vite-proxy] Starting backend API server for Vite proxy...');

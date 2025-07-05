@@ -12,7 +12,8 @@ const server = spawn('npx', ['tsx', 'server/index.ts'], {
   shell: false,
   env: {
     ...process.env,
-    NODE_ENV: 'production',
+    NODE_ENV: 'development',
+    FORCE_DEV_MODE: 'true',
     PORT: process.env.PORT || '10000'
   }
 });
