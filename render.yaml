@@ -6,9 +6,9 @@ services:
     buildCommand: |
       npm install
       mkdir -p dist/public
-      ls -la
-      echo "Build completed - files available"
-    startCommand: node server.js
+      chmod +x final-production-server.cjs 2>/dev/null || true
+      echo "Build completed successfully"
+    startCommand: node final-production-server.cjs
     envVars:
       - key: NODE_ENV
         value: production
