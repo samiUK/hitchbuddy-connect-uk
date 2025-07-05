@@ -342,6 +342,7 @@ A modern ride-sharing platform built with React, TypeScript, Express.js, and Pos
 - ✅ Standardized "Message Rider/Driver" button naming for clarity
 
 ## User Preferences
+- Always ask user to change files directly rather than creating complex workarounds or polyfills
 - Hitchbuddy logo must maintain permanent blue-to-green gradient across entire platform regardless of user type
 - Available trips should only show in rider dashboard, not driver dashboard
 - Drivers should only see booking requests from riders (not trip requests)
