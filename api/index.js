@@ -9,9 +9,8 @@ const path = require('path');
 
 console.log('🚀 HitchBuddy Production Entry Point - Starting Development Server...');
 
-// Change to the parent directory where our actual server files are located
+// Get the correct project root directory
 const projectRoot = path.resolve(__dirname, '..');
-process.chdir(projectRoot);
 
 console.log(`📁 Working directory: ${projectRoot}`);
 console.log(`🌍 Environment: ${process.env.NODE_ENV || 'production'}`);
@@ -26,7 +25,6 @@ const server = spawn('node', ['dev-server.cjs'], {
     ...process.env,
     NODE_ENV: 'development',
     FORCE_DEV_MODE: 'true',
-    VITE_CONFIG: 'vite.config.production.js',
     PORT: process.env.PORT || '10000'
   }
 });

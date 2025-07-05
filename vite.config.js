@@ -6,29 +6,25 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Fix for production deployment path resolution
-const isProduction = process.env.NODE_ENV === 'production' || process.env.FORCE_DEV_MODE === 'true';
-const rootDir = isProduction && process.cwd().endsWith('/src') ? process.cwd() : __dirname;
-
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(rootDir, "src"),
-      "@shared": path.resolve(rootDir, "shared"),
-      "@assets": path.resolve(rootDir, "attached_assets"),
+      "@": path.resolve(__dirname, "src"),
+      "@shared": path.resolve(__dirname, "shared"),
+      "@assets": path.resolve(__dirname, "attached_assets"),
     },
     // Enhanced resolution for production deployment
     conditions: ['import', 'module', 'browser', 'default'],
     mainFields: ['browser', 'module', 'main'],
     extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']
   },
-  root: rootDir,
+  root: __dirname,
   build: {
     outDir: 'dist/public',
     emptyOutDir: true,
     rollupOptions: {
-      input: path.resolve(rootDir, 'index.html')
+      input: path.resolve(__dirname, 'index.html')
     }
   },
   server: {
@@ -36,7 +32,7 @@ export default defineConfig({
     port: 5173,
   },
   css: {
-    postcss: path.resolve(rootDir, "client/postcss.config.js"),
+    postcss: path.resolve(__dirname, "client/postcss.config.js"),
   },
   optimizeDeps: {
     include: [
