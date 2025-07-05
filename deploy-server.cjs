@@ -4,27 +4,28 @@ const path = require('path');
 
 console.log('🚗 Starting HitchBuddy Production Server...');
 
-// Check if we need to reorganize file structure for deployment
-const srcExists = fs.existsSync(path.join(__dirname, 'src'));
-if (!srcExists) {
-  console.log('📁 Reorganizing file structure for deployment...');
-  try {
-    // Ensure build script has execute permissions
-    console.log('🔧 Setting build script permissions...');
-    execSync('chmod +x build-client.sh', { cwd: __dirname, stdio: 'pipe' });
-    
-    // Run the build script synchronously before starting the server
-    console.log('📦 Running build script...');
+// Set up permissions and basic structure without causing crash loops
+try {
+  // Ensure build script has execute permissions
+  console.log('🔧 Setting build script permissions...');
+  execSync('chmod +x build-client.sh', { cwd: __dirname, stdio: 'pipe' });
+  
+  // Check if we need to create src directory (avoid repeated reorganization)
+  const srcExists = fs.existsSync(path.join(__dirname, 'src'));
+  if (!srcExists) {
+    console.log('📁 Creating src directory structure...');
     execSync('./build-client.sh', { 
       cwd: __dirname, 
       stdio: 'inherit',
       encoding: 'utf-8'
     });
-    console.log('✅ File structure reorganized successfully');
-  } catch (error) {
-    console.error('❌ Failed to reorganize file structure:', error.message);
-    process.exit(1);
+    console.log('✅ File structure created successfully');
+  } else {
+    console.log('✅ File structure already exists - skipping build step');
   }
+} catch (error) {
+  console.log('⚠️  Build step failed, continuing with existing structure:', error.message);
+  // Continue rather than exit - don't crash the deployment
 }
 
 // Force development mode to ensure Vite processes TypeScript modules
@@ -39,6 +40,10 @@ setupPolyfill();
 // Start the development server directly (same as dev-server.cjs)
 console.log('Starting HitchBuddy development server...');
 
+// Use the environment port or default to 10000 for Render
+const deploymentPort = process.env.PORT || '10000';
+console.log(`🌐 Using port: ${deploymentPort}`);
+
 const server = spawn('node', ['dev-server.cjs'], {
   stdio: 'inherit',
   shell: false,
@@ -47,7 +52,7 @@ const server = spawn('node', ['dev-server.cjs'], {
     NODE_ENV: 'development',
     FORCE_DEV_MODE: 'true',
     SERVER_DIRNAME: __dirname,
-    PORT: process.env.PORT || '10000',
+    PORT: deploymentPort,
     IS_PRODUCTION_DEPLOYMENT: 'true'
   }
 });
@@ -65,7 +70,8 @@ server.on('error', (err) => {
       NODE_ENV: 'development',
       FORCE_DEV_MODE: 'true',
       SERVER_DIRNAME: __dirname,
-      PORT: process.env.PORT || '10000'
+      PORT: deploymentPort,
+      IS_PRODUCTION_DEPLOYMENT: 'true'
     }
   });
   

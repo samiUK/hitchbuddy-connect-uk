@@ -6,9 +6,9 @@ services:
     buildCommand: |
       npm install
       chmod +x build-client.sh
-      chmod +x start-production.sh
       chmod +x deploy-server.cjs
-    startCommand: bash start-production.sh
+      chmod +x start-production.sh
+    startCommand: node deploy-server.cjs
     envVars:
       - key: NODE_ENV
         value: development

@@ -27,6 +27,13 @@ module.exports = {
     // Set environment variable for server directory
     process.env.SERVER_DIRNAME = serverDir;
     
+    // Create a comprehensive import.meta polyfill for the server directory
+    const importMetaPolyfill = {
+      dirname: serverDir,
+      filename: path.join(serverDir, 'index.ts'),
+      url: `file://${serverDir}`
+    };
+    
     // Enhanced module loading patch to fix import.meta.dirname
     const originalRequire = Module.prototype.require;
     Module.prototype.require = function(id) {
@@ -38,23 +45,57 @@ module.exports = {
         if (typeof result === 'object' && result !== null) {
           if (!result.import) result.import = {};
           if (!result.import.meta) result.import.meta = {};
-          if (!result.import.meta.dirname) {
-            result.import.meta.dirname = serverDir;
-          }
+          Object.assign(result.import.meta, importMetaPolyfill);
         }
       }
       
       return result;
     };
     
-    // Also patch the global import.meta for ES modules
+    // Global import.meta polyfill for ES modules
     if (typeof globalThis !== 'undefined') {
       if (!globalThis.import) globalThis.import = {};
       if (!globalThis.import.meta) globalThis.import.meta = {};
-      if (!globalThis.import.meta.dirname) {
-        globalThis.import.meta.dirname = serverDir;
-      }
+      Object.assign(globalThis.import.meta, importMetaPolyfill);
     }
+    
+    // Direct global polyfill for import.meta.dirname
+    if (typeof globalThis.import === 'undefined') {
+      globalThis.import = {};
+    }
+    if (typeof globalThis.import.meta === 'undefined') {
+      globalThis.import.meta = {};
+    }
+    globalThis.import.meta.dirname = serverDir;
+    
+    // Override the specific path resolution that's failing
+    const originalResolve = require('path').resolve;
+    require('path').resolve = function(...args) {
+      // If the first argument is undefined (import.meta.dirname), use serverDir
+      if (args[0] === undefined) {
+        args[0] = serverDir;
+      }
+      return originalResolve.apply(this, args);
+    };
+    
+    // Module-level polyfill for direct import.meta access
+    const vm = require('vm');
+    const originalRunInThisContext = vm.runInThisContext;
+    vm.runInThisContext = function(code, options) {
+      // Inject import.meta polyfill into the code context
+      const context = {
+        import: {
+          meta: importMetaPolyfill
+        },
+        global: global,
+        process: process,
+        Buffer: Buffer,
+        __dirname: serverDir,
+        __filename: path.join(serverDir, 'index.ts')
+      };
+      
+      return originalRunInThisContext.call(this, code, { ...options, ...context });
+    };
     
     console.log('✅ Production polyfill activated - server directory:', serverDir);
   }

@@ -9,20 +9,26 @@ chmod +x "$0" 2>/dev/null || true
 echo "🚗 Building HitchBuddy Client..."
 echo "📋 Script permissions verified"
 
-# COMPLETE FILE STRUCTURE REORGANIZATION FOR DEPLOYMENT
-echo "📁 Reorganizing file structure for deployment..."
+# Simplified deployment approach - avoid file reorganization that causes crashes
+echo "📁 Preparing deployment structure..."
 
-# Remove any existing src directory to prevent double nesting
-rm -rf src 2>/dev/null
+# Only create src directory if it doesn't exist to prevent crash loops
+if [ ! -d "src" ]; then
+    echo "📁 Creating src directory structure..."
+    mkdir -p src
+    cp -r client/src/* src/ 2>/dev/null || true
+    echo "✅ Created src/ directory from client/src/"
+else
+    echo "✅ src/ directory already exists - skipping file reorganization"
+fi
 
-# Create new src directory and copy files directly
-mkdir -p src
-cp -r client/src/* src/ 2>/dev/null
-echo "✅ Moved client files to root src/ directory"
-
-# Verify the structure
-echo "📋 Verifying file structure:"
-ls -la src/ | head -10
+# Verify the structure exists
+if [ -d "src" ]; then
+    echo "📋 Deployment structure verified:"
+    ls -la src/ | head -5
+else
+    echo "⚠️  Warning: src/ directory not found, using fallback structure"
+fi
 
 # Set up deployment-specific configurations that point to the correct paths
 echo "📁 Applying deployment configurations..."
