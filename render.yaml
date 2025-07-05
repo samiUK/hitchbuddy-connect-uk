@@ -6,14 +6,12 @@ services:
     buildCommand: |
       npm install
       mkdir -p dist/public
-      chmod +x build-client.sh deploy-server.cjs 2>/dev/null || true
-      echo "Build directories created and permissions set"
-    startCommand: npm start
+      ls -la
+      echo "Build completed - files available"
+    startCommand: node server.js
     envVars:
       - key: NODE_ENV
         value: production
-      - key: FORCE_DEV_MODE
-        value: 'false'
       - key: PORT
         value: '10000'
     healthCheckPath: /health
