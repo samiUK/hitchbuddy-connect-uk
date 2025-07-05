@@ -22,8 +22,8 @@ let scheduler: any = null;
 
 const app = express();
 
-// Apply Render free tier optimizations
-if (process.env.NODE_ENV === 'production') {
+// Apply Render free tier optimizations and health check
+if (process.env.NODE_ENV === 'production' || process.env.IS_PRODUCTION_DEPLOYMENT === 'true') {
   console.log('[optimization] Applying Render free tier optimizations...');
   applyMemoryOptimizations(app);
   applyRequestOptimizations(app, renderFreeConfig);

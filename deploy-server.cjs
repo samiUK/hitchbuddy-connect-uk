@@ -3,6 +3,11 @@ const fs = require('fs');
 const path = require('path');
 
 console.log('🚗 Starting HitchBuddy Production Server...');
+console.log('📊 Environment Check:');
+console.log('  - NODE_ENV:', process.env.NODE_ENV);
+console.log('  - PORT:', process.env.PORT);
+console.log('  - DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
+console.log('  - Working Directory:', process.cwd());
 
 // CRITICAL: Ensure build script runs and has permissions
 console.log('🔧 Setting up deployment environment...');
@@ -52,9 +57,9 @@ try {
   }
 }
 
-// Set production environment for Cloud Run deployment
-process.env.NODE_ENV = 'production';
-process.env.FORCE_DEV_MODE = 'false';
+// Set environment for Render deployment (needs development mode for Vite processing)
+process.env.NODE_ENV = 'development';
+process.env.FORCE_DEV_MODE = 'true';
 process.env.SERVER_DIRNAME = __dirname;
 
 // Load and activate production polyfill
@@ -64,20 +69,39 @@ setupPolyfill();
 // Start the development server directly (same as dev-server.cjs)
 console.log('Starting HitchBuddy development server...');
 
-// Use the environment port or default to 80 for Cloud Run
-const deploymentPort = process.env.PORT || '80';
+// Use the environment port or default to 10000 for Render
+const deploymentPort = process.env.PORT || '10000';
 console.log(`🌐 Using port: ${deploymentPort}`);
+
+// Add startup timeout for Render deployment
+let serverStarted = false;
+const startupTimeout = setTimeout(() => {
+  if (!serverStarted) {
+    console.error('❌ Server startup timeout after 60 seconds');
+    process.exit(1);
+  }
+}, 60000);
 
 const server = spawn('node', ['dev-server.cjs'], {
   stdio: 'inherit',
   shell: false,
   env: {
     ...process.env,
-    NODE_ENV: 'production',
-    FORCE_DEV_MODE: 'false',
+    NODE_ENV: 'development',
+    FORCE_DEV_MODE: 'true',
     SERVER_DIRNAME: __dirname,
     PORT: deploymentPort,
     IS_PRODUCTION_DEPLOYMENT: 'true'
+  }
+});
+
+// Monitor for successful startup
+server.stdout?.on('data', (data) => {
+  const output = data.toString();
+  if (output.includes('[express] serving on port')) {
+    serverStarted = true;
+    clearTimeout(startupTimeout);
+    console.log('✅ Server successfully started and ready for requests');
   }
 });
 
@@ -91,8 +115,8 @@ server.on('error', (err) => {
     shell: true,
     env: {
       ...process.env,
-      NODE_ENV: 'production',
-      FORCE_DEV_MODE: 'false',
+      NODE_ENV: 'development',
+      FORCE_DEV_MODE: 'true',
       SERVER_DIRNAME: __dirname,
       PORT: deploymentPort,
       IS_PRODUCTION_DEPLOYMENT: 'true'
