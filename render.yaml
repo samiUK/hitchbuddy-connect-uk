@@ -1,13 +1,14 @@
 services:
   - type: web
-    name: hitchbuddy
+    name: hitchbuddy-connect-uk
     env: node
     plan: free
     buildCommand: |
       npm install
       mkdir -p dist/public
       chmod +x final-production-server.cjs 2>/dev/null || true
-      echo "Build completed successfully"
+      ls -la final-production-server.cjs
+      echo "Production server ready for deployment"
     startCommand: node final-production-server.cjs
     envVars:
       - key: NODE_ENV
