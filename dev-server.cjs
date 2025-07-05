@@ -2,10 +2,26 @@ const { spawn } = require('child_process');
 
 console.log('🚗 Starting HitchBuddy Development Server...');
 
-// Start the development server using tsx
+// Load global import.meta patch before starting server
+require('./patch-import-meta.cjs');
+
+// Load and activate production polyfill to fix import.meta.dirname issues
+try {
+  const { setupPolyfill } = require('./server/polyfill.js');
+  setupPolyfill();
+} catch (err) {
+  console.log('Note: Polyfill not needed in development:', err.message);
+}
+
+// Start the development server using tsx with Node.js loader
 const server = spawn('npx', ['tsx', 'server/index.ts'], {
   stdio: 'inherit',
-  shell: false
+  shell: false,
+  env: {
+    ...process.env,
+    // Set Node.js options to require our polyfill before any ES modules
+    NODE_OPTIONS: '--require ./patch-import-meta.cjs'
+  }
 });
 
 server.on('error', (err) => {
