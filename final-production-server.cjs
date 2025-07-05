@@ -28,12 +28,54 @@ console.log('✅ Database connection initialized');
 const storage = {
   async getUserByEmail(email) {
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    return result.rows[0];
+    const user = result.rows[0];
+    if (!user) return null;
+    
+    // Map snake_case database fields to camelCase for consistency
+    return {
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      userType: user.user_type,
+      phone: user.phone,
+      avatarUrl: user.avatar_url,
+      addressLine1: user.address_line1,
+      addressLine2: user.address_line2,
+      city: user.city,
+      county: user.county,
+      postcode: user.postcode,
+      country: user.country,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at
+    };
   },
   
   async getUser(id) {
     const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-    return result.rows[0];
+    const user = result.rows[0];
+    if (!user) return null;
+    
+    // Map snake_case database fields to camelCase for consistency
+    return {
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      userType: user.user_type,
+      phone: user.phone,
+      avatarUrl: user.avatar_url,
+      addressLine1: user.address_line1,
+      addressLine2: user.address_line2,
+      city: user.city,
+      county: user.county,
+      postcode: user.postcode,
+      country: user.country,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at
+    };
   },
   
   async createUser(userData) {

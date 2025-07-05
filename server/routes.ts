@@ -2,7 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertUserSchema, insertRideSchema, insertRideRequestSchema, insertBookingSchema } from "@shared/schema";
+import { emailService } from "./email";
 import { z } from "zod";
+import { nanoid } from "nanoid";
 
 const signInSchema = z.object({
   email: z.string().email(),
@@ -18,8 +20,13 @@ const signUpSchema = z.object({
   phone: z.string().optional(),
 });
 
-const resetPasswordSchema = z.object({
+const forgotPasswordSchema = z.object({
   email: z.string().email(),
+});
+
+const resetPasswordSchema = z.object({
+  token: z.string().min(1),
+  password: z.string().min(6),
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -116,6 +123,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       console.error('Signout error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Password Reset Routes
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = forgotPasswordSchema.parse(req.body);
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // For security, always return success even if email doesn't exist
+        return res.json({ message: "If the email exists, a reset link has been sent." });
+      }
+
+      // Generate secure reset token
+      const resetToken = nanoid(32);
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+      // Store reset token in database
+      await storage.createPasswordResetToken(user.id, resetToken, expiresAt);
+
+      // Send email
+      const emailSent = await emailService.sendPasswordResetEmail(
+        user.email, 
+        resetToken, 
+        `${user.firstName} ${user.lastName}`
+      );
+
+      if (!emailSent) {
+        return res.status(500).json({ error: "Failed to send reset email. Please try again later." });
+      }
+
+      res.json({ message: "If the email exists, a reset link has been sent." });
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors[0].message });
+      }
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, password } = resetPasswordSchema.parse(req.body);
+      
+      const resetToken = await storage.getPasswordResetToken(token);
+      if (!resetToken || resetToken.usedAt) {
+        return res.status(400).json({ error: "Invalid or expired reset token." });
+      }
+
+      // Check if token is expired
+      if (new Date() > resetToken.expiresAt) {
+        return res.status(400).json({ error: "Reset token has expired." });
+      }
+
+      // Hash new password and update user
+      const hashedPassword = await storage.hashPassword(password);
+      await storage.updateUser(resetToken.userId, { password: hashedPassword });
+
+      // Mark token as used
+      await storage.usePasswordResetToken(token);
+
+      res.json({ message: "Password has been reset successfully." });
+    } catch (error) {
+      console.error('Reset password error:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors[0].message });
+      }
       res.status(500).json({ error: "Internal server error" });
     }
   });
