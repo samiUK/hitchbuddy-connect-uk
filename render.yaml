@@ -1,15 +1,19 @@
 services:
   - type: web
-    name: hitchbuddy-connect-uk
+    name: hitchbuddy
     env: node
     plan: free
-    buildCommand: npm install
-    startCommand: node deploy-server.cjs
+    buildCommand: |
+      npm install
+      mkdir -p dist/public
+      chmod +x build-client.sh deploy-server.cjs 2>/dev/null || true
+      echo "Build directories created and permissions set"
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
-        value: development
+        value: production
       - key: FORCE_DEV_MODE
-        value: 'true'
+        value: 'false'
       - key: PORT
         value: '10000'
     healthCheckPath: /health

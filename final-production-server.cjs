@@ -137,60 +137,6 @@ const storage = {
   
   async deleteSession(sessionId) {
     await pool.query('DELETE FROM sessions WHERE id = $1', [sessionId]);
-  },
-
-  async updateUser(id, updates) {
-    try {
-      const setClause = [];
-      const values = [];
-      let paramIndex = 1;
-
-      if (updates.userType) {
-        setClause.push(`user_type = $${paramIndex}`);
-        values.push(updates.userType);
-        paramIndex++;
-      }
-
-      if (setClause.length === 0) {
-        return null;
-      }
-
-      setClause.push(`updated_at = $${paramIndex}`);
-      values.push(new Date());
-      paramIndex++;
-      values.push(id);
-
-      const result = await pool.query(
-        `UPDATE users SET ${setClause.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
-        values
-      );
-
-      const user = result.rows[0];
-      if (!user) return null;
-
-      // Map snake_case database fields to camelCase for consistency
-      return {
-        id: user.id,
-        email: user.email,
-        password: user.password,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        userType: user.user_type,
-        phone: user.phone,
-        avatarUrl: user.avatar_url,
-        addressLine1: user.address_line1,
-        addressLine2: user.address_line2,
-        city: user.city,
-        county: user.county,
-        postcode: user.postcode,
-        country: user.country,
-        createdAt: user.created_at,
-        updatedAt: user.updated_at
-      };
-    } catch (error) {
-      console.error('Error updating user:', error);
-      return null;
-    }
   }
 };
 
@@ -202,9 +148,10 @@ const STATIC_DIR = path.join(__dirname, 'dist', 'public');
 console.log('📁 Serving static files from:', STATIC_DIR);
 
 // Check if static build exists
-if (!fs.existsSync(STATIC_DIR)) {
-  console.error('❌ Static build directory not found:', STATIC_DIR);
-  console.error('Please build the client application first');
+if (fs.existsSync(STATIC_DIR)) {
+  console.log('✅ Static build found, serving compiled React app');
+} else {
+  console.error('❌ Static build not found at:', STATIC_DIR);
   process.exit(1);
 }
 
@@ -240,73 +187,16 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    service: 'HitchBuddy API',
-    database: process.env.DATABASE_URL ? 'connected' : 'not configured',
-    endpoints: 'active'
-  });
-});
-
-// Core API endpoints needed for full functionality
-console.log('📡 Registering core API endpoints...');
-
-// User type switching endpoint
-app.patch('/api/auth/user-type', async (req, res) => {
-  try {
-    const sessionId = req.cookies.session;
-    if (!sessionId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    const session = await storage.getSession(sessionId);
-    if (!session) {
-      return res.status(401).json({ error: "Invalid session" });
-    }
-
-    const { userType } = req.body;
-    if (!userType || !['rider', 'driver'].includes(userType)) {
-      return res.status(400).json({ error: "Invalid user type" });
-    }
-
-    // Update user type in database
-    const user = await storage.updateUser(session.userId, { userType });
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const { password: _, ...userWithoutPassword } = user;
-    res.json({ user: userWithoutPassword });
-  } catch (error) {
-    console.error('User type switch error:', error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Get user bookings
-app.get('/api/bookings', async (req, res) => {
-  try {
-    const sessionId = req.cookies.session;
-    if (!sessionId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    const session = await storage.getSession(sessionId);
-    if (!session) {
-      return res.status(401).json({ error: "Invalid session" });
-    }
-
-    // For now, return empty bookings - production uses simplified storage
-    res.json({ bookings: [] });
-  } catch (error) {
-    console.error('Bookings error:', error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
 // Authentication endpoints
+// Import and register all API routes from the development server
+try {
+  const { registerRoutes } = require('./server/routes.ts');
+  registerRoutes(app);
+  console.log('✅ All API routes registered from development server');
+} catch (error) {
+  console.log('⚠️ Could not load TypeScript routes, using fallback authentication');
+  
+  // Fallback authentication endpoints
   app.post('/api/auth/signup', async (req, res) => {
     try {
       const { email, password, firstName, lastName, userType, phone } = req.body;
