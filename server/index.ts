@@ -43,14 +43,14 @@ async function startServer() {
   // Smart port detection for different platforms
   let PORT;
   if (process.env.IS_PRODUCTION_DEPLOYMENT === 'true') {
-    // Render deployment - use environment port or 10000
-    PORT = parseInt(process.env.PORT || '10000', 10);
+    // Cloud Run/Render deployment - use environment port or 80
+    PORT = parseInt(process.env.PORT || '80', 10);
   } else {
     // Replit development - use 5000
     PORT = parseInt(process.env.PORT || '5000', 10);
   }
   
-  console.log(`[port] Platform: ${process.env.IS_PRODUCTION_DEPLOYMENT === 'true' ? 'Render' : 'Replit'}, Port: ${PORT}`);
+  console.log(`[port] Platform: ${process.env.IS_PRODUCTION_DEPLOYMENT === 'true' ? 'Cloud Run/Render' : 'Replit'}, Port: ${PORT}`);
   
   // Fix import.meta.dirname compatibility for production
   if (typeof globalThis.__dirname === 'undefined') {

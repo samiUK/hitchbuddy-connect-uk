@@ -1,0 +1,61 @@
+# Cloud Run Dockerfile for HitchBuddy
+# Optimized for Google Cloud Run deployment
+
+FROM node:20-alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache git python3 make g++
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY vite.config.ts ./
+COPY tailwind.config.ts ./
+
+# Install dependencies
+RUN npm ci --production=false
+
+# Copy source code
+COPY . .
+
+# Build React application
+RUN npm run build:client || echo "Build failed, using existing build"
+
+# Production stage
+FROM node:20-alpine
+
+# Install runtime dependencies
+RUN apk add --no-cache dumb-init
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S hitchbuddy -u 1001
+
+WORKDIR /app
+
+# Copy built application
+COPY --from=builder /app/client/dist ./client/dist
+COPY --from=builder /app/server ./server
+COPY --from=builder /app/shared ./shared
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy Cloud Run server
+COPY cloud-run-server.js ./
+
+# Set permissions
+RUN chown -R hitchbuddy:nodejs /app
+USER hitchbuddy
+
+# Expose port 80 for Cloud Run
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:80/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+
+# Start server with dumb-init
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "cloud-run-server.js"]

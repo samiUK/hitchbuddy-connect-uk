@@ -69,7 +69,6 @@ module.exports = {
     globalThis.import.meta.dirname = serverDir;
     
     // Override the specific path resolution that's failing
-    const path = require('path');
     const originalResolve = path.resolve;
     path.resolve = function(...args) {
       // If the first argument is undefined (import.meta.dirname), use serverDir
@@ -79,8 +78,7 @@ module.exports = {
       return originalResolve.apply(this, args);
     };
     
-    // Also patch require('path').resolve for modules that import path
-    const Module = require('module');
+    // Also patch require('path').resolve for modules that import path  
     const originalRequirePath = Module._resolveFilename;
     Module._resolveFilename = function(request, parent, isMain) {
       if (request === 'path') {

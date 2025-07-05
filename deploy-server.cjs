@@ -52,9 +52,9 @@ try {
   }
 }
 
-// Force development mode to ensure Vite processes TypeScript modules
-process.env.NODE_ENV = 'development';
-process.env.FORCE_DEV_MODE = 'true';
+// Set production environment for Cloud Run deployment
+process.env.NODE_ENV = 'production';
+process.env.FORCE_DEV_MODE = 'false';
 process.env.SERVER_DIRNAME = __dirname;
 
 // Load and activate production polyfill
@@ -64,8 +64,8 @@ setupPolyfill();
 // Start the development server directly (same as dev-server.cjs)
 console.log('Starting HitchBuddy development server...');
 
-// Use the environment port or default to 10000 for Render
-const deploymentPort = process.env.PORT || '10000';
+// Use the environment port or default to 80 for Cloud Run
+const deploymentPort = process.env.PORT || '80';
 console.log(`🌐 Using port: ${deploymentPort}`);
 
 const server = spawn('node', ['dev-server.cjs'], {
@@ -73,8 +73,8 @@ const server = spawn('node', ['dev-server.cjs'], {
   shell: false,
   env: {
     ...process.env,
-    NODE_ENV: 'development',
-    FORCE_DEV_MODE: 'true',
+    NODE_ENV: 'production',
+    FORCE_DEV_MODE: 'false',
     SERVER_DIRNAME: __dirname,
     PORT: deploymentPort,
     IS_PRODUCTION_DEPLOYMENT: 'true'
@@ -91,8 +91,8 @@ server.on('error', (err) => {
     shell: true,
     env: {
       ...process.env,
-      NODE_ENV: 'development',
-      FORCE_DEV_MODE: 'true',
+      NODE_ENV: 'production',
+      FORCE_DEV_MODE: 'false',
       SERVER_DIRNAME: __dirname,
       PORT: deploymentPort,
       IS_PRODUCTION_DEPLOYMENT: 'true'
