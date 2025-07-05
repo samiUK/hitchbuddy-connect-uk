@@ -31,10 +31,10 @@ process.env.SERVER_DIRNAME = __dirname;
 const { setupPolyfill } = require('./server/polyfill.js');
 setupPolyfill();
 
-// Start the TypeScript server
-console.log('Starting TypeScript server with tsx...');
+// Start the development server directly (same as dev-server.cjs)
+console.log('Starting HitchBuddy development server...');
 
-const server = spawn('tsx', ['server/index.ts'], {
+const server = spawn('node', ['dev-server.cjs'], {
   stdio: 'inherit',
   shell: false,
   env: {
