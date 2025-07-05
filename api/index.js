@@ -26,6 +26,7 @@ const server = spawn('node', ['dev-server.cjs'], {
     ...process.env,
     NODE_ENV: 'development',
     FORCE_DEV_MODE: 'true',
+    VITE_CONFIG: 'vite.config.production.js',
     PORT: process.env.PORT || '10000'
   }
 });

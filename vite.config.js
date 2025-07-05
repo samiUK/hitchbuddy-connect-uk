@@ -14,6 +14,10 @@ export default defineConfig({
       "@shared": path.resolve(__dirname, "shared"),
       "@assets": path.resolve(__dirname, "attached_assets"),
     },
+    // Enhanced resolution for production deployment
+    conditions: ['import', 'module', 'browser', 'default'],
+    mainFields: ['browser', 'module', 'main'],
+    extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']
   },
   root: __dirname,
   build: {
@@ -38,9 +42,18 @@ export default defineConfig({
       "date-fns",
       "lucide-react",
       "clsx",
-      "tailwind-merge"
+      "tailwind-merge",
+      "@radix-ui/react-avatar",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-label",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-toast",
+      "@hookform/resolvers/zod"
     ],
-    force: true
+    force: true,
+    entries: ['./src/main.tsx', './src/main.jsx'],
+    exclude: []
   },
   define: {
     // Ensure process.env is available in development mode

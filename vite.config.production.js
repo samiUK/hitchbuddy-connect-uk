@@ -1,38 +1,52 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Production-specific Vite configuration for Render deployment
 export default defineConfig({
   plugins: [react()],
-  root: "./client",
-  css: {
-    postcss: './client/postcss.config.js',
-  },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "client/src"),
-      "@shared": path.resolve(__dirname, "shared"),
-      "@assets": path.resolve(__dirname, "attached_assets"),
+      "@": path.resolve(__dirname, "./src"),
+      "@shared": path.resolve(__dirname, "./shared"),
+      "@assets": path.resolve(__dirname, "./attached_assets"),
     },
   },
+  root: __dirname,
   build: {
-    outDir: path.resolve(__dirname, "dist/public"),
+    outDir: 'dist/public',
     emptyOutDir: true,
-    minify: 'esbuild',
-    target: 'es2020',
-    sourcemap: false,
     rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-popover', '@radix-ui/react-select'],
-          utils: ['lucide-react', 'date-fns', 'clsx']
-        }
-      }
-    },
-    chunkSizeWarningLimit: 1000
+      input: path.resolve(__dirname, 'index.html')
+    }
   },
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+  },
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "date-fns",
+      "lucide-react",
+      "clsx",
+      "tailwind-merge"
+    ],
+    force: false,
+    exclude: []
+  },
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('development')
+  },
+  // Production environment specific settings
   esbuild: {
-    drop: ['console', 'debugger'],
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
   },
+  logLevel: 'info'
 });
