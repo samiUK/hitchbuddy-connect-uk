@@ -57,9 +57,9 @@ try {
   }
 }
 
-// Set environment for Render deployment (needs development mode for Vite processing)
-process.env.NODE_ENV = 'development';
-process.env.FORCE_DEV_MODE = 'true';
+// Set production environment for Render deployment
+process.env.NODE_ENV = 'production';
+process.env.FORCE_DEV_MODE = 'false';
 process.env.SERVER_DIRNAME = __dirname;
 
 // Load and activate production polyfill
@@ -87,8 +87,8 @@ const server = spawn('node', ['dev-server.cjs'], {
   shell: false,
   env: {
     ...process.env,
-    NODE_ENV: 'development',
-    FORCE_DEV_MODE: 'true',
+    NODE_ENV: 'production',
+    FORCE_DEV_MODE: 'false',
     SERVER_DIRNAME: __dirname,
     PORT: deploymentPort,
     IS_PRODUCTION_DEPLOYMENT: 'true'
@@ -115,8 +115,8 @@ server.on('error', (err) => {
     shell: true,
     env: {
       ...process.env,
-      NODE_ENV: 'development',
-      FORCE_DEV_MODE: 'true',
+      NODE_ENV: 'production',
+      FORCE_DEV_MODE: 'false',
       SERVER_DIRNAME: __dirname,
       PORT: deploymentPort,
       IS_PRODUCTION_DEPLOYMENT: 'true'

@@ -18,6 +18,8 @@ const server = spawn('npx', ['tsx', 'server/index.ts'], {
   shell: false,
   env: {
     ...process.env,
+    NODE_ENV: 'production',
+    FORCE_DEV_MODE: 'false',
     IS_PRODUCTION_DEPLOYMENT: 'false', // Mark as Replit development
     PORT: process.env.PORT || '5000'   // Ensure Replit uses port 5000
   }

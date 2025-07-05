@@ -69,7 +69,7 @@ async function startServer() {
   
   if (process.env.NODE_ENV === "production" && !process.env.FORCE_DEV_MODE) {
     // Production: Serve built React app directly
-    console.log('[production] Production mode - serving React application');
+    console.log('[production] Production mode - serving optimized React application');
     
     // Serve static files from client directory
     app.use(express.static(path.join(process.cwd(), "client", "public")));

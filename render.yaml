@@ -12,9 +12,9 @@ services:
     startCommand: node deploy-server.cjs
     envVars:
       - key: NODE_ENV
-        value: development
+        value: production
       - key: FORCE_DEV_MODE
-        value: 'true'
+        value: 'false'
       - key: PORT
         fromService:
           type: web
