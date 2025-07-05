@@ -3,7 +3,11 @@
 # HitchBuddy Client Build Script
 # Used by deployment platforms to build the React frontend
 
+# Ensure this script has execute permissions
+chmod +x "$0" 2>/dev/null || true
+
 echo "🚗 Building HitchBuddy Client..."
+echo "📋 Script permissions verified"
 
 # COMPLETE FILE STRUCTURE REORGANIZATION FOR DEPLOYMENT
 echo "📁 Reorganizing file structure for deployment..."

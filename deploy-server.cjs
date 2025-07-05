@@ -9,7 +9,12 @@ const srcExists = fs.existsSync(path.join(__dirname, 'src'));
 if (!srcExists) {
   console.log('📁 Reorganizing file structure for deployment...');
   try {
+    // Ensure build script has execute permissions
+    console.log('🔧 Setting build script permissions...');
+    execSync('chmod +x build-client.sh', { cwd: __dirname, stdio: 'pipe' });
+    
     // Run the build script synchronously before starting the server
+    console.log('📦 Running build script...');
     execSync('./build-client.sh', { 
       cwd: __dirname, 
       stdio: 'inherit',
