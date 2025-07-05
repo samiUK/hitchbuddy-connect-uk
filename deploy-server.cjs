@@ -5,6 +5,7 @@ console.log('🚗 Starting HitchBuddy Production Server...');
 // Force development mode to ensure Vite processes TypeScript modules
 process.env.NODE_ENV = 'development';
 process.env.FORCE_DEV_MODE = 'true';
+process.env.SERVER_DIRNAME = __dirname;
 
 // Start the server using tsx - this gives us the full React application with Vite
 const server = spawn('npx', ['tsx', 'server/index.ts'], {

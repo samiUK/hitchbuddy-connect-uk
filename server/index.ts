@@ -59,6 +59,11 @@ const server = createServer(app);
 
 async function startServer() {
   const PORT = parseInt(process.env.PORT || '5000', 10);
+  
+  // Fix import.meta.dirname compatibility for production
+  if (typeof globalThis.__dirname === 'undefined') {
+    globalThis.__dirname = process.env.SERVER_DIRNAME || import.meta.dirname || process.cwd();
+  }
   // If running as backend for Vite proxy, only setup routes and start on port 8080
   if (process.env.IS_VITE_PROXY === 'true') {
     console.log('[vite-proxy] Starting backend API server for Vite proxy...');
