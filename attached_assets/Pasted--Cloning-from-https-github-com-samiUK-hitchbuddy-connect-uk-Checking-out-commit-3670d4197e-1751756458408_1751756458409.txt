@@ -1,0 +1,218 @@
+==> Cloning from https://github.com/samiUK/hitchbuddy-connect-uk
+==> Checking out commit 3670d4197ec1de8f08409cc164941114c12395e3 in branch main
+==> Requesting Node.js version >=18.0.0
+==> Using Node.js version 24.3.0 via /opt/render/project/src/package.json
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Using Bun version 1.1.0 (default)
+==> Docs on specifying a Bun version: https://render.com/docs/bun-version
+==> Running build command 'npm install'...
+added 383 packages, and audited 384 packages in 5s
+51 packages are looking for funding
+  run `npm fund` for details
+6 vulnerabilities (3 low, 3 high)
+To address all issues, run:
+  npm audit fix
+Run `npm audit` for details.
+==> Uploading build...
+==> Uploaded in 4.7s. Compression took 2.5s
+==> Build successful 🎉
+==> Deploying...
+==> Running 'node api/index.js'
+🚀 HitchBuddy Production Entry Point - Starting Development Server...
+📁 Working directory: /opt/render/project/src
+🌍 Environment: Production
+🚪 Port: 10000
+✅ Production entry point configured - development server starting...
+🚗 Starting HitchBuddy Development Server...
+✅ Production polyfill activated - server directory: /opt/render/project/src/server
+SendGrid API key not found. Email functionality will be disabled.
+[optimization] Applying Render free tier optimizations...
+Compression optimization skipped - package not available
+[port] Platform: Replit, Port: 10000
+[development] Setting up TypeScript React application
+[routes] Registering API routes...
+[express] serving on port 10000
+[scheduler] Started ride cancellation scheduler
+[scheduler] Started ride cancellation scheduler
+Error: The following dependencies are imported but could not be resolved:
+  @/hooks/use-toast (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/toast (imported by /opt/render/project/src/src/components/ui/toaster.tsx)
+  @/components/ui/button (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/input (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/hooks/useAuthNew (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/card (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/label (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/LandingHero (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/tabs (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/UserTypeSelection (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/AuthModal (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/Logo (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/badge (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/dropdown-menu (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/avatar (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NewRideRequestForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/PostNewRideForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ProfileEditForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/BookRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ChatPopup (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NotificationCenter (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/CounterOfferModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ModifyRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/lib/dateUtils (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+Are they installed?
+    at optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+Server exited with code 1
+🛑 Development server process exited with code 0
+==> Running 'node api/index.js'
+🚀 HitchBuddy Production Entry Point - Starting Development Server...
+📁 Working directory: /opt/render/project/src
+🌍 Environment: Production
+🚪 Port: 10000
+✅ Production entry point configured - development server starting...
+🚗 Starting HitchBuddy Development Server...
+✅ Production polyfill activated - server directory: /opt/render/project/src/server
+SendGrid API key not found. Email functionality will be disabled.
+[optimization] Applying Render free tier optimizations...
+Compression optimization skipped - package not available
+[port] Platform: Replit, Port: 10000
+[development] Setting up TypeScript React application
+[routes] Registering API routes...
+[express] serving on port 10000
+[scheduler] Started ride cancellation scheduler
+[scheduler] Started ride cancellation scheduler
+==> Your service is live 🎉
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+Error: The following dependencies are imported but could not be resolved:
+  @/hooks/use-toast (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/toast (imported by /opt/render/project/src/src/components/ui/toaster.tsx)
+  @/hooks/useAuthNew (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/button (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/input (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/card (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/label (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/tabs (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/LandingHero (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/badge (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/UserTypeSelection (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/dropdown-menu (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/Logo (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/AuthModal (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/avatar (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NewRideRequestForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/PostNewRideForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ProfileEditForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/BookRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ChatPopup (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NotificationCenter (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/CounterOfferModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ModifyRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/lib/dateUtils (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+Are they installed?
+    at optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+==> Available at your primary URL https://hitchbuddy.onrender.com
+==> 
+Server exited with code 1
+🛑 Development server process exited with code 0
+==> ///////////////////////////////////////////////////////////
+==> Running 'node api/index.js'
+🚀 HitchBuddy Production Entry Point - Starting Development Server...
+📁 Working directory: /opt/render/project/src
+🌍 Environment: Production
+🚪 Port: 10000
+✅ Production entry point configured - development server starting...
+🚗 Starting HitchBuddy Development Server...
+✅ Production polyfill activated - server directory: /opt/render/project/src/server
+SendGrid API key not found. Email functionality will be disabled.
+[optimization] Applying Render free tier optimizations...
+Compression optimization skipped - package not available
+[port] Platform: Replit, Port: 10000
+[development] Setting up TypeScript React application
+[routes] Registering API routes...
+[express] serving on port 10000
+[scheduler] Started ride cancellation scheduler
+[scheduler] Started ride cancellation scheduler
+Error: The following dependencies are imported but could not be resolved:
+  @/hooks/use-toast (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/hooks/useAuthNew (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/button (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/toast (imported by /opt/render/project/src/src/components/ui/toaster.tsx)
+  @/components/ui/card (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/input (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/badge (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/label (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/dropdown-menu (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/LandingHero (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/tabs (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/avatar (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/UserTypeSelection (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/AuthModal (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/Logo (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NewRideRequestForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/PostNewRideForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ProfileEditForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/BookRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ChatPopup (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NotificationCenter (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/CounterOfferModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ModifyRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/lib/dateUtils (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+Are they installed?
+    at optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+Server exited with code 1
+🛑 Development server process exited with code 0
+==> Running 'node api/index.js'
+🚀 HitchBuddy Production Entry Point - Starting Development Server...
+📁 Working directory: /opt/render/project/src
+🌍 Environment: Production
+🚪 Port: 10000
+✅ Production entry point configured - development server starting...
+🚗 Starting HitchBuddy Development Server...
+✅ Production polyfill activated - server directory: /opt/render/project/src/server
+SendGrid API key not found. Email functionality will be disabled.
+[optimization] Applying Render free tier optimizations...
+Compression optimization skipped - package not available
+[port] Platform: Replit, Port: 10000
+[development] Setting up TypeScript React application
+[routes] Registering API routes...
+[express] serving on port 10000
+[scheduler] Started ride cancellation scheduler
+[scheduler] Started ride cancellation scheduler
+Error: The following dependencies are imported but could not be resolved:
+  @/hooks/use-toast (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/toast (imported by /opt/render/project/src/src/components/ui/toaster.tsx)
+  @/components/ui/button (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/hooks/useAuthNew (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/card (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/input (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/ui/badge (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/label (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/LandingHero (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/dropdown-menu (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ui/tabs (imported by /opt/render/project/src/src/pages/Auth.tsx)
+  @/components/UserTypeSelection (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/ui/avatar (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/AuthModal (imported by /opt/render/project/src/src/pages/Index.tsx)
+  @/components/Logo (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NewRideRequestForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/PostNewRideForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ProfileEditForm (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/BookRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ChatPopup (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/NotificationCenter (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/CounterOfferModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/components/ModifyRideModal (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+  @/lib/dateUtils (imported by /opt/render/project/src/src/pages/Dashboard.tsx)
+Are they installed?
+    at optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async optimizeDeps (/opt/render/project/src/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:49467:10)
+Server exited with code 1
+🛑 Development server process exited with code 0
