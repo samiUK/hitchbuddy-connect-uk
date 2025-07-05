@@ -5,17 +5,16 @@ services:
     plan: free
     buildCommand: |
       npm install
-      echo "Using existing compiled build - no build process needed"
-    startCommand: node final-production-server.cjs
+      mkdir -p dist/public
+      chmod +x build-client.sh deploy-server.cjs 2>/dev/null || true
+      echo "Build directories created and permissions set"
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: FORCE_DEV_MODE
         value: 'false'
       - key: PORT
-        fromService:
-          type: web
-          name: hitchbuddy
-          property: port
+        value: '10000'
     healthCheckPath: /health
     autoDeploy: false
