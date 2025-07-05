@@ -5,25 +5,89 @@
 
 echo "🚗 Building HitchBuddy Client..."
 
-# Copy client src files to root src directory for Vite compatibility
-echo "📁 Setting up Vite file structure..."
+# COMPLETE FILE STRUCTURE REORGANIZATION FOR DEPLOYMENT
+echo "📁 Reorganizing file structure for deployment..."
+
+# Remove any existing src directory to prevent double nesting
+rm -rf src 2>/dev/null
+
+# Create new src directory and copy files directly
 mkdir -p src
 cp -r client/src/* src/ 2>/dev/null
-echo "✅ Copied client files to src/ for Vite compatibility"
+echo "✅ Moved client files to root src/ directory"
 
-# Set up deployment-specific configurations
-echo "📁 Setting up deployment-specific configurations..."
-if [ -f "tsconfig.deployment.json" ]; then
-    cp tsconfig.json tsconfig.original.backup 2>/dev/null
-    cp tsconfig.deployment.json tsconfig.json
-    echo "✅ Applied deployment-specific tsconfig.json"
-fi
+# Verify the structure
+echo "📋 Verifying file structure:"
+ls -la src/ | head -10
 
-if [ -f "vite.config.deployment.js" ]; then
-    cp vite.config.js vite.config.original.backup 2>/dev/null
-    cp vite.config.deployment.js vite.config.js
-    echo "✅ Applied deployment-specific vite.config.js"
-fi
+# Set up deployment-specific configurations that point to the correct paths
+echo "📁 Applying deployment configurations..."
+
+# Create a simplified vite config for deployment
+cat > vite.config.js << 'EOF'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(process.cwd(), "src"),
+      "@shared": path.resolve(process.cwd(), "shared"),
+      "@assets": path.resolve(process.cwd(), "attached_assets"),
+    },
+  },
+  root: process.cwd(),
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+  },
+  css: {
+    postcss: path.resolve(process.cwd(), "client/postcss.config.js"),
+  },
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "date-fns",
+      "lucide-react",
+      "clsx",
+      "tailwind-merge"
+    ],
+  },
+});
+EOF
+
+# Create deployment-specific tsconfig
+cat > tsconfig.json << 'EOF'
+{
+  "include": ["src/**/*", "shared/**/*", "server/**/*"],
+  "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
+    "noEmit": true,
+    "module": "ESNext",
+    "strict": true,
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "types": ["node", "vite/client"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@shared/*": ["./shared/*"]
+    }
+  }
+}
+EOF
+
+echo "✅ Applied deployment-specific configurations"
 
 # For deployment platforms, we use the development server 
 # which handles TypeScript compilation automatically
