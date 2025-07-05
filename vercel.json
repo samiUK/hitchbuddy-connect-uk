@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "deploy-server.cjs",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/deploy-server.cjs"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "development",
+    "FORCE_DEV_MODE": "true",
+    "SERVER_DIRNAME": "/var/task/server"
+  },
+  "functions": {
+    "deploy-server.cjs": {
+      "maxDuration": 10
+    }
+  }
+}
