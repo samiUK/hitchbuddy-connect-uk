@@ -8,7 +8,7 @@ services:
       mkdir -p dist/public
       chmod +x build-client.sh deploy-server.cjs 2>/dev/null || true
       echo "Build directories created and permissions set"
-    startCommand: node final-production-server.cjs
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
