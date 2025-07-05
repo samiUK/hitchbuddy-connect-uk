@@ -38,7 +38,7 @@ COPY --from=builder --chown=hitchbuddy:nodejs /app/client/dist ./client/dist
 COPY --from=builder --chown=hitchbuddy:nodejs /app/server ./server
 COPY --from=builder --chown=hitchbuddy:nodejs /app/shared ./shared
 COPY --from=builder --chown=hitchbuddy:nodejs /app/deploy-server.cjs ./
-COPY --from=builder --chown=hitchbuddy:nodejs /app/patch-import-meta.cjs ./
+# Note: patch-import-meta.cjs removed - polyfill now handled by server/polyfill.js
 COPY --from=deps --chown=hitchbuddy:nodejs /app/node_modules ./node_modules
 
 # Set correct permissions
