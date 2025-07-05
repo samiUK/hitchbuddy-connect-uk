@@ -33,5 +33,10 @@ export default defineConfig({
       "clsx",
       "tailwind-merge"
     ],
+    force: true
   },
+  define: {
+    // Ensure process.env is available in development mode
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+  }
 });

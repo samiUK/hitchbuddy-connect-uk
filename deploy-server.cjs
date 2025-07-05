@@ -14,10 +14,11 @@ try {
 const server = spawn('npx', ['tsx', 'server/index.ts'], {
   stdio: 'inherit',
   shell: false,
+  cwd: __dirname,
   env: {
     ...process.env,
-    NODE_ENV: 'production',
-    FORCE_DEV_MODE: 'false',
+    NODE_ENV: 'development',  // Use development mode for Vite processing
+    FORCE_DEV_MODE: 'true',   // Force dev mode to enable Vite TypeScript compilation
     IS_PRODUCTION_DEPLOYMENT: 'true',
     PORT: process.env.PORT || '10000'
   }
