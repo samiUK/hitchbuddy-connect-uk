@@ -21,7 +21,7 @@ const server = spawn('npx', ['tsx', 'server/index.ts'], {
     NODE_ENV: 'development',
     FORCE_DEV_MODE: 'true',
     IS_PRODUCTION_DEPLOYMENT: 'true', // Enable production deployment features
-    PORT: process.env.PORT || '5000'   // Ensure Replit uses port 5000
+    PORT: process.env.PORT || '10000'   // Use PORT environment variable, default to 10000 for Render
   }
 });
 
